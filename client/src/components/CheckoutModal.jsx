@@ -1,33 +1,109 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 export default function CheckoutModal({ open, cart, onClose }) {
+  const [formData, setFormData] = useState({ name: '', phone: '', address: '', instructions: '' });
+
   if (!open) return null;
 
   const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!formData.name || !formData.phone || !formData.address) {
+      alert('Please fill out all required fields.');
+      return;
+    }
+    // Generate WhatsApp text
+    const itemsText = cart.map(item => `- ${item.name}: ${item.quantity} ${item.unit}(s) (₹${item.price * item.quantity})`).join('%0A');
+    const message = `*NEW ORDER FROM MR. WASHWALA WEBAPP*%0A%0A` +
+      `*Customer Details:*%0A` +
+      `- Name: ${formData.name}%0A` +
+      `- Phone: ${formData.phone}%0A` +
+      `- Address: ${formData.address}%0A` +
+      `${formData.instructions ? `- Instructions: ${formData.instructions}%0A` : ''}%0A` +
+      `*Order Details:*%0A${itemsText}%0A%0A` +
+      `*Total Amount:* ₹${subtotal}%0A%0A` +
+      `Please confirm my doorstep pickup booking!`;
+
+    window.open(`https://wa.me/918088980347?text=${message}`, '_blank');
+    onClose();
+  };
+
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" role="dialog" aria-modal="true">
-      <div className="bg-white rounded-xl p-6 w-[520px] max-w-full">
-        <div className="flex justify-between items-center">
-          <h2 className="text-xl font-semibold">Checkout Summary</h2>
-          <button className="text-2xl" onClick={onClose}>&times;</button>
-        </div>
+    <div className="modal" style={{ display: 'block' }}>
+      <div className="modal-content">
+        <button className="modal-close" onClick={onClose} aria-label="Close modal">
+          &times;
+        </button>
+        <h2>Book Your Doorstep Pickup</h2>
 
-        <div className="mt-4 space-y-3">
-          {cart.map((item) => (
-            <div key={item.name} className="flex justify-between">
-              <div>{item.name} × {item.quantity}</div>
-              <div>₹{item.price * item.quantity}</div>
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="modal-name">Full Name *</label>
+            <input
+              type="text"
+              id="modal-name"
+              required
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              placeholder="Enter your name"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="modal-phone">Phone Number *</label>
+            <input
+              type="tel"
+              id="modal-phone"
+              required
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              placeholder="Enter 10-digit number"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="modal-address">Doorstep Address *</label>
+            <textarea
+              id="modal-address"
+              required
+              rows="3"
+              value={formData.address}
+              onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+              placeholder="House/Apartment No, Street, Landmark, Mysuru"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="modal-instructions">Special Instructions (Optional)</label>
+            <input
+              type="text"
+              id="modal-instructions"
+              value={formData.instructions}
+              onChange={(e) => setFormData({ ...formData, instructions: e.target.value })}
+              placeholder="e.g. Wash separate, handle delicates carefully"
+            />
+          </div>
+
+          <div className="checkout-summary">
+            <h3>Selected Services</h3>
+            <div style={{ maxHeight: '120px', overflowY: 'auto', marginBottom: '10px' }}>
+              {cart.map((item) => (
+                <div key={item.name} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', marginBottom: '4px' }}>
+                  <span>{item.name} × {item.quantity}</span>
+                  <span>₹{item.price * item.quantity}</span>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+            <div className="summary-total">
+              <strong>Total Amount: ₹{subtotal}</strong>
+            </div>
+          </div>
 
-        <div className="mt-4 text-right font-bold">Total: ₹{subtotal}</div>
-
-        <div className="mt-6 flex gap-3 justify-end">
-          <button className="bg-gradient-to-r from-accent to-blue-500 text-white px-4 py-2 rounded" onClick={() => { alert('Payment flow not implemented'); }}>Pay Now</button>
-          <button className="px-4 py-2 border rounded" onClick={onClose}>Close</button>
-        </div>
+          <button type="submit" className="btn btn-primary btn-block">
+            Confirm & Order via WhatsApp
+          </button>
+        </form>
       </div>
     </div>
   );

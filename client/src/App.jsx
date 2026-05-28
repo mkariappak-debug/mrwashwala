@@ -12,6 +12,8 @@ import Footer from "./components/Footer";
 
 // Note: Ensure your global configurations, resets, and typography imports live here:
 import "./index.css";
+import "./styles.css"
+
 
 export default function App() {
   const [cart, setCart] = useState([]);

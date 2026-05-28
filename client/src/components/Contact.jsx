@@ -1,48 +1,54 @@
 import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPhone, faEnvelope, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
-import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 
 export default function Contact() {
   return (
-    <section id="contact" className="py-14">
-      <div className="max-w-[1100px] mx-auto px-4">
-        <h2 className="text-3xl font-extrabold text-center text-white">Get in Touch</h2>
+    <section id="contact" className="contact-section">
+      <div className="container">
+        <h2 className="section-title">Get in Touch</h2>
+        <p className="section-subtitle">We are always here to help you with your laundry needs</p>
 
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-4">
-            <div className="bg-white/5 p-5 rounded-lg">
-              <h3 className="text-lg font-semibold"><FontAwesomeIcon icon={faPhone} className="mr-2 text-xl" />Phone</h3>
-              <p className="mt-2"><a href="tel:8088980347" className="text-white/90">+91 80889 80347</a></p>
-              <p className="text-sm text-white/70 mt-1">Available everyday</p>
+        <div className="contact-wrapper">
+          <div className="contact-info">
+            <div className="contact-card" data-aos="fade-right">
+              <h3>📞 Phone</h3>
+              <p>
+                <a href="tel:8088980347">+91 80889 80347</a>
+              </p>
+              <div className="contact-label">Available everyday</div>
             </div>
 
-            <div className="bg-white/5 p-5 rounded-lg">
-              <h3 className="text-lg font-semibold"><FontAwesomeIcon icon={faWhatsapp} className="mr-2 text-xl" />WhatsApp</h3>
-              <p className="mt-2"><a href="https://wa.me/918088980347?text=Hi%20Mr.%20WashWala%2C%20I%20want%20to%20know%20about%20your%20services" target="_blank" rel="noreferrer" className="text-white/90">Chat with us</a></p>
-              <p className="text-sm text-white/70 mt-1">Quick responses guaranteed</p>
+            <div className="contact-card whatsapp-card" data-aos="fade-right" data-aos-delay="100">
+              <h3>💬 WhatsApp</h3>
+              <p>
+                <a
+                  href="https://wa.me/918088980347?text=Hi%20Mr.%20WashWala%2C%20I%20want%20to%20know%20about%20your%20services"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Chat with us
+                </a>
+              </p>
+              <div className="contact-label">Quick responses guaranteed</div>
             </div>
 
-            <div className="bg-white/5 p-5 rounded-lg">
-              <h3 className="text-lg font-semibold"><FontAwesomeIcon icon={faEnvelope} className="mr-2 text-xl" />Email</h3>
-              <p className="mt-2"><a href="mailto:mrwashwala@gmail.com" className="text-white/90">mrwashwala@gmail.com</a></p>
-              <p className="text-sm text-white/70 mt-1">We'll reply within 24 hours</p>
+            <div className="contact-card" data-aos="fade-right" data-aos-delay="200">
+              <h3>✉️ Email</h3>
+              <p>
+                <a href="mailto:mrwashwala@gmail.com">mrwashwala@gmail.com</a>
+              </p>
+              <div className="contact-label">We'll reply within 24 hours</div>
             </div>
           </div>
 
-          <div className="bg-white/5 p-5 rounded-lg">
-            <h3 className="text-lg font-semibold"><FontAwesomeIcon icon={faMapMarkerAlt} className="mr-2 text-xl" />Location</h3>
-            <div className="mt-3 rounded overflow-hidden">
-              <iframe
-                title="Mr. WashWala location"
-                src="https://maps.google.com/maps?q=12%20Vani%20Vilas%20Layout%20Mysuru%20Vijaynagar&t=&z=15&ie=UTF8&iwloc=&output=embed"
-                width="100%"
-                height="300"
-                style={{ border: 0 }}
-                loading="lazy"
-              />
-            </div>
-            <p className="text-sm text-white/70 mt-3">Open everyday</p>
+          <div className="map-container" data-aos="fade-left">
+            <iframe
+              title="Mr. WashWala location"
+              src="https://maps.google.com/maps?q=12%20Vani%20Vilas%20Layout%20Mysuru%20Vijaynagar&t=&z=15&ie=UTF8&iwloc=&output=embed"
+              width="100%"
+              height="100%"
+              style={{ border: 0, display: 'block' }}
+              loading="lazy"
+            />
           </div>
         </div>
       </div>

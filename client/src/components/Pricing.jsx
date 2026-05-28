@@ -1,6 +1,4 @@
 import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck } from '@fortawesome/free-solid-svg-icons';
 
 const SERVICES_DATA = [
   {
@@ -47,38 +45,56 @@ const SERVICES_DATA = [
 
 export default function Pricing({ cart, onUpdateQuantity }) {
   return (
-    <section id="pricing" className="py-14">
-      <div className="max-w-[1100px] mx-auto px-4">
-        <h2 className="text-3xl font-extrabold text-center text-white">Our Premium Services & Pricing</h2>
-        <p className="text-center text-white/90 mt-2">Transparent pricing with no hidden charges</p>
+    <section id="pricing" className="pricing-section">
+      <div className="container">
+        <h2 className="section-title">Our Premium Services & Pricing</h2>
+        <p className="section-subtitle">Transparent pricing with no hidden charges</p>
 
-        <div className="grid gap-6 mt-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          {SERVICES_DATA.map((service) => {
-            const cartItem = cart.find(item => item.name === service.name);
+        <div className="pricing-grid">
+          {SERVICES_DATA.map((service, i) => {
+            const cartItem = cart.find((item) => item.name === service.name);
             const quantity = cartItem ? cartItem.quantity : 0;
+            const delay = i * 100;
 
             return (
-              <div key={service.id} className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-6 flex flex-col justify-between shadow-lg">
-                {service.featured && <div className="inline-block bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-sm font-semibold ml-auto">Popular</div>}
-                <div>
-                  <h3 className="text-xl font-bold text-white mt-4">{service.name}</h3>
-                  <p className="text-sm text-white/80 mt-1">per {service.unit}</p>
-                  <p className="text-2xl font-extrabold text-white mt-4">₹{service.price}</p>
-                  <ul className="text-white/85 mt-4 space-y-1">
-                    {service.features.map((feature, index) => (
-                      <li key={index}><FontAwesomeIcon icon={faCheck} className="text-amber-400 text-base mr-2" />{feature}</li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="mt-6">
+              <div
+                key={service.id}
+                className={`pricing-card ${service.featured ? 'featured' : ''}`}
+                data-aos="zoom-in"
+                data-aos-delay={delay}
+              >
+                {service.featured && <div className="featured-badge">Popular</div>}
+                <h3>{service.name}</h3>
+                <p className="pricing-unit">per {service.unit}</p>
+                <p className="pricing-amount">₹{service.price}</p>
+                <ul className="pricing-features">
+                  {service.features.map((feature, idx) => (
+                    <li key={idx}>✓ {feature}</li>
+                  ))}
+                </ul>
+                <div className="btn-container">
                   {quantity === 0 ? (
-                    <button className="w-full bg-gradient-to-r from-accent to-blue-500 text-white font-semibold px-4 py-2 rounded-lg" onClick={() => onUpdateQuantity(service.name, 1, service.price, service.unit)}>Add to Cart</button>
+                    <button
+                      className="btn btn-primary add-btn"
+                      onClick={() => onUpdateQuantity(service.name, 1, service.price, service.unit)}
+                    >
+                      Add to Cart
+                    </button>
                   ) : (
-                    <div className="flex items-center justify-center gap-3">
-                      <button className="px-3 py-1 bg-white/10 rounded" onClick={() => onUpdateQuantity(service.name, quantity - 1, service.price, service.unit)}>−</button>
-                      <span className="px-3 py-1 bg-white/5 rounded">{quantity}</span>
-                      <button className="px-3 py-1 bg-white/10 rounded" onClick={() => onUpdateQuantity(service.name, quantity + 1, service.price, service.unit)}>+</button>
+                    <div className="quantity-control">
+                      <button
+                        className="qty-decrease"
+                        onClick={() => onUpdateQuantity(service.name, quantity - 1, service.price, service.unit)}
+                      >
+                        −
+                      </button>
+                      <span className="qty-display">{quantity}</span>
+                      <button
+                        className="qty-increase"
+                        onClick={() => onUpdateQuantity(service.name, quantity + 1, service.price, service.unit)}
+                      >
+                        +
+                      </button>
                     </div>
                   )}
                 </div>
