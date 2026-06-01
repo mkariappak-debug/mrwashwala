@@ -7,7 +7,13 @@ gsap.registerPlugin(ScrollTrigger);
 
 export function initAOS() {
   try {
-    AOS.init({ duration: 800, easing: 'ease-in-out-cubic', once: false, mirror: true });
+    AOS.init({ 
+      duration: 800, 
+      easing: 'ease-in-out-cubic', 
+      once: true, 
+      mirror: false,
+      offset: 50
+    });
   } catch (e) {
     // ignore
   }

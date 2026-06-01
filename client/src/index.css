@@ -431,6 +431,19 @@ body {
     box-shadow: var(--shadow-lg);
 }
 
+.btn-whatsapp {
+    background: #25D366;
+    color: white;
+    box-shadow: 0 10px 20px rgba(37, 211, 102, 0.2);
+    border: none;
+}
+
+.btn-whatsapp:hover {
+    background: #20ba5a;
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px rgba(37, 211, 102, 0.35);
+}
+
 .btn-service {
     background: var(--primary-color);
     color: white;
@@ -713,7 +726,7 @@ body {
    WHY CHOOSE US SECTION
    ============================================ */
 .why-choose-section {
-    padding: 50px 0 30px 0;
+    padding: 50px 0 0 0;
     position: relative;
     overflow: hidden;
 }
@@ -1068,9 +1081,10 @@ body {
    PRICING SECTION
    ============================================ */
 .pricing-section {
-    padding: 100px 0;
+    padding: 0 0 100px 0;
     position: relative;
     overflow: hidden;
+    margin-top: -80px;
 }
 
 .pricing-section::before {
@@ -1581,11 +1595,11 @@ body {
    ANIMATIONS (AOS)
    ============================================ */
 [data-aos] {
-    opacity: 0;
+    opacity: 1 !important;
 }
 
 [data-aos].aos-animate {
-    opacity: 1;
+    opacity: 1 !important;
 }
 
 /* ============================================

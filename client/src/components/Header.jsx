@@ -37,6 +37,15 @@ export default function Header({ cartCount }) {
             </a>
           </li>
           <li>
+  <a
+    href="#franchise"
+    className="nav-link"
+    onClick={() => setIsMenuOpen(false)}
+  >
+    Franchise
+  </a>
+</li>
+          <li>
             <a href="#cart" className="nav-link" onClick={() => setIsMenuOpen(false)}>
               Cart <span id="cart-count" className="cart-badge">{cartCount}</span>
             </a>
