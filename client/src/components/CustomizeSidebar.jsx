@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 
 const DATA = {
@@ -218,8 +219,15 @@ export default function CustomizeSidebar({
         </div>
 
         <div className="sidebar-footer">
-          <p>Items: {totalItems}</p>
-          <p>Subtotal: ₹{subtotal}</p>
+          <div className="sidebar-summary">
+            <p>
+              <strong>Items:</strong> {totalItems}
+            </p>
+
+            <p>
+              <strong>Subtotal:</strong> ₹{subtotal}
+            </p>
+          </div>
         </div>
 
       </div>
@@ -269,3 +277,4 @@ function ItemRow({
     </div>
   );
 }
+

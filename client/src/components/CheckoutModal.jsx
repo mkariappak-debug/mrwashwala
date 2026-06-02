@@ -1,17 +1,18 @@
-import React, { useState } from 'react';
+
+import React, { useState } from "react";
 
 export default function CheckoutModal({
   open,
-  cart,
+  cart = [],
   onClose,
   onConfirmOrder
-}) {
-
+}) 
+{
   const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    address: '',
-    instructions: ''
+    name: "",
+    phone: "",
+    address: "",
+    instructions: ""
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -19,78 +20,45 @@ export default function CheckoutModal({
   if (!open) return null;
 
   const subtotal = cart.reduce(
-    (s, i) => s + i.price * i.quantity,
+    (sum, item) => sum + item.price * item.quantity,
     0
   );
-
-  const handleSubmit = async (e) => {
-
+const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.phone || !formData.address) {
-      alert('Please fill out all required fields.');
+    if (
+      !formData.name ||
+      !formData.phone ||
+      !formData.address
+    ) {
+      alert("Please fill all required fields");
       return;
     }
 
     setIsSubmitting(true);
 
-    try {
-
-      const orderData = {
-        customerName: formData.name,
-        phone: formData.phone,
-        address: formData.address,
-
-        services: cart.map((item) => ({
-          serviceName: item.name,
-          quantity: item.quantity,
-          price: item.price,
-        })),
-
-        totalAmount: subtotal,
-      };
-
-      const response = await fetch(
-        'http://localhost:5000/api/orders',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(orderData),
-        }
-      );
-
-      const savedOrder = await response.json();
-
+try {
       const itemsText = cart
         .map(
           (item) =>
-            `- ${item.name}: ${item.quantity} ${item.unit}(s) (₹${
-              item.price * item.quantity
-            })`
+            `- ${item.name}: ${item.quantity} ${item.unit}(s) (₹${item.price * item.quantity})`
         )
-        .join('%0A');
+        .join("%0A");
 
       const message =
-        `*NEW ORDER FROM MR. WASHWALA WEBAPP*%0A%0A` +
-        `*Order ID:* ${savedOrder._id}%0A%0A` +
-        `*Customer Details:*%0A` +
-        `- Name: ${formData.name}%0A` +
-        `- Phone: ${formData.phone}%0A` +
-        `- Address: ${formData.address}%0A` +
-        `${
-          formData.instructions
-            ? `- Instructions: ${formData.instructions}%0A`
-            : ''
-        }%0A` +
-        `*Order Details:*%0A${itemsText}%0A%0A` +
-        `*Total Amount:* ₹${subtotal}%0A%0A` +
-        `Please confirm my doorstep pickup booking!`;
+        `*NEW ORDER FROM MR. WASHWALA*%0A%0A` +
+        `*Customer Details*%0A` +
+        `Name: ${formData.name}%0A` +
+        `Phone: ${formData.phone}%0A` +
+        `Address: ${formData.address}%0A` +
+        `${formData.instructions ? `Instructions: ${formData.instructions}%0A` : ""}` +
+        `%0A*Order Details*%0A` +
+        `${itemsText}%0A%0A` +
+        `*Total:* ₹${subtotal}`;
 
       window.open(
         `https://wa.me/918088980347?text=${message}`,
-        '_blank'
+        "_blank"
       );
 
       if (onConfirmOrder) {
@@ -98,139 +66,174 @@ export default function CheckoutModal({
       }
 
       onClose();
-
-    } catch (error) {
-
-      console.log(error);
-
-      alert('Failed to place order');
-
-    } finally {
-
+    } catch (err) {
+      console.log(err);
+      alert("Failed to place order");
+    } finally 
+    {
       setIsSubmitting(false);
-
     }
   };
 
   return (
-    <div className="modal" style={{ display: 'block' }}>
-      <div className="modal-content">
-
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "rgba(0,0,0,0.65)",
+        backdropFilter: "blur(8px)",
+        zIndex: 999999,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "20px"
+      }}
+    >
+      <div
+        style={{
+          width: "100%",
+          maxWidth: "720px",
+          background: "rgba(255,255,255,0.96)",
+          borderRadius: "24px",
+          padding: "35px",
+          boxShadow: "0 25px 60px rgba(0,0,0,0.25)",
+          maxHeight: "90vh",
+          overflowY: "auto"
+        }}
+      >
         <button
-          className="modal-close"
           onClick={onClose}
+          style={{
+            float: "right",
+            border: "none",
+            background: "transparent",
+            fontSize: "28px",
+            cursor: "pointer"
+          }}
         >
-          &times;
+          ×
         </button>
 
-        <h2>Book Your Doorstep Pickup</h2>
+        <h2
+          style={{
+            color: "#27187E",
+            marginBottom: "25px"
+          }}
+        >
+          Book Your Doorstep Pickup
+        </h2>
 
         <form onSubmit={handleSubmit}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "18px"
+            }}
+          >
+            <input
+              type="text"
+              placeholder="Full Name"
+              value={formData.name}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  name: e.target.value
+                })
+              }
+              style={inputStyle}
+            />
 
-          <input
-            type="text"
-            placeholder="Your Name"
-            value={formData.name}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                name: e.target.value
-              })
-            }
-          />
+            <input
+              type="tel"
+              placeholder="Phone Number"
+              value={formData.phone}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  phone: e.target.value
+                })
+              }
+              style={inputStyle}
+            />
 
-          <input
-            type="text"
-            placeholder="Phone Number"
-            value={formData.phone}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                phone: e.target.value
-              })
-            }
-          />
+            <textarea
+              placeholder="Pickup Address"
+              value={formData.address}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  address: e.target.value
+                })
+              }
+              style={{
+                ...inputStyle,
+                gridColumn: "1 / -1",
+                minHeight: "100px"
+              }}
+            />
 
-          <textarea
-            placeholder="Address"
-            value={formData.address}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                address: e.target.value
-              })
-            }
-          />
+            <textarea
+              placeholder="Special Instructions"
+              value={formData.instructions}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  instructions: e.target.value
+                })
+              }
+              style={{
+                ...inputStyle,
+                gridColumn: "1 / -1",
+                minHeight: "90px"
+              }}
+            />
+          </div>
 
-          <input
-            type="text"
-            placeholder="Special Instructions"
-            value={formData.instructions}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                instructions: e.target.value
-              })
-            }
-          />
+          <div
+            style={{
+              marginTop: "25px",
+              padding: "18px",
+              background: "#f5f7ff",
+              borderRadius: "14px"
+            }}
+          >
+            <strong>Total Amount: ₹{subtotal}</strong>
+          </div>
 
           <button
             type="submit"
-            className="btn btn-primary btn-block"
             disabled={isSubmitting}
+            style={{
+              width: "100%",
+              marginTop: "20px",
+              padding: "16px",
+              border: "none",
+              borderRadius: "12px",
+              background: "#27187E",
+              color: "#fff",
+              fontSize: "16px",
+              fontWeight: "700",
+              cursor: "pointer"
+            }}
           >
-            {
-              isSubmitting
-                ? 'Booking Order...'
-                : 'Confirm & Order via WhatsApp'
-            }
+            {isSubmitting
+              ? "Booking Order..."
+              : "Confirm & Order via WhatsApp"}
           </button>
-
         </form>
-
       </div>
     </div>
   );
 }
-<div className="pickup-modal">
 
-  <span className="pickup-close">×</span>
+const inputStyle = {
+  width: "100%",
+  padding: "14px",
+  border: "1px solid #ddd",
+  borderRadius: "12px",
+  fontSize: "15px",
+  outline: "none",
+  boxSizing: "border-box"
+};
 
-  <h2>Book Your Doorstep Pickup</h2>
-
-  <form className="pickup-form">
-
-      <input
-        type="text"
-        placeholder="Your Name"
-      />
-
-      <input
-        type="tel"
-        placeholder="Phone Number"
-      />
-
-      <input
-        type="text"
-        placeholder="Address"
-      />
-
-      <input
-        type="text"
-        placeholder="Preferred Pickup Time"
-      />
-
-      <textarea
-        placeholder="Special Instructions"
-      />
-
-      <button
-        type="submit"
-        className="pickup-submit"
-      >
-        Confirm & Order via WhatsApp
-      </button>
-
-  </form>
-
-</div>

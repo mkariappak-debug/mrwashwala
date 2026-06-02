@@ -95,10 +95,10 @@ export default function App() {
       prev.filter((item) => item.name !== name)
     );
   };
-
   const openCheckout = () => {
-    setIsCheckoutOpen(true);
-  };
+  console.log("OPEN CHECKOUT CLICKED");
+  setIsCheckoutOpen(true);
+};
 
   const closeCheckout = () => {
     setIsCheckoutOpen(false);

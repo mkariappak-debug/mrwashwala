@@ -1497,3 +1497,361 @@ body { font-family: 'Poppins', sans-serif; color: var(--text-dark); background-i
     position: relative;
     z-index: 1;
 }
+/* ==========================
+   BUTTON DISABLED STATE
+========================== */
+
+.btn:disabled,
+.btn-primary:disabled,
+.btn-block:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+  animation: none !important;
+}
+
+.btn:disabled:hover,
+.btn-primary:disabled:hover,
+.btn-block:disabled:hover {
+  transform: none !important;
+}
+.checkout-premium-form {
+    margin-top: 20px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+.checkout-premium-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #27187E;
+}
+
+.checkout-premium-form input,
+.checkout-premium-form textarea {
+    width: 100%;
+    padding: 14px 16px;
+
+    border: 1px solid rgba(39,24,126,0.15);
+
+    border-radius: 14px;
+
+    background: rgba(255,255,255,0.9);
+
+    font-size: 15px;
+
+    transition: all 0.3s ease;
+}
+
+.checkout-premium-form textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.checkout-premium-form input:focus,
+.checkout-premium-form textarea:focus {
+    outline: none;
+
+    border-color: #27187E;
+
+    box-shadow:
+        0 0 0 4px rgba(39,24,126,0.12);
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-content {
+        padding: 24px;
+    }
+}
+/* ============================================
+PREMIUM GLASSMORPHISM CONTACT SECTION
+============================================ */
+
+.contact-section {
+position: relative;
+padding: 120px 0;
+}
+
+.contact-section::before {
+content: "";
+position: absolute;
+inset: 0;
+
+
+background:
+    radial-gradient(circle at top left,
+        rgba(255,255,255,0.15),
+        transparent 40%),
+    radial-gradient(circle at bottom right,
+        rgba(74,144,226,0.15),
+        transparent 40%);
+
+pointer-events: none;
+
+
+}
+
+.contact-wrapper {
+display: grid;
+grid-template-columns: 1fr 1.2fr;
+gap: 40px;
+align-items: stretch;
+}
+
+.contact-info {
+display: flex;
+flex-direction: column;
+gap: 24px;
+}
+
+/* GLASS CARDS */
+
+.contact-card {
+position: relative;
+overflow: hidden;
+
+
+background: rgba(255, 255, 255, 0.12);
+
+backdrop-filter: blur(18px);
+-webkit-backdrop-filter: blur(18px);
+
+border: 1px solid rgba(255,255,255,0.18);
+
+border-radius: 24px;
+
+padding: 30px;
+
+box-shadow:
+    0 8px 32px rgba(0,0,0,0.15),
+    inset 0 1px 0 rgba(255,255,255,0.2);
+
+transition: all 0.35s ease;
+
+}
+
+.contact-card:hover {
+transform: translateY(-8px);
+
+box-shadow:
+    0 15px 40px rgba(0,0,0,0.25),
+    0 0 25px rgba(255,255,255,0.15);
+
+}
+
+.contact-card::before {
+content: "";
+
+position: absolute;
+
+top: -100%;
+left: -100%;
+
+width: 200%;
+height: 200%;
+
+background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(255,255,255,0.15),
+    transparent
+);
+
+transform: rotate(25deg);
+
+transition: 0.8s;
+
+}
+
+.contact-card:hover::before {
+top: 100%;
+left: 100%;
+}
+
+.contact-card h3 {
+font-size: 1.3rem;
+font-weight: 700;
+margin-bottom: 12px;
+color: #ffffff;
+}
+
+.contact-card p {
+margin: 0;
+}
+
+.contact-card a {
+color: #ffffff;
+text-decoration: none;
+font-weight: 500;
+font-size: 1.05rem;
+}
+
+.contact-card a:hover {
+opacity: 0.85;
+}
+
+.contact-label {
+margin-top: 10px;
+color: rgba(255,255,255,0.8);
+font-size: 0.9rem;
+}
+
+/* WHATSAPP CARD */
+
+.whatsapp-card {
+border: 1px solid rgba(37,211,102,0.35);
+}
+
+/* MAP GLASS BOX */
+
+.map-container {
+overflow: hidden;
+
+border-radius: 24px;
+
+background: rgba(255,255,255,0.12);
+
+backdrop-filter: blur(18px);
+-webkit-backdrop-filter: blur(18px);
+
+border: 1px solid rgba(255,255,255,0.18);
+
+box-shadow:
+    0 8px 32px rgba(0,0,0,0.15),
+    inset 0 1px 0 rgba(255,255,255,0.2);
+
+min-height: 500px;
+
+}
+
+.map-container iframe {
+width: 100%;
+height: 100%;
+min-height: 500px;
+}
+
+/* MOBILE */
+
+@media (max-width: 768px) {
+
+.contact-wrapper {
+    grid-template-columns: 1fr;
+}
+
+.map-container {
+    min-height: 350px;
+}
+
+.map-container iframe {
+    min-height: 350px;
+}
+}
+.testimonial-card {
+    position: relative;
+    overflow: hidden;
+
+    background: rgba(255, 255, 255, 0.30);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+
+    border: 1px solid rgba(255,255,255,0.30);
+    border-radius: 20px;
+
+    padding: 30px;
+
+    box-shadow:
+        0 8px 25px rgba(0,0,0,0.12);
+
+    transition: all 0.35s ease;
+}
+
+/* shine effect */
+.testimonial-card::before {
+    content: "";
+
+    position: absolute;
+    top: 0;
+    left: -120%;
+
+    width: 60%;
+    height: 100%;
+
+    background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255,255,255,0.35),
+        transparent
+    );
+
+    transform: skewX(-25deg);
+    transition: 0.8s;
+}
+
+.testimonial-card:hover::before {
+    left: 140%;
+}
+
+.testimonial-card:hover {
+    transform: translateY(-8px);
+
+    box-shadow:
+        0 20px 40px rgba(0,0,0,0.18),
+        0 0 20px rgba(255,255,255,0.3);
+}
+
+/* CONTACT CARD FINAL GLASS EFFECT */
+
+.contact-card {
+    background: rgba(255,255,255,0.18);
+
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+
+    border: 1px solid rgba(255,255,255,0.22);
+
+    box-shadow:
+        0 8px 25px rgba(0,0,0,0.12);
+
+    transition: all .35s ease;
+}
+
+.contact-card:hover {
+    background: rgba(255,255,255,0.22);
+
+    transform: translateY(-6px);
+
+    box-shadow:
+        0 15px 35px rgba(0,0,0,0.18);
+}
+
+.contact-card::before {
+    background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255,255,255,0.08),
+        transparent
+    );
+}
+.pricing-card.featured {
+    border: none !important;
+}

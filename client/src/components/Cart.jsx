@@ -69,12 +69,15 @@ export default function Cart({ cart, onUpdateQuantity, onRemoveItem, onCheckout 
               <span>₹{total}</span>
             </div>
             <button
-              className="btn btn-primary btn-block"
-              disabled={cart.length === 0}
-              onClick={onCheckout}
-            >
-              Proceed to Checkout
-            </button>
+  className="btn btn-primary btn-block"
+  disabled={cart.length === 0}
+  onClick={() => {
+    console.log("BUTTON CLICKED");
+    onCheckout();
+  }}
+>
+  Proceed to Checkout
+</button>
           </aside>
         </div>
       </div>

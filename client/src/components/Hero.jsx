@@ -1,13 +1,12 @@
 import React from "react";
 
-export default function Hero({ onBookPickup, onViewServices }) {
+export default function Hero({ onBookPickup }) {
   return (
     <section id="home" className="hero-section">
       <div id="canvas-hero" className="hero-gradient-bg" />
       <div className="hero-overlay" />
 
       <div className="hero-content">
-
         <h1 className="hero-title">
           Fresh Clothes Delivered
           <br />
@@ -20,7 +19,6 @@ export default function Hero({ onBookPickup, onViewServices }) {
           Across Mysuru
         </p>
 
-        
         <div className="hero-cta">
           <button
             className="btn btn-primary"
@@ -38,16 +36,6 @@ export default function Hero({ onBookPickup, onViewServices }) {
             WhatsApp Order
           </a>
         </div>
-
-      </div>
-
-      <div
-        className="scroll-indicator"
-        onClick={onViewServices}
-        style={{ cursor: "pointer" }}
-      >
-        <span>Scroll to explore</span>
-        <div className="scroll-icon">↓</div>
       </div>
     </section>
   );
