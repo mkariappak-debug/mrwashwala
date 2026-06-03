@@ -68,7 +68,23 @@ app.use((err, req, res, next) => {
 
 // Server Port
 const PORT = process.env.PORT || 5000;
+import Service from './models/Service.js';
 
+app.get('/debug-services', async (req, res) => {
+  try {
+    const services = await Service.find({});
+    const count = await Service.countDocuments();
+
+    res.json({
+      count,
+      services
+    });
+  } catch (error) {
+    res.json({
+      error: error.message
+    });
+  }
+});
 // Start Server
 app.listen(PORT, () => {
   console.log(
