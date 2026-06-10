@@ -8,7 +8,9 @@ export default function Header({ cartCount }) {
   return (
     <nav className="navbar sticky-nav">
       <div className="nav-container">
-       
+        <a href="#home" className="nav-logo">
+          <img src={logo} alt="Mr. Wash Wala Logo" className="logo-img" />
+        </a>
 
         <ul className={`nav-menu ${isMenuOpen ? 'active' : ''}`}>
           <li>

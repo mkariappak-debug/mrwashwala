@@ -47,6 +47,28 @@ export default function Testimonials() {
               </div>
             </div>
           ))}
+          
+          {/* Google Reviews Card */}
+          <a 
+            href="https://www.google.com/maps/place/Mr.+Wash+Wala/@12.3418468,76.6119963,17z/data=!4m8!3m7!1s0x3baf7bb24121a2bb:0xfa784c6c8d775294!8m2!3d12.3418468!4d76.6145712!9m1!1b1!16s%2Fg%2F11n54qm_kk?entry=ttu&g_ep=EgoyMDI2MDYwMy4xIKXMDSoASAFQAw%3D%3D"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="testimonial-card google-reviews-card"
+            data-aos="zoom-in"
+            data-aos-delay={FEEDBACKS.length * 100}
+          >
+            <div className="google-reviews-content">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="#27187E" strokeWidth="2"/>
+                <path d="M8 12L11 15L16 8" stroke="#27187E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <h3>Check Out Our Google Reviews</h3>
+              <p>See what customers say on Google Maps</p>
+              <div className="google-stars">
+                {'★'.repeat(5)}
+              </div>
+            </div>
+          </a>
         </div>
       </div>
     </section>

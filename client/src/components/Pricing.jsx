@@ -11,14 +11,14 @@ export default function Pricing({
   const pricingRef = useRef(null);
   const getServiceImage = (serviceName) => {
   const images = {
-    "Wash & Fold": "/pricing/wash.jpg",
-    "Wash & Iron": "/pricing/wash.jpg",
-    "Dry Cleaning": "/pricing/wash.jpg",
-    "Shoe Cleaning": "/pricing/wash.jpg",
-    "Customize Your Service": "/pricing/wash.jpg"
+    "Wash & Fold": "/pricing/fold.jpg",
+    "Wash & Iron": "/pricing/shoe.jpg",
+    "Dry Cleaning": "/pricing/dry.jpg",
+    "Shoes Cleaning": "/pricing/shoe.jpg",
+    "Blanket Cleaning": "/pricing/bed.jpg",
+    "Customize Your Service": "/pricing/fold.jpg"
   };
-
-  return images[serviceName] || "/pricing/wash.jpg";
+  return images[serviceName] || "/pricing/fold.jpg";
 };
 
   useEffect(() => {
@@ -100,6 +100,7 @@ export default function Pricing({
                 : 0;
 
               const delay = i * 100;
+              console.log(service.name);
 
               return (
                 <div

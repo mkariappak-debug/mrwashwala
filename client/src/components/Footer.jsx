@@ -28,9 +28,6 @@ export default function Footer() {
       </div>
 
       <div className="footer-content container">
-        <div className="footer-section">
-         
-         </div> 
 
         <div className="footer-section">
           <h4 style={{ color: '#fff' }}>Quick Links</h4>

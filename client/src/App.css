@@ -1618,6 +1618,24 @@ body {
     margin: 5px 0;
 }
 
+.footer-logo-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.footer-logo {
+    width: 120px;
+    height: auto;
+    object-fit: contain;
+    opacity: 0.9;
+    transition: opacity 0.3s ease;
+}
+
+.footer-logo:hover {
+    opacity: 1;
+}
+
 /* ============================================
    ANIMATIONS (AOS)
    ============================================ */

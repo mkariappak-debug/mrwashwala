@@ -7,6 +7,7 @@ import Pricing from "./components/Pricing";
 import CustomizeSidebar from "./components/CustomizeSidebar";
 import Cart from "./components/Cart";
 import Testimonials from "./components/Testimonials";
+import Gallery from "./components/Gallery";
 import CheckoutModal from "./components/CheckoutModal";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
@@ -191,6 +192,8 @@ export default function App() {
       />
 
       <Testimonials />
+
+      <Gallery />
 
       <CheckoutModal
         open={isCheckoutOpen}
