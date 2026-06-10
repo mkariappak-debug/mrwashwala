@@ -8,17 +8,7 @@ export default function Header({ cartCount }) {
   return (
     <nav className="navbar sticky-nav">
       <div className="nav-container">
-        <div 
-          className="nav-logo" 
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          style={{ cursor: 'pointer' }}
-        >
-          <img src={logo} alt="Mr. WashWala Logo" className="logo-img logo-img-large" />
-          <span className="logo-text">
-            <span className="logo-mr">Mr. </span>
-            <span className="logo-wash">WashWala</span>
-          </span>
-        </div>
+       
 
         <ul className={`nav-menu ${isMenuOpen ? 'active' : ''}`}>
           <li>
@@ -29,11 +19,6 @@ export default function Header({ cartCount }) {
           <li>
             <a href="#pricing" className="nav-link" onClick={() => setIsMenuOpen(false)}>
               Services
-            </a>
-          </li>
-          <li>
-            <a href="#pricing" className="nav-link" onClick={() => setIsMenuOpen(false)}>
-              Pricing
             </a>
           </li>
           <li>

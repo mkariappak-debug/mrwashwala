@@ -408,12 +408,36 @@ body { font-family: 'Poppins', sans-serif; color: var(--text-dark); background-i
     margin-top: 0px !important;
     margin-bottom: 0px !important;
 }
+
+/* Why Choose Us section title styling */
+.why-choose-section .section-title {
+    color: #000000;
+}
+
+.why-mr,
+.why-washwala {
+    color: var(--primary-color);
+}
+
 .pricing-section {
     padding-top: 80px !important;
     padding-bottom: 100px !important;
 
     margin-top: 0 !important;
     margin-bottom: 0 !important;
+}
+
+/* Services heading color styling */
+.services-our {
+    color: #000000 !important;
+}
+
+.services-premium {
+    color: var(--primary-color) !important;
+}
+
+.services-services {
+    color: #000000 !important;
 }
 
 .why-choose-section .container,
@@ -707,16 +731,32 @@ body { font-family: 'Poppins', sans-serif; color: var(--text-dark); background-i
 }
 
 .franchise-card {
-  background: rgba(255,255,255,0.65);
+  background: #ffffff;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 40px 30px;
+  border-radius: 15px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
 
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-
-  border: 1px solid rgba(255,255,255,0.18);
+.franchise-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+  opacity: 0.8;
 }
 
 .franchise-card:hover {
   transform: translateY(-8px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.8);
 }
 
 .franchise-card h3 {
@@ -731,10 +771,11 @@ body { font-family: 'Poppins', sans-serif; color: var(--text-dark); background-i
   font-size: 3rem;
   font-weight: 800;
   text-align: center;
+  color: #000000;
 }
 
 .franchise-mr {
-  color: #000000;
+  color: #27187E;
 }
 
 .franchise-washwala {
@@ -873,11 +914,11 @@ body { font-family: 'Poppins', sans-serif; color: var(--text-dark); background-i
 
   padding: 14px 28px;
 
-  background: rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.18);
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
 
-  border: 1px solid rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.35);
 
   border-radius: 999px;
 
@@ -886,14 +927,63 @@ body { font-family: 'Poppins', sans-serif; color: var(--text-dark); background-i
   margin-right: auto;
 
   box-shadow:
-    0 10px 30px rgba(0,0,0,0.15);
+    0 8px 32px rgba(0,0,0,0.15),
+    inset 0 1px 1px rgba(255,255,255,0.3);
+    
+  animation: glassGlow 3s ease-in-out infinite;
+  position: relative;
+}
+
+@keyframes glassGlow {
+  0%, 100% {
+    transform: translateY(0px);
+    box-shadow: 
+      0 8px 32px rgba(0,0,0,0.15),
+      0 0 20px rgba(255,255,255,0.1),
+      inset 0 1px 1px rgba(255,255,255,0.3);
+  }
+  50% {
+    transform: translateY(-10px);
+    box-shadow: 
+      0 15px 40px rgba(0,0,0,0.25),
+      0 0 40px rgba(255,255,255,0.25),
+      inset 0 1px 1px rgba(255,255,255,0.4);
+  }
 }
 
 .hero-stats span {
-  color: #ffffff;
   font-size: 0.95rem;
   font-weight: 600;
   letter-spacing: 0.3px;
+}
+
+.stat-item {
+  display: inline;
+}
+
+/* Stat color variations with !important for specificity */
+.stat-number {
+  color: #27187E !important;
+}
+
+.stat-plus {
+  color: var(--primary-color) !important;
+  font-weight: 700;
+}
+
+.stat-text {
+  color: #000000 !important;
+}
+
+.stat-star {
+  color: #ffc107 !important;
+  font-size: 1.15rem;
+  margin: 0 3px;
+}
+
+.stat-rating {
+  color: #27187E !important;
+  font-weight: 700;
 }
 
 .stats-divider {
@@ -1458,8 +1548,13 @@ body { font-family: 'Poppins', sans-serif; color: var(--text-dark); background-i
     color: #FFD700 !important;
 }
 .franchise-title {
-    color: #ffffff !important;
+    color: #000000 !important;
 }
+
+.franchise-section .section-subtitle {
+    color: #ffffff;
+}
+
 /* FRANCHISE SECTION GLASS BOX */
 
 .franchise-section {
@@ -1593,6 +1688,70 @@ position: relative;
 padding: 120px 0;
 }
 
+.contact-section .section-title {
+color: #000000;
+}
+
+.contact-section .section-subtitle {
+color: #27187E;
+}
+
+.contact-title-box {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 16px;
+  padding: 30px 50px;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), inset 0 1px 2px rgba(255, 255, 255, 0.9);
+  position: relative;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.contact-title-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+}
+
+.contact-title-box .section-title {
+  margin-bottom: 0;
+}
+
+.contact-subtitle-box {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 16px;
+  padding: 20px 50px;
+  margin-bottom: 60px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), inset 0 1px 2px rgba(255, 255, 255, 0.8);
+  position: relative;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.contact-subtitle-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.7), transparent);
+}
+
+.contact-subtitle-box .section-subtitle {
+  margin-bottom: 0;
+}
+
 .contact-section::before {
 content: "";
 position: absolute;
@@ -1631,32 +1790,30 @@ gap: 24px;
 position: relative;
 overflow: hidden;
 
+background: #ffffff !important;
+backdrop-filter: none !important;
+-webkit-backdrop-filter: none !important;
 
-background: rgba(255, 255, 255, 0.12);
+border: none;
 
-backdrop-filter: blur(18px);
--webkit-backdrop-filter: blur(18px);
-
-border: 1px solid rgba(255,255,255,0.18);
-
-border-radius: 24px;
+border-radius: 12px;
 
 padding: 30px;
 
 box-shadow:
-    0 8px 32px rgba(0,0,0,0.15),
-    inset 0 1px 0 rgba(255,255,255,0.2);
+    0 2px 12px rgba(0,0,0,0.1),
+    0 6px 16px rgba(0,0,0,0.08);
 
 transition: all 0.35s ease;
 
 }
 
 .contact-card:hover {
-transform: translateY(-8px);
+transform: translateY(-4px);
 
 box-shadow:
-    0 15px 40px rgba(0,0,0,0.25),
-    0 0 25px rgba(255,255,255,0.15);
+    0 4px 20px rgba(0,0,0,0.15),
+    0 8px 24px rgba(0,0,0,0.1);
 
 }
 
@@ -1671,12 +1828,7 @@ left: -100%;
 width: 200%;
 height: 200%;
 
-background: linear-gradient(
-    45deg,
-    transparent,
-    rgba(255,255,255,0.15),
-    transparent
-);
+background: transparent;
 
 transform: rotate(25deg);
 
@@ -1693,7 +1845,7 @@ left: 100%;
 font-size: 1.3rem;
 font-weight: 700;
 margin-bottom: 12px;
-color: #ffffff;
+color: #27187E;
 }
 
 .contact-card p {
@@ -1701,7 +1853,7 @@ margin: 0;
 }
 
 .contact-card a {
-color: #ffffff;
+color: #27187E;
 text-decoration: none;
 font-weight: 500;
 font-size: 1.05rem;
@@ -1713,14 +1865,27 @@ opacity: 0.85;
 
 .contact-label {
 margin-top: 10px;
-color: rgba(255,255,255,0.8);
+color: rgba(0,0,0,0.5);
 font-size: 0.9rem;
 }
 
 /* WHATSAPP CARD */
 
 .whatsapp-card {
-border: 1px solid rgba(37,211,102,0.35);
+background: rgba(37, 211, 102, 0.95) !important;
+border: 1px solid rgba(37,211,102,0.6) !important;
+}
+
+.whatsapp-card h3 {
+color: white !important;
+}
+
+.whatsapp-card a {
+color: white !important;
+}
+
+.whatsapp-card p {
+color: rgba(255,255,255,0.95) !important;
 }
 
 /* MAP GLASS BOX */
@@ -1854,4 +2019,44 @@ min-height: 500px;
 }
 .pricing-card.featured {
     border: none !important;
+}
+.why-choose-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  border-radius: 0;
+}
+.why-choose-intro {
+    padding: 0 !important;
+    margin: 0 auto !important;
+    border: none !important;
+    border-left: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+.why-choose-image {
+    width: 100%;
+    display: block;
+    border: 2px solid rgba(255, 255, 255, 0.9) !important;
+    outline: none !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+    border-radius: 0 !important;
+}
+
+/* Pricing Card Images */
+.card-image {
+    width: 100%;
+    height: 180px;       /* adjust 140-180px as needed */
+    overflow: hidden;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+
+.card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;   /* keeps image inside card */
+    display: block;
 }

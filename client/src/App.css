@@ -808,11 +808,18 @@ body {
 .why-choose-intro {
     max-width: 900px;
     margin: 0 auto 30px;
-    padding: 30px 40px;
-    background: rgba(255, 255, 255, 0);
-    border-radius: 15px;
-    border-left: 4px solid var(--primary-color);
-    box-shadow: 0 4px 15px rgba(39, 24, 126, 0.08);
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+.why-choose-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 20px; /* optional */
+     border: 3px solid rgba(255,255,255,0.8);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
 }
 
 .why-choose-intro p {
@@ -1197,6 +1204,14 @@ body {
     overflow: hidden;
 }
 
+.contact-section .section-title {
+    color: #000000;
+}
+
+.contact-section .section-subtitle {
+    color: #27187E;
+}
+
 .contact-section::before {
     content: '';
     position: absolute;
@@ -1228,18 +1243,19 @@ body {
 }
 
 .contact-card {
-    background: #ffffff;
+    background: #ffffff !important;
     padding: 30px;
     border-radius: 12px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1), 0 6px 16px rgba(0, 0, 0, 0.08);
     transition: var(--transition);
-
-    border-left: 4px solid var(--primary-color);
+    border: none;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
 }
 
 .contact-card:hover {
-    transform: translateX(10px);
-    box-shadow: 0 12px 40px rgba(39, 24, 126, 0.25), var(--glass-shadow);
+    transform: translateY(-4px);
+    box-shadow: 0 4px 20px rgba(39, 24, 126, 0.15), 0 8px 24px rgba(0, 0, 0, 0.1);
     background: #ffffff;
 }
 
@@ -2182,4 +2198,18 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+/* Pricing card image */
+.card-image {
+  width: 100%;
+  height: 120px;
+  overflow: hidden;
+  border-radius: 16px;
+  margin-bottom: 12px;
+}
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }

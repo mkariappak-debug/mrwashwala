@@ -8,17 +8,18 @@ export default function Hero({ onBookPickup }) {
 
       <div className="hero-content">
         <h1 className="hero-title">
-          Fresh Clothes Delivered
-          <br />
-          To Your Doorstep
-        </h1>
+  Premium Wash,
+  <br />
+  Shine Like New!
+</h1>
 
-        <p className="hero-subtitle">
-          Fast, Premium Laundry & Dry Cleaning Service
-          <br />
-          Across Mysuru
-        </p>
-
+<p className="hero-subtitle">
+  <span className="gold-text">Premium Wash</span>
+  <span className="white-text"> | </span>
+  <span className="gold-text">Dry Cleaning</span>
+  <span className="white-text"> | </span>
+  <span className="gold-text">Laundry</span>
+</p>
         <div className="hero-cta">
           <button
             className="btn btn-primary"

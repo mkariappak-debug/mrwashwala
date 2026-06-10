@@ -9,6 +9,17 @@ export default function Pricing({
 }) {
   const [servicesList, setServicesList] = useState([]);
   const pricingRef = useRef(null);
+  const getServiceImage = (serviceName) => {
+  const images = {
+    "Wash & Fold": "/pricing/wash.jpg",
+    "Wash & Iron": "/pricing/wash.jpg",
+    "Dry Cleaning": "/pricing/wash.jpg",
+    "Shoe Cleaning": "/pricing/wash.jpg",
+    "Customize Your Service": "/pricing/wash.jpg"
+  };
+
+  return images[serviceName] || "/pricing/wash.jpg";
+};
 
   useEffect(() => {
     fetchServices();
@@ -57,7 +68,7 @@ export default function Pricing({
       <div className="container">
 
       <h2 className="section-title">
-  Our Premium Services & Pricing
+  <span className="services-our">Our</span> <span className="services-premium">Premium</span> <span className="services-services">Services</span>
 </h2>
       
 
@@ -107,7 +118,14 @@ export default function Pricing({
                     </div>
                   )}
 
-                  <h3>{service.name}</h3>
+                  <div className="card-image">
+  <img
+    src={getServiceImage(service.name)}
+    alt={service.name}
+  />
+</div>
+
+<h3>{service.name}</h3>
 
                   <p className="pricing-unit">
                     per {service.unit}

@@ -29,14 +29,8 @@ export default function Footer() {
 
       <div className="footer-content container">
         <div className="footer-section">
-          <h4>
-            <span className="footer-logo-mr">Mr. </span>
-            <span className="footer-logo-wash">WashWala</span>
-          </h4>
-          <p style={{ marginTop: '10px', fontSize: '0.9rem', color: '#e3f2fd' }}>
-            Mysuru's most trusted premium laundry and dry cleaning service.
-          </p>
-        </div>
+         
+         </div> 
 
         <div className="footer-section">
           <h4 style={{ color: '#fff' }}>Quick Links</h4>
@@ -46,9 +40,6 @@ export default function Footer() {
             </li>
             <li>
               <a href="#pricing">Services</a>
-            </li>
-            <li>
-              <a href="#pricing">Pricing</a>
             </li>
             <li>
               <a href="#cart">Cart</a>
