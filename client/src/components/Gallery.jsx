@@ -62,8 +62,8 @@ export default function Gallery() {
   return (
     <section className="gallery-section">
       <div className="container">
-        <h2 className="section-title">Our Work Speaks for Itself</h2>
-        <p className="section-subtitle">Real results from real garments</p>
+        <h2 className="section-title white-bg-heading">Our Work Speaks for Itself</h2>
+        <p className="section-subtitle white-bg-subtitle">Real results from real garments</p>
 
         <div 
           className="gallery-carousel-wrapper"

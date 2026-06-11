@@ -5,7 +5,7 @@ export default function WhyChooseUs() {
   return (
     <section className="why-choose-section">
       <div className="container">
-        <h2 className="section-title">
+        <h2 className="section-title white-bg-heading">
           Why Choose <span className="why-mr">Mr.</span>{" "}
           <span className="why-washwala">WashWala</span>?
         </h2>

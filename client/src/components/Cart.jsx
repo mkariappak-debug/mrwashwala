@@ -7,7 +7,7 @@ export default function Cart({ cart, onUpdateQuantity, onRemoveItem, onCheckout 
   return (
     <section id="cart" className="cart-section">
       <div className="container">
-        <h2 className="section-title">Your Shopping Cart</h2>
+        <h2 className="section-title white-bg-heading">Your Shopping Cart</h2>
 
         <div className="cart-wrapper">
           <div className="cart-items-container">

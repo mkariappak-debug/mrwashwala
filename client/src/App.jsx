@@ -12,6 +12,8 @@ import CheckoutModal from "./components/CheckoutModal";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import WhatsAppButton from "./components/WhatsAppButton";
+import CallButton from "./components/CallButton";
+import EmailButton from "./components/EmailButton";
 import Franchise from "./components/Franchise";
 
 import "./index.css";
@@ -167,6 +169,8 @@ export default function App() {
 
       <WhyChooseUs />
 
+      <Gallery />
+
       <Pricing
         cart={cart}
         onUpdateQuantity={handleUpdateQuantity}
@@ -193,8 +197,6 @@ export default function App() {
 
       <Testimonials />
 
-      <Gallery />
-
       <CheckoutModal
         open={isCheckoutOpen}
         cart={cart}
@@ -205,6 +207,8 @@ export default function App() {
        <Franchise/>
       <Footer />
       <WhatsAppButton />
+      <CallButton />
+      <EmailButton />
 
     </div>
   );

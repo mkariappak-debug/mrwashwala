@@ -14,9 +14,9 @@ export default function Pricing({
     "Wash & Fold": "/pricing/fold.jpg",
     "Wash & Iron": "/pricing/shoe.jpg",
     "Dry Cleaning": "/pricing/dry.jpg",
-    "Shoes Cleaning": "/pricing/shoe.jpg",
+    "Shoes Cleaning": "/pricing/iron.jpg",
     "Blanket Cleaning": "/pricing/bed.jpg",
-    "Customize Your Service": "/pricing/fold.jpg"
+    "Customize Your Service": "/pricing/wash.jpg"
   };
   return images[serviceName] || "/pricing/fold.jpg";
 };
@@ -67,12 +67,12 @@ export default function Pricing({
     <section id="pricing" className="pricing-section">
       <div className="container">
 
-      <h2 className="section-title">
+      <h2 className="section-title white-bg-heading">
   <span className="services-our">Our</span> <span className="services-premium">Premium</span> <span className="services-services">Services</span>
 </h2>
       
 
-        <p className="section-subtitle">
+        <p className="section-subtitle white-bg-subtitle">
           Transparent pricing with no hidden charges
         </p>
 

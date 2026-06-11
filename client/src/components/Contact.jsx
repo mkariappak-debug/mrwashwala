@@ -5,10 +5,10 @@ export default function Contact() {
     <section id="contact" className="contact-section">
       <div className="container">
         <div className="contact-title-box">
-          <h2 className="section-title">Get In Touch</h2>
+          <h2 className="section-title white-bg-heading">Get In Touch</h2>
         </div>
         <div className="contact-subtitle-box">
-          <p className="section-subtitle">We are always here to help you with your laundry needs</p>
+          <p className="section-subtitle white-bg-subtitle">We are always here to help you with your laundry needs</p>
         </div>
 
         <div className="contact-wrapper">
@@ -41,6 +41,16 @@ export default function Contact() {
                 <a href="mailto:mrwashwala@gmail.com">mrwashwala@gmail.com</a>
               </p>
               <div className="contact-label">We'll reply within 24 hours</div>
+            </div>
+
+            <div className="contact-card" id="address" data-aos="fade-right" data-aos-delay="300">
+              <h3>📍 Address</h3>
+              <p>
+                12 Vani Vilas Layout<br />
+                Vijaynagar, Mysuru<br />
+                Karnataka - 570017
+              </p>
+              <div className="contact-label">Open everyday 9 AM - 8 PM</div>
             </div>
           </div>
 

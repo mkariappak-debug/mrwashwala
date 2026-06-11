@@ -20,7 +20,9 @@ export default function Franchise() {
           <div className="franchise-card">
             <h3>Low Investment</h3>
             <p>
-              Start your own laundry business with affordable setup costs.
+              Minimum Investment: ₹5 Lakhs,
+ROI: 18-24 months,
+Revenue Share: 70-30 Model.
             </p>
           </div>
 
@@ -39,9 +41,11 @@ export default function Franchise() {
           </div>
 
           <div className="franchise-card">
-            <h3>Growing Industry</h3>
+            <h3>franchise models</h3>
             <p>
-              Tap into the rapidly growing laundry and dry-cleaning market.
+              Express Kiosk: ₹5-8 Lakhs,
+Standard Outlet: ₹12-15 Lakhs,
+Premium Center: ₹20-25 Lakhs
             </p>
           </div>
 

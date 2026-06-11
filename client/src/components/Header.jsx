@@ -42,6 +42,11 @@ export default function Header({ cartCount }) {
               Contact
             </a>
           </li>
+          <li>
+            <a href="#address" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+              Address
+            </a>
+          </li>
         </ul>
 
         <div className={`hamburger ${isMenuOpen ? 'active' : ''}`} onClick={toggleMenu}>

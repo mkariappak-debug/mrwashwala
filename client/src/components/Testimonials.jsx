@@ -1,75 +1,192 @@
-import React from 'react';
-
-const FEEDBACKS = [
-  {
-    stars: 5,
-    text: '"Mr. WashWala provides exceptional laundry service! My clothes always come back fresh and perfectly folded. Highly recommended!"',
-    author: 'Rajesh Kumar',
-    status: 'Verified Customer'
-  },
-  {
-    stars: 5,
-    text: '"Same-day delivery is a game changer! I no longer have to worry about running out of neat business shirts. Keep up the great work!"',
-    author: 'Priya Sharma',
-    status: 'Verified Customer'
-  },
-  {
-    stars: 5,
-    text: '"Best laundry service in Mysuru. Professional, affordable, and reliable. I\'ve been using them for 6 months!"',
-    author: 'Amit Patel',
-    status: 'Verified Customer'
-  },
-  {
-    stars: 5,
-    text: '"Their shoe cleaning service is outstanding! My sneakers look brand new. Definitely worth trying!"',
-    author: 'Sneha Desai',
-    status: 'Verified Customer'
-  }
-];
+import React, { useState, useEffect } from 'react';
+import API from '../api/api';
 
 export default function Testimonials() {
+  const [allReviews, setAllReviews] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const REVIEWS_PER_BATCH = 5;
+  const ROTATION_INTERVAL = 8000; // 8 seconds
+
+  // Fetch reviews from API
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        setLoading(true);
+        const response = await API.get('/api/reviews');
+        
+        if (response.data.success && response.data.data.length > 0) {
+          setAllReviews(response.data.data);
+          setError(null);
+        } else {
+          setError('No reviews available');
+          setAllReviews([]);
+        }
+      } catch (err) {
+        console.error('Error fetching reviews:', err);
+        setError('Failed to load reviews');
+        setAllReviews([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReviews();
+  }, []);
+
+  // Auto-rotate reviews every 8 seconds
+  useEffect(() => {
+    if (allReviews.length === 0) return;
+
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) => {
+        const nextIndex = prevIndex + REVIEWS_PER_BATCH;
+        // If we don't have enough reviews for the next batch, wrap to beginning
+        if (nextIndex >= allReviews.length) {
+          return 0;
+        }
+        return nextIndex;
+      });
+    }, ROTATION_INTERVAL);
+
+    return () => clearInterval(interval);
+  }, [allReviews.length]);
+
+  // Get current batch of reviews
+  const getCurrentReviews = () => {
+    if (allReviews.length <= REVIEWS_PER_BATCH) {
+      return allReviews;
+    }
+
+    const endIndex = currentIndex + REVIEWS_PER_BATCH;
+    if (endIndex > allReviews.length) {
+      // Wrap around - get remaining + some from beginning
+      const remaining = allReviews.slice(currentIndex);
+      const needed = REVIEWS_PER_BATCH - remaining.length;
+      return [...remaining, ...allReviews.slice(0, needed)];
+    }
+
+    return allReviews.slice(currentIndex, endIndex);
+  };
+
+  // Truncate long review text
+  const truncateText = (text, maxLength = 150) => {
+    if (text.length > maxLength) {
+      return text.substring(0, maxLength) + '...';
+    }
+    return text;
+  };
+
+  // Format review date
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const today = new Date();
+    const diffTime = today - date;
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return 'Yesterday';
+    if (diffDays < 30) return `${diffDays} days ago`;
+    if (diffDays < 365) {
+      const months = Math.floor(diffDays / 30);
+      return `${months} month${months > 1 ? 's' : ''} ago`;
+    }
+
+    const years = Math.floor(diffDays / 365);
+    return `${years} year${years > 1 ? 's' : ''} ago`;
+  };
+
+  const currentReviews = getCurrentReviews();
+
+  if (loading) {
+    return (
+      <section className="testimonials-section">
+        <div className="container">
+          <h2 className="section-title white-bg-heading">What Our Customers Say</h2>
+          <p className="section-subtitle white-bg-subtitle">Real feedback from our premium service subscribers</p>
+          <div className="testimonials-carousel">
+            <div className="loading-message">Loading reviews...</div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error || allReviews.length === 0) {
+    return (
+      <section className="testimonials-section">
+        <div className="container">
+          <h2 className="section-title white-bg-heading">What Our Customers Say</h2>
+          <p className="section-subtitle white-bg-subtitle">Real feedback from our premium service subscribers</p>
+          <div className="testimonials-carousel">
+            <div className="error-message">{error || 'No reviews available at the moment'}</div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="testimonials-section">
       <div className="container">
-        <h2 className="section-title">What Our Customers Say</h2>
-        <p className="section-subtitle">Real feedback from our premium service subscribers</p>
+        <h2 className="section-title white-bg-heading">What Our Customers Say</h2>
+        <p className="section-subtitle white-bg-subtitle">Real feedback from our premium service subscribers</p>
 
         <div className="testimonials-carousel">
-          {FEEDBACKS.map((f, i) => (
-            <div key={i} className="testimonial-card" data-aos="zoom-in" data-aos-delay={i * 100}>
+          {currentReviews.map((review, index) => (
+            <div
+              key={`${review._id}-${currentIndex}-${index}`}
+              className="testimonial-card"
+              data-aos="zoom-in"
+              data-aos-delay={index * 100}
+            >
+              {/* Review Header with Profile and Stars */}
+              <div className="review-header">
+                <div className="reviewer-info">
+                  {review.profilePhoto ? (
+                    <img
+                      src={review.profilePhoto}
+                      alt={review.author}
+                      className="reviewer-avatar"
+                    />
+                  ) : (
+                    <div className="reviewer-avatar-placeholder">
+                      {review.author.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <div className="reviewer-details">
+                    <h4 className="reviewer-name">{review.author}</h4>
+                    <p className="review-date">{formatDate(review.reviewDate)}</p>
+                  </div>
+                </div>
+                <div className="verified-badge">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" stroke="#4285F4" strokeWidth="2"/>
+                    <path d="M8 12L11 15L16 9" stroke="#4285F4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  <span>Verified</span>
+                </div>
+              </div>
+
+              {/* Star Rating */}
               <div className="stars">
-                {'★'.repeat(f.stars)}
+                {'★'.repeat(review.rating)}
               </div>
-              <p className="testimonial-text">{f.text}</p>
-              <div className="testimonial-author">
-                <h4>{f.author}</h4>
-                <p>{f.status}</p>
-              </div>
+
+              {/* Review Text */}
+              <p className="testimonial-text">{truncateText(review.text)}</p>
             </div>
           ))}
-          
-          {/* Google Reviews Card */}
-          <a 
-            href="https://www.google.com/maps/place/Mr.+Wash+Wala/@12.3418468,76.6119963,17z/data=!4m8!3m7!1s0x3baf7bb24121a2bb:0xfa784c6c8d775294!8m2!3d12.3418468!4d76.6145712!9m1!1b1!16s%2Fg%2F11n54qm_kk?entry=ttu&g_ep=EgoyMDI2MDYwMy4xIKXMDSoASAFQAw%3D%3D"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="testimonial-card google-reviews-card"
-            data-aos="zoom-in"
-            data-aos-delay={FEEDBACKS.length * 100}
-          >
-            <div className="google-reviews-content">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="12" cy="12" r="10" stroke="#27187E" strokeWidth="2"/>
-                <path d="M8 12L11 15L16 8" stroke="#27187E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              <h3>Check Out Our Google Reviews</h3>
-              <p>See what customers say on Google Maps</p>
-              <div className="google-stars">
-                {'★'.repeat(5)}
-              </div>
-            </div>
-          </a>
         </div>
+
+        {/* Review Counter */}
+        {allReviews.length > REVIEWS_PER_BATCH && (
+          <div className="review-counter">
+            Showing {currentIndex + 1} - {Math.min(currentIndex + REVIEWS_PER_BATCH, allReviews.length)} of {allReviews.length} reviews
+          </div>
+        )}
       </div>
     </section>
   );
