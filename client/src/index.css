@@ -1261,12 +1261,15 @@ body {
 
 .contact-card {
     background: #ffffff;
-    padding: 30px;
+    padding: 15px 20px;
     border-radius: 12px;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
     transition: var(--transition);
 
     border-left: 4px solid var(--primary-color);
+}
+.contact-info {
+    gap: 10px;
 }
 
 .contact-card:hover {
@@ -1311,7 +1314,7 @@ body {
 
 .contact-card h3 {
     color: var(--primary-color);
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     font-size: 1.1rem;
 }
 
@@ -1329,7 +1332,7 @@ body {
 .contact-label {
     color: var(--text-light);
     font-size: 0.85rem;
-    margin-top: 5px;
+    margin-top: 2px;
 }
 
 .map-container {

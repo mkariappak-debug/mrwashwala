@@ -49,7 +49,7 @@ export default function Footer() {
 
         <div className="footer-section">
           <h4 style={{ color: '#fff' }}>Contact Us</h4>
-          <p style={{ fontSize: '0.9rem', color: '#e3f2fd' }}>📞 +91 80889 80347</p>
+          <p style={{ fontSize: '0.9rem', color: '#e3f2fd' }}>📞 +91 7019436720</p>
           <p style={{ fontSize: '0.9rem', color: '#e3f2fd', marginTop: '5px' }}>✉️ mrwashwala@gmail.com</p>
 
           <div className="social-links">
@@ -69,7 +69,7 @@ export default function Footer() {
 
       <div className="footer-bottom container">
         <p>© {new Date().getFullYear()} Mr. WashWala. All rights reserved.</p>
-        <p style={{ marginTop: '5px' }}>Mysuru's Doorstep Premium Laundry</p>
+        <p style={{ marginTop: '5px' }}>LIFE IS SHORT, DON'T WASTE IT ON LAUNDRY.BURDEN NAMGE BIDII NIVU JUST ENJOY MADII  </p>
       </div>
     </footer>
   );

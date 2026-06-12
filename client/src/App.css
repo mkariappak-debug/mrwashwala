@@ -1236,7 +1236,7 @@ body {
 .contact-info {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 25px;
+    gap: 10px;
 }
 
 .contact-card {
@@ -1292,7 +1292,7 @@ body {
 
 .contact-card h3 {
     color: var(--primary-color);
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     font-size: 1.1rem;
 }
 
@@ -1310,7 +1310,7 @@ body {
 .contact-label {
     color: var(--text-light);
     font-size: 0.85rem;
-    margin-top: 5px;
+    margin-top: 2px;
 }
 
 .map-container {
