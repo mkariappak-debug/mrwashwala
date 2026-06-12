@@ -15,7 +15,7 @@ export default function Pricing({
     "Wash & Iron": "/pricing/shoe.jpg",
     "Dry Cleaning": "/pricing/dry.jpg",
     "Shoes Cleaning": "/pricing/iron.jpg",
-    "Blanket Cleaning": "/pricing/bed.jpg",
+    "Blanket Cleaning": "/pricing/bedsheet.jpg",
     "Customize Your Service": "/pricing/wash.jpg"
   };
   return images[serviceName] || "/pricing/fold.jpg";

@@ -39,6 +39,35 @@
     padding: 0;
     box-sizing: border-box;
 }
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    max-width: 100%;
+}
+.btn-container,
+.hero-cta,
+.review-header,
+.reviewer-info,
+.contact-wrapper,
+.cart-wrapper,
+.services-grid,
+.pricing-grid,
+.testimonials-carousel {
+    min-width: 0;
+}
+
+.btn-container > *,
+.hero-cta > *,
+.review-header > *,
+.reviewer-info > *,
+.contact-wrapper > *,
+.cart-wrapper > *,
+.services-grid > *,
+.pricing-grid > *,
+.testimonials-carousel > * {
+    min-width: 0;
+}
 
 html {
     scroll-behavior: smooth;
@@ -1886,4 +1915,82 @@ body {
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
     }
+}
+/* ==========================
+   MOBILE OVERFLOW FIX
+   ========================== */
+
+@media (max-width: 480px) {
+
+  /* Prevent horizontal scrolling */
+  html,
+  body {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+
+  /* Make all sections respect viewport width */
+  .container,
+  .hero-content,
+  .why-choose-intro,
+  .pricing-card,
+  .testimonial-card,
+  .contact-card,
+  .cart-summary,
+  .cart-items-container {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  /* Images never exceed parent */
+  img,
+  .why-choose-image,
+  .card-image img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Prevent text/buttons from expanding cards */
+  h1, h2, h3, h4, h5, h6,
+  p,
+  span,
+  a,
+  button {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  /* Testimonials stay inside card */
+  .testimonial-card {
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
+  .testimonial-text {
+    word-break: break-word;
+  }
+
+  /* Pricing cards */
+  .pricing-card {
+    overflow: hidden;
+  }
+
+  .pricing-features {
+    overflow: hidden;
+  }
+
+  /* Fix flex items overflowing */
+  .btn-container,
+  .review-header,
+  .reviewer-info {
+    flex-wrap: wrap;
+  }
+
+  /* Prevent avatars or long names pushing outside */
+  .reviewer-name {
+    max-width: 100%;
+    overflow-wrap: break-word;
+  }
 }

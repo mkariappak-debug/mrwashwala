@@ -7,53 +7,86 @@ export default function Contact() {
         <div className="contact-title-box">
           <h2 className="section-title white-bg-heading">Get In Touch</h2>
         </div>
+
         <div className="contact-subtitle-box">
-          <p className="section-subtitle white-bg-subtitle">We are always here to help you with your laundry needs</p>
+          <p className="section-subtitle white-bg-subtitle">
+            We are always here to help you with your laundry needs
+          </p>
         </div>
 
         <div className="contact-wrapper">
           <div className="contact-info">
+            {/* Phone */}
             <div className="contact-card" data-aos="fade-right">
               <h3>📞 Phone</h3>
               <p>
-                <a href="tel:8867295898">+91 8867295898</a>
+                <a href="tel:7019436720">+91 7019436720</a>
               </p>
               <div className="contact-label">Available everyday</div>
             </div>
 
-            <div className="contact-card whatsapp-card" data-aos="fade-right" data-aos-delay="100">
+            {/* WhatsApp */}
+            <div
+              className="contact-card whatsapp-card"
+              data-aos="fade-right"
+              data-aos-delay="100"
+            >
               <h3>💬 WhatsApp</h3>
               <p>
                 <a
-                  href="https://wa.me/918867295898?text=Hi%20Mr.%20WashWala%2C%20I%20want%20to%20know%20about%20your%20services"
+                  href="https://wa.me/7019436720?text=Hi%20Mr.%20WashWala%2C%20I%20want%20to%20know%20about%20your%20services"
                   target="_blank"
                   rel="noreferrer"
                 >
                   Chat with us
                 </a>
               </p>
-              <div className="contact-label">Quick responses guaranteed</div>
+              <div className="contact-label">
+                Quick responses guaranteed
+              </div>
             </div>
 
-            <div className="contact-card" data-aos="fade-right" data-aos-delay="200">
+            {/* Email */}
+            <div
+              className="contact-card"
+              data-aos="fade-right"
+              data-aos-delay="200"
+            >
               <h3>✉️ Email</h3>
               <p>
-                <a href="mailto:mrwashwala@gmail.com">mrwashwala@gmail.com</a>
+                <a href="mailto:mrwashwala@gmail.com">
+                  mrwashwala@gmail.com
+                </a>
               </p>
-              <div className="contact-label">We'll reply within 24 hours</div>
+              <div className="contact-label">
+                We'll reply within 24 hours
+              </div>
             </div>
 
-            <div className="contact-card" id="address" data-aos="fade-right" data-aos-delay="300">
+            {/* Invisible scroll target for navbar Address link */}
+            <div id="address"></div>
+
+            {/* Address */}
+            <div
+              className="contact-card"
+              data-aos="fade-right"
+              data-aos-delay="300"
+            >
               <h3>📍 Address</h3>
               <p>
-                12 Vani Vilas Layout<br />
-                Vijaynagar, Mysuru<br />
+                12 Vani Vilas Layout
+                <br />
+                Vijaynagar, Mysuru
+                <br />
                 Karnataka - 570017
               </p>
-              <div className="contact-label">Open everyday 9 AM - 8 PM</div>
+              <div className="contact-label">
+                Open everyday 9 AM - 8 PM
+              </div>
             </div>
           </div>
 
+          {/* Google Map */}
           <div className="map-container" data-aos="fade-left">
             <iframe
               title="Mr. WashWala location"

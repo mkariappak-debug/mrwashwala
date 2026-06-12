@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import API from '../api/api';
 
@@ -16,7 +17,7 @@ export default function Testimonials() {
       try {
         setLoading(true);
         const response = await API.get('/api/reviews');
-        
+
         if (response.data.success && response.data.data.length > 0) {
           setAllReviews(response.data.data);
           setError(null);
@@ -43,7 +44,6 @@ export default function Testimonials() {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => {
         const nextIndex = prevIndex + REVIEWS_PER_BATCH;
-        // If we don't have enough reviews for the next batch, wrap to beginning
         if (nextIndex >= allReviews.length) {
           return 0;
         }
@@ -61,8 +61,8 @@ export default function Testimonials() {
     }
 
     const endIndex = currentIndex + REVIEWS_PER_BATCH;
+
     if (endIndex > allReviews.length) {
-      // Wrap around - get remaining + some from beginning
       const remaining = allReviews.slice(currentIndex);
       const needed = REVIEWS_PER_BATCH - remaining.length;
       return [...remaining, ...allReviews.slice(0, needed)];
@@ -104,8 +104,12 @@ export default function Testimonials() {
     return (
       <section className="testimonials-section">
         <div className="container">
-          <h2 className="section-title white-bg-heading">What Our Customers Say</h2>
-          <p className="section-subtitle white-bg-subtitle">Real feedback from our premium service subscribers</p>
+          <h2 className="section-title white-bg-heading">
+            What Our Customers Say
+          </h2>
+          <p className="section-subtitle white-bg-subtitle">
+            Real feedback from our premium service subscribers
+          </p>
           <div className="testimonials-carousel">
             <div className="loading-message">Loading reviews...</div>
           </div>
@@ -118,10 +122,16 @@ export default function Testimonials() {
     return (
       <section className="testimonials-section">
         <div className="container">
-          <h2 className="section-title white-bg-heading">What Our Customers Say</h2>
-          <p className="section-subtitle white-bg-subtitle">Real feedback from our premium service subscribers</p>
+          <h2 className="section-title white-bg-heading">
+            What Our Customers Say
+          </h2>
+          <p className="section-subtitle white-bg-subtitle">
+            Real feedback from our premium service subscribers
+          </p>
           <div className="testimonials-carousel">
-            <div className="error-message">{error || 'No reviews available at the moment'}</div>
+            <div className="error-message">
+              {error || 'No reviews available at the moment'}
+            </div>
           </div>
         </div>
       </section>
@@ -131,8 +141,12 @@ export default function Testimonials() {
   return (
     <section className="testimonials-section">
       <div className="container">
-        <h2 className="section-title white-bg-heading">What Our Customers Say</h2>
-        <p className="section-subtitle white-bg-subtitle">Real feedback from our premium service subscribers</p>
+        <h2 className="section-title white-bg-heading">
+          What Our Customers Say
+        </h2>
+        <p className="section-subtitle white-bg-subtitle">
+          Real feedback from our premium service subscribers
+        </p>
 
         <div className="testimonials-carousel">
           {currentReviews.map((review, index) => (
@@ -142,7 +156,7 @@ export default function Testimonials() {
               data-aos="zoom-in"
               data-aos-delay={index * 100}
             >
-              {/* Review Header with Profile and Stars */}
+              {/* Review Header */}
               <div className="review-header">
                 <div className="reviewer-info">
                   {review.profilePhoto ? (
@@ -156,17 +170,15 @@ export default function Testimonials() {
                       {review.author.charAt(0).toUpperCase()}
                     </div>
                   )}
+
                   <div className="reviewer-details">
-                    <h4 className="reviewer-name">{review.author}</h4>
-                    <p className="review-date">{formatDate(review.reviewDate)}</p>
+                    <h4 className="reviewer-name">
+                      {review.author}
+                    </h4>
+                    <p className="review-date">
+                      {formatDate(review.reviewDate)}
+                    </p>
                   </div>
-                </div>
-                <div className="verified-badge">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="12" cy="12" r="10" stroke="#4285F4" strokeWidth="2"/>
-                    <path d="M8 12L11 15L16 9" stroke="#4285F4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                  <span>Verified</span>
                 </div>
               </div>
 
@@ -176,7 +188,9 @@ export default function Testimonials() {
               </div>
 
               {/* Review Text */}
-              <p className="testimonial-text">{truncateText(review.text)}</p>
+              <p className="testimonial-text">
+                {truncateText(review.text)}
+              </p>
             </div>
           ))}
         </div>
@@ -184,10 +198,16 @@ export default function Testimonials() {
         {/* Review Counter */}
         {allReviews.length > REVIEWS_PER_BATCH && (
           <div className="review-counter">
-            Showing {currentIndex + 1} - {Math.min(currentIndex + REVIEWS_PER_BATCH, allReviews.length)} of {allReviews.length} reviews
+            Showing {currentIndex + 1} -{' '}
+            {Math.min(
+              currentIndex + REVIEWS_PER_BATCH,
+              allReviews.length
+            )}{' '}
+            of {allReviews.length} reviews
           </div>
         )}
       </div>
     </section>
   );
 }
+

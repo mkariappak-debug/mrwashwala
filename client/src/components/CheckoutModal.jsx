@@ -67,7 +67,7 @@ const handleSubmit = async (e) => {
         .join("\n");
 
       window.open(
-        `https://wa.me/918867295898?text=${encodeURIComponent(message)}`,
+        `https://wa.me/917019436720?text=${encodeURIComponent(message)}`,
         "_blank"
       );
 
