@@ -21,7 +21,7 @@ const app = express();
 // Middleware
 const allowedOrigins = new Set([
   process.env.FRONTEND_URL,
-  "https://mrwashwala-cpje.vercel.app",
+  "https://mkariappak-debug-mrwashwala.vercel.app",
   'http://localhost:5173',
   'http://localhost:5174',
 ].filter(Boolean));
