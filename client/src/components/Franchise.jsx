@@ -1,65 +1,115 @@
 import React from "react";
 
+const franchiseData = [
+  {
+    title: "Express Kiosk",
+    area: "180–250 sq. ft.",
+    investment: "₹5–8 Lakhs",
+    revenue: "₹1.2–2 Lakhs",
+    share: "70:30",
+    roi: "12–18 Months",
+  },
+  {
+    title: "Standard Outlet",
+    area: "180–250 sq. ft.",
+    investment: "₹12–15 Lakhs",
+    revenue: "₹1.6–3 Lakhs",
+    share: "70:30",
+    roi: "18–24 Months",
+  },
+  {
+    title: "Premium Center",
+    area: "180–250 sq. ft.",
+    investment: "₹20–25 Lakhs",
+    revenue: "₹2.3–4 Lakhs",
+    share: "70:30",
+    roi: "18–24 Months",
+  },
+];
+
 export default function Franchise() {
   return (
     <section id="franchise" className="franchise-section">
       <div className="container">
-
-        
         <h2 className="franchise-title">
-  Own a <span className="franchise-mr">Mr.</span>{" "}
-  <span className="franchise-washwala">WashWala</span> Franchise
-</h2>
+          Own a <span className="franchise-mr">Mr.</span>{" "}
+          <span className="franchise-washwala">WashWala</span> Franchise
+        </h2>
 
         <p className="section-subtitle">
-          Join our growing laundry network and build a successful business with our proven model.
+          Join our growing laundry network and build a successful business with
+          our proven franchise model.
         </p>
 
-        <div className="franchise-grid">
+        <div className="franchise-grid-new">
+          {franchiseData.map((item, index) => (
+            <div className="franchise-card-new" key={index}>
+              <div className="franchise-card-header">
+                <h3>{item.title}</h3>
+              </div>
 
-          <div className="franchise-card">
-            <h3>Low Investment</h3>
-            <p>
-              Minimum Investment: ₹5 Lakhs,
-ROI: 18-24 months,
-Revenue Share: 70-30 Model.
-            </p>
+              <div className="franchise-card-body">
+                <div className="info-row">
+                  <span>Area Required</span>
+                  <strong>{item.area}</strong>
+                </div>
+
+                <div className="info-row">
+                  <span>Investment</span>
+                  <strong>{item.investment}</strong>
+                </div>
+
+                <div className="info-row">
+                  <span>Estimated Monthly Revenue</span>
+                  <strong>{item.revenue}</strong>
+                </div>
+
+                <div className="info-row">
+                  <span>Revenue Share</span>
+                  <strong>{item.share}</strong>
+                </div>
+
+                <div className="info-row">
+                  <span>Estimated ROI</span>
+                  <strong>{item.roi}</strong>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Common Benefits */}
+        <div className="franchise-benefits">
+          <h3>What's Included with Every Franchise</h3>
+
+          <div className="benefits-grid">
+            <div className="benefit-item">
+              ✓ Premium imported commercial equipment from South Korea (LG
+              Commercial) and Germany
+            </div>
+
+            <div className="benefit-item">
+              ✓ 24×7 Technical Assistance
+            </div>
+
+            <div className="benefit-item">
+              ✓ Complete Operational & Staff Training
+            </div>
+
+            <div className="benefit-item">
+              ✓ Marketing & Branding Support
+            </div>
           </div>
-
-          <div className="franchise-card">
-            <h3>Complete Training</h3>
-            <p>
-              We provide operational, technical and customer service training.
-            </p>
-          </div>
-
-          <div className="franchise-card">
-            <h3>Marketing Support</h3>
-            <p>
-              Get branding, promotional materials and digital marketing support.
-            </p>
-          </div>
-
-          <div className="franchise-card">
-            <h3>franchise models</h3>
-            <p>
-              Express Kiosk: ₹5-8 Lakhs,
-Standard Outlet: ₹12-15 Lakhs,
-Premium Center: ₹20-25 Lakhs
-            </p>
-          </div>
-
         </div>
 
         <a
-           href="https://wa.me/917019436720"
+          href="https://wa.me/917019436720"
           target="_blank"
           rel="noopener noreferrer"
-          className="btn btn-primary"
+          className="btn btn-primary franchise-btn"
         >
           Enquire About Franchise
         </a>
-
       </div>
     </section>
   );

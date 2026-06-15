@@ -7,10 +7,22 @@ export default function Hero({ onBookPickup }) {
       <div className="hero-overlay" />
 
       <div className="hero-content">
-        <h1 className="hero-title">
-  Premium Wash,
-  <br />
-  Shine Like New!
+      <h1 className="hero-title">
+  <span className="desktop-title">
+    Premium Wash,
+    <br />
+    Shine Like New!
+  </span>
+
+  <span className="mobile-title">
+    Premium
+    <br />
+    Wash
+    <br />
+    Shine Like
+    <br />
+    New!
+  </span>
 </h1>
 
 <p className="hero-subtitle">
