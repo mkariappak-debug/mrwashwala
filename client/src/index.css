@@ -1507,6 +1507,10 @@ body {
 
     opacity: 0.9;
 }
+#waveContainer,
+.wave-container {
+    pointer-events: none !important;
+}
 
 .wave-bar {
     background-image:
