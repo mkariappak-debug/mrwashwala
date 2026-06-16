@@ -1,4 +1,3 @@
-
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
@@ -9,6 +8,7 @@ import Service from './models/Service.js';
 import serviceRoutes from './routes/serviceRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import reviewRoutes from './routes/reviewRoutes.js';
+import franchiseLeadRoutes from './routes/franchiseLeadRoutes.js';
 
 // Load environment variables
 dotenv.config();
@@ -23,8 +23,8 @@ const allowedOrigins = new Set([
   process.env.FRONTEND_URL,
   "https://mrwashwala-hwgn.vercel.app",
   "https://mkariappak-debug-mrwashwala.vercel.app",
-  'http://localhost:5173',
-  'http://localhost:5174',
+  "http://localhost:5173",
+  "http://localhost:5174",
 ].filter(Boolean));
 
 app.use(
@@ -43,12 +43,19 @@ app.use(
 
 app.use(express.json());
 
+// =========================
 // API Routes
+// =========================
+
 app.use('/api/services', serviceRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/franchise-leads', franchiseLeadRoutes);
 
+// =========================
 // API Status Route
+// =========================
+
 app.get('/api-status', (req, res) => {
   res.json({
     status: 'online',
@@ -57,7 +64,10 @@ app.get('/api-status', (req, res) => {
   });
 });
 
+// =========================
 // Test Route
+// =========================
+
 app.get('/api/test', (req, res) => {
   res.json({
     success: true,
@@ -65,7 +75,10 @@ app.get('/api/test', (req, res) => {
   });
 });
 
-// DEBUG ROUTE
+// =========================
+// Debug Services Route
+// =========================
+
 app.get('/debug-services', async (req, res) => {
   try {
     const services = await Service.find({});
@@ -84,7 +97,10 @@ app.get('/debug-services', async (req, res) => {
   }
 });
 
+// =========================
 // Root Route
+// =========================
+
 app.get('/', (req, res) => {
   res.send(`
     <h1>Welcome to Mr. Washwala API Server</h1>
@@ -92,7 +108,10 @@ app.get('/', (req, res) => {
   `);
 });
 
+// =========================
 // Error Handling Middleware
+// =========================
+
 app.use((err, req, res, next) => {
   console.error(err.stack);
 
@@ -106,10 +125,16 @@ app.use((err, req, res, next) => {
   });
 });
 
+// =========================
 // Server Port
+// =========================
+
 const PORT = process.env.PORT || 5000;
 
+// =========================
 // Start Server
+// =========================
+
 app.listen(PORT, () => {
   console.log(
     `\x1b[35m%s\x1b[0m`,

@@ -78,7 +78,6 @@ export default function Franchise() {
           ))}
         </div>
 
-        {/* Common Benefits */}
         <div className="franchise-benefits">
           <h3>What's Included with Every Franchise</h3>
 
@@ -102,14 +101,25 @@ export default function Franchise() {
           </div>
         </div>
 
-        <a
-          href="https://wa.me/917019436720"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="btn btn-primary franchise-btn"
-        >
-          Enquire About Franchise
-        </a>
+        <div className="franchise-buttons">
+          <a
+            href="https://wa.me/917019436720"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-primary franchise-btn"
+          >
+            Enquire About Franchise
+          </a>
+
+          <a
+            href="/Brochure/Mr_WashWala_Brochure.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn brochure-btn"
+          >
+            📄 Download Franchise Brochure
+          </a>
+        </div>
       </div>
     </section>
   );

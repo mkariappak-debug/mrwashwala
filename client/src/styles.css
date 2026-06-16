@@ -3253,3 +3253,175 @@ min-height: 500px;
     padding: 16px;
   }
 }
+/* ===== Franchise Brochure Premium Modal ===== */
+
+.brochure-modal-overlay {
+  position: fixed;
+  inset: 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
+
+  z-index: 99999;
+}
+
+.brochure-modal {
+  position: relative;
+
+  width: 92%;
+  max-width: 560px;
+
+  background: #fff;
+
+  border-radius: 24px;
+
+  padding: 36px;
+
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.25);
+
+  animation: modalPop 0.3s ease;
+}
+
+@keyframes modalPop {
+  from {
+    opacity: 0;
+    transform: translateY(25px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 16px;
+
+  border: none;
+  background: transparent;
+
+  font-size: 32px;
+  cursor: pointer;
+
+  color: #666;
+}
+
+.modal-close:hover {
+  color: #000;
+}
+
+.modal-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.modal-header h2 {
+  margin-bottom: 10px;
+  font-size: 2rem;
+}
+
+.modal-header p {
+  color: #666;
+  line-height: 1.6;
+}
+
+.brochure-modal form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.brochure-modal input {
+  width: 100%;
+
+  padding: 15px 18px;
+
+  border: 1px solid #ddd;
+  border-radius: 14px;
+
+  font-size: 15px;
+
+  transition: all 0.2s ease;
+}
+
+.brochure-modal input:focus {
+  outline: none;
+
+  border-color: #5a31d6;
+
+  box-shadow:
+    0 0 0 4px rgba(90, 49, 214, 0.12);
+}
+
+.download-submit-btn {
+  margin-top: 8px;
+
+  border: none;
+  border-radius: 14px;
+
+  padding: 16px;
+
+  font-size: 16px;
+  font-weight: 600;
+
+  color: #fff;
+
+  cursor: pointer;
+
+  background: linear-gradient(
+    135deg,
+    #5a31d6,
+    #7a59ff
+  );
+
+  transition: all 0.25s ease;
+}
+
+.download-submit-btn:hover {
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .brochure-modal {
+    padding: 24px;
+  }
+
+  .modal-header h2 {
+    font-size: 1.6rem;
+  }
+}
+.brochure-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 99999;
+  padding: 20px;
+}
+
+.brochure-modal {
+  position: relative;
+  z-index: 100000;
+
+  width: 100%;
+  max-width: 650px;
+
+  max-height: 90vh;
+  overflow-y: auto;
+
+  background: #fff;
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+}
