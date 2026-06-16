@@ -1,3 +1,4 @@
+import "./FranchiseBrochure.css";
 import React, { useState } from "react";
 
 export default function FranchiseBrochure() {
@@ -8,26 +9,76 @@ export default function FranchiseBrochure() {
     city: "",
   });
 
+  const [loading, setLoading] = useState(false);
+
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    });
+    }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Later you can save to backend here
+    if (!formData.name.trim()) {
+      alert("Please enter your name");
+      return;
+    }
 
-    const link = document.createElement("a");
-    link.href = "/Brochure/Mr_WashWala_Brochure.pdf";
-    link.download = "Mr_WashWala_Brochure.pdf";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    if (!formData.phone.trim()) {
+      alert("Please enter your phone number");
+      return;
+    }
 
-    alert("Thank you! Your brochure download has started.");
+    setLoading(true);
+
+    try {
+        const response = await fetch(
+      "http://localhost:5000/api/franchise-leads",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || "Failed to save lead information"
+        );
+      }
+
+      const link = document.createElement("a");
+      link.href = "/Brochure/Mr_WashWala_Brochure.pdf";
+      link.download = "Mr_WashWala_Brochure.pdf";
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      alert("Thank you! Your brochure download has started.");
+
+      setFormData({
+        name: "",
+        phone: "",
+        email: "",
+        city: "",
+      });
+    } catch (error) {
+      console.error("Brochure Lead Error:", error);
+
+      alert(
+        error.message ||
+          "Something went wrong. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -41,6 +92,12 @@ export default function FranchiseBrochure() {
           growth opportunities with Mr. WashWala.
         </p>
 
+       <div className="franchise-features">
+  <div>✓ Low Investment</div>
+  <div>✓ High ROI</div>
+  <div>✓ Training Support</div>
+  <div>✓ Marketing Support</div>
+</div>
         <form onSubmit={handleSubmit}>
           <input
             type="text"
@@ -76,8 +133,17 @@ export default function FranchiseBrochure() {
             onChange={handleChange}
           />
 
-          <button type="submit">
-            Submit & Download Brochure
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              opacity: loading ? 0.7 : 1,
+              cursor: loading ? "not-allowed" : "pointer",
+            }}
+          >
+            {loading
+              ? "Submitting..."
+              : "Submit & Download Brochure"}
           </button>
         </form>
       </div>

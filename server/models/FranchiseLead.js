@@ -13,11 +13,12 @@ const franchiseLeadSchema = new mongoose.Schema(
       trim: true,
     },
     email: {
-      type: String,
-      required: true,
-      trim: true,
-      lowercase: true,
-    },
+  type: String,
+  required: false,
+  default: "",
+  trim: true,
+  lowercase: true,
+},
     city: {
       type: String,
       default: "",

@@ -8,7 +8,7 @@ import Service from './models/Service.js';
 import serviceRoutes from './routes/serviceRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import reviewRoutes from './routes/reviewRoutes.js';
-import franchiseLeadRoutes from './routes/franchiseLeadRoutes.js';
+import franchiseLeadRoutes from './routes/FranchiseLeadRoutes.js';
 
 // Load environment variables
 dotenv.config();

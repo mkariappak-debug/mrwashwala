@@ -7,12 +7,12 @@ router.post("/", async (req, res) => {
   try {
     const { name, phone, email, city } = req.body;
 
-    if (!name || !phone || !email) {
-      return res.status(400).json({
-        success: false,
-        message: "Please fill all required fields.",
-      });
-    }
+    if (!name || !phone) {
+  return res.status(400).json({
+    success: false,
+    message: "Name and phone are required.",
+  });
+}
 
     const lead = await FranchiseLead.create({
       name,

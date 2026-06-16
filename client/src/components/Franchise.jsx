@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const franchiseData = [
   {
@@ -111,14 +112,12 @@ export default function Franchise() {
             Enquire About Franchise
           </a>
 
-          <a
-            href="/Brochure/Mr_WashWala_Brochure.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn brochure-btn"
-          >
-            📄 Download Franchise Brochure
-          </a>
+          <Link
+  to="/franchise-brochure"
+  className="btn brochure-btn"
+>
+  📄 Download Franchise Brochure
+</Link>
         </div>
       </div>
     </section>

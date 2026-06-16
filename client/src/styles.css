@@ -3425,3 +3425,20 @@ min-height: 500px;
   padding: 40px;
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
 }
+.brochure-btn {
+  background: linear-gradient(135deg, #16a34a, #22c55e) !important;
+  color: #ffffff !important;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 14px rgba(34, 197, 94, 0.3);
+}
+
+.brochure-btn:hover {
+  background: linear-gradient(135deg, #15803d, #16a34a) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(34, 197, 94, 0.4);
+}

@@ -1,3 +1,5 @@
+import { Routes, Route } from "react-router-dom";
+import FranchiseBrochure from "./pages/FranchiseBrochure";
 import bgVideo from "./assets/background-video.mp4";
 import React, { useState, useEffect } from "react";
 import Header from "./components/Header";
@@ -142,9 +144,17 @@ export default function App() {
     }
   };
 
-      return (
-  <div className="app-layout-container">
+     return (
+  <Routes>
+    <Route
+      path="/franchise-brochure"
+      element={<FranchiseBrochure />}
+    />
 
+    <Route
+      path="/"
+      element={
+        <div className="app-layout-container">
     <video
       className="site-background-video"
       autoPlay
@@ -203,13 +213,15 @@ export default function App() {
         onClose={closeCheckout}
       />
 
-      <Contact />
-       <Franchise/>
-      <Footer />
-      <WhatsAppButton />
-      <CallButton />
-      <EmailButton />
-
-    </div>
-  );
+                <Contact />
+          <Franchise />
+          <Footer />
+          <WhatsAppButton />
+          <CallButton />
+          <EmailButton />
+        </div>
+      }
+    />
+  </Routes>
+);
 }
