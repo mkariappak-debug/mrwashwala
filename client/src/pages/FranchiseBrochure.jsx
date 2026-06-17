@@ -35,7 +35,7 @@ export default function FranchiseBrochure() {
 
     try {
         const response = await fetch(
-      "http://localhost:5000/api/franchise-leads",
+      "https://mrwashwala-server.onrender.com/api/franchise-leads",
         {
           method: "POST",
           headers: {
