@@ -216,12 +216,11 @@ body {
     gap: 30px;
     align-items: center;
 }
-
 .nav-link {
     color: var(--text-dark);
     text-decoration: none;
-    font-weight: 500;
-    font-size: 0.95rem;
+    font-weight: 900;
+    font-size: 1rem;
     position: relative;
     transition: var(--transition);
 }

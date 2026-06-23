@@ -76,7 +76,7 @@
 .nav-link {
     color: var(--text-dark);
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 600;
     font-size: 0.95rem;
     position: relative;
     transition: var(--transition);
@@ -408,6 +408,164 @@ body { font-family: 'Poppins', sans-serif; color: var(--text-dark); background-i
     }
 }
 
+/* Aggressive mobile optimization for phones (max-width: 480px) */
+@media (max-width: 480px) {
+    /* Hero Section */
+    .hero-title {
+        font-size: 2.2rem !important;
+        line-height: 1.2 !important;
+        margin-bottom: 15px !important;
+        letter-spacing: -0.5px !important;
+    }
+
+    .hero-subtitle {
+        font-size: 0.95rem !important;
+        margin-bottom: 20px !important;
+    }
+
+    .hero-cta {
+        gap: 12px !important;
+    }
+
+    .hero-cta .btn {
+        width: 100% !important;
+        max-width: 100% !important;
+        font-size: 0.95rem !important;
+        padding: 14px 20px !important;
+    }
+
+    .hero-stats {
+        margin-top: 20px !important;
+        gap: 12px !important;
+    }
+
+    .stat-item {
+        font-size: 0.8rem !important;
+    }
+
+    /* General spacing */
+    body, html {
+        font-size: 14px;
+    }
+
+    h1 {
+        font-size: 1.8rem !important;
+    }
+
+    h2 {
+        font-size: 1.4rem !important;
+    }
+
+    h3 {
+        font-size: 1.1rem !important;
+    }
+
+    p {
+        font-size: 0.9rem !important;
+    }
+
+    /* Section padding */
+    .section {
+        padding: 40px 15px !important;
+    }
+
+    .services-section {
+        padding: 40px 0 !important;
+    }
+
+    .gallery-section {
+        padding: 40px 0 !important;
+    }
+
+    .cart-section {
+        padding: 40px 0 !important;
+    }
+
+    .testimonials-section {
+        padding: 40px 0 !important;
+    }
+
+    .contact-section {
+        padding: 40px 0 !important;
+    }
+
+    /* Grid adjustments */
+    .services-grid {
+        grid-template-columns: 1fr !important;
+        gap: 15px !important;
+        margin-bottom: 30px !important;
+    }
+
+    .service-card {
+        padding: 20px !important;
+    }
+
+    .service-icon {
+        width: 50px !important;
+        height: 50px !important;
+        font-size: 24px !important;
+        margin-bottom: 15px !important;
+    }
+
+    /* Button sizing */
+    .btn {
+        padding: 12px 16px !important;
+        font-size: 0.9rem !important;
+    }
+
+    .btn-primary, .btn-secondary {
+        padding: 12px 16px !important;
+    }
+
+    /* Reduce gaps */
+    .container {
+        padding: 0 15px !important;
+    }
+
+    /* Modal/Checkout adjustments */
+    .checkout-modal {
+        padding: 20px !important;
+    }
+
+    /* Testimonials */
+    .testimonial-card {
+        padding: 20px !important;
+    }
+
+    .testimonial-text {
+        font-size: 0.85rem !important;
+    }
+
+    /* Contact section */
+    .contact-info {
+        font-size: 0.9rem !important;
+    }
+
+    /* Gallery */
+    .gallery-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+    }
+
+    /* Pricing card */
+    .pricing-card {
+        padding: 20px !important;
+    }
+
+    .pricing-price {
+        font-size: 1.8rem !important;
+    }
+
+    /* Why Choose */
+    .why-card {
+        padding: 20px !important;
+    }
+
+    .why-card h3 {
+        font-size: 1rem !important;
+    }
+}
+
 /* Zero-gap section styling for Why Choose Us and Pricing/Services */
 .why-choose-section {
     padding-top: 60px !important;
@@ -696,7 +854,7 @@ body { font-family: 'Poppins', sans-serif; color: var(--text-dark); background-i
 }
 .whatsapp-float {
   position: fixed;
-  bottom: 25px;
+  bottom: 105px;
   right: 25px;
 
   width: 65px;
@@ -753,7 +911,7 @@ body { font-family: 'Poppins', sans-serif; color: var(--text-dark); background-i
 /* Call Button Styling */
 .call-float {
   position: fixed;
-  bottom: 100px;
+  bottom: 180px;
   right: 25px;
 
   width: 65px;
@@ -805,7 +963,7 @@ body { font-family: 'Poppins', sans-serif; color: var(--text-dark); background-i
 /* Email Button Styling */
 .email-float {
   position: fixed;
-  bottom: 175px;
+  bottom: 255px;
   right: 25px;
 
   width: 65px;
@@ -3441,4 +3599,177 @@ min-height: 500px;
   background: linear-gradient(135deg, #15803d, #16a34a) !important;
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(34, 197, 94, 0.4);
+}
+@media (max-width: 768px) {
+
+  .franchise-grid-new {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    align-items: start;
+  }
+
+  .franchise-card-new {
+    width: 100%;
+    min-width: 0;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .franchise-card-header h3 {
+    font-size: 0.8rem !important;
+    padding: 10px 4px;
+  }
+
+  .franchise-card-body {
+    padding: 6px !important;
+  }
+
+  .info-row {
+    padding: 6px 2px !important;
+  }
+
+  .info-row span {
+    font-size: 0.55rem !important;
+    line-height: 1.1;
+  }
+
+  .info-row strong {
+    font-size: 0.65rem !important;
+    line-height: 1.1;
+  }
+}
+.franchise-link {
+  background: linear-gradient(
+    135deg,
+    #27187E,
+    #4F46E5
+  );
+
+  color: #fff !important;
+
+  padding: 10px 20px;
+
+  border-radius: 999px;
+
+  font-weight: 800;
+
+  box-shadow:
+    0 6px 18px rgba(39, 24, 126, 0.35);
+
+  transition: all 0.3s ease;
+}
+
+.franchise-link:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 10px 25px rgba(39, 24, 126, 0.45);
+
+  color: #fff !important;
+}
+
+.franchise-link::after {
+  display: none !important;
+}
+.franchise-floating-btn {
+  position: fixed;
+
+  right: 20px;
+  bottom: 15px;
+
+  z-index: 9999;
+
+  background: linear-gradient(
+    135deg,
+    #27187E,
+    #4F46E5
+  );
+
+  color: white;
+
+  border: none;
+  border-radius: 999px;
+
+  padding: 14px 20px;
+
+  font-size: 0.95rem;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  overflow: hidden;
+
+  box-shadow:
+    0 10px 30px rgba(39,24,126,0.35),
+    0 0 25px rgba(79,70,229,0.25);
+
+  transition: all 0.3s ease;
+}
+
+.franchise-floating-btn:hover {
+  transform: translateY(-3px);
+
+  box-shadow:
+    0 15px 40px rgba(39,24,126,0.45),
+    0 0 35px rgba(79,70,229,0.4);
+}
+
+/* Glass Shine */
+.franchise-floating-btn::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: -120%;
+
+  width: 60%;
+  height: 100%;
+
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255,255,255,0.45),
+    transparent
+  );
+
+  transform: skewX(-25deg);
+
+  animation: franchiseShine 3s infinite;
+}
+
+@keyframes franchiseShine {
+  0% {
+    left: -120%;
+  }
+
+  60% {
+    left: 150%;
+  }
+
+  100% {
+    left: 150%;
+  }
+}
+@media (max-width: 768px) {
+  .franchise-floating-btn {
+    right: 15px;
+    bottom: 20px !important;
+
+    padding: 12px 16px;
+    font-size: 0.85rem;
+
+    z-index: 9999;
+  }
+}
+@media (max-width: 768px) {
+  .hero-title {
+    line-height: 1.15 !important;
+    margin-bottom: 25px !important;
+  }
+
+  .hero-subtitle {
+    margin-top: 10px !important;
+  }
 }

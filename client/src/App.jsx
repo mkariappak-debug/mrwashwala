@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import FranchiseBrochure from "./pages/FranchiseBrochure";
-import bgVideo from "./assets/background-video.mp4";
+import desktopVideo from "./assets/background-video.mp4";
+import mobileVideo from "./assets/mobile-background-video.mp4";
 import React, { useState, useEffect } from "react";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
@@ -13,6 +14,7 @@ import Gallery from "./components/Gallery";
 import CheckoutModal from "./components/CheckoutModal";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
+import FranchiseButton from "./components/FranchiseButton";
 import WhatsAppButton from "./components/WhatsAppButton";
 import CallButton from "./components/CallButton";
 import EmailButton from "./components/EmailButton";
@@ -22,10 +24,10 @@ import "./index.css";
 import "./styles.css";
 
 export default function App() {
-  const [cart, setCart] = useState([]);
-  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-  const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
-
+ const [cart, setCart] = useState([]);
+const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
+const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   useEffect(() => {
     import("./animations")
       .then((mod) => {
@@ -61,6 +63,17 @@ export default function App() {
       console.log(e);
     }
   }, [cart]);
+  useEffect(() => {
+  const handleResize = () => {
+    setIsMobile(window.innerWidth <= 768);
+  };
+
+  window.addEventListener("resize", handleResize);
+
+  return () => {
+    window.removeEventListener("resize", handleResize);
+  };
+}, []);
 
   const handleUpdateQuantity = (
     name,
@@ -155,16 +168,21 @@ export default function App() {
       path="/"
       element={
         <div className="app-layout-container">
-    <video
-      className="site-background-video"
-      autoPlay
-      muted
-      loop
-      playsInline
-    >
-      <source src={bgVideo} type="video/mp4" />
-    </video>
-
+  <video
+  key={isMobile ? 'mobile' : 'desktop'}
+  className="site-background-video"
+  autoPlay
+  muted
+  loop
+  playsInline
+  preload="auto"
+>
+  <source
+    src={isMobile ? mobileVideo : desktopVideo}
+    type="video/mp4"
+  />
+</video>
+ 
       <Header
         cartCount={cart.reduce(
           (sum, item) => sum + item.quantity,
@@ -217,6 +235,7 @@ export default function App() {
           <Franchise />
           <Footer />
           <WhatsAppButton />
+          <FranchiseButton />
           <CallButton />
           <EmailButton />
         </div>

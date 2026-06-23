@@ -111,9 +111,9 @@ export default function Franchise() {
           >
             Enquire About Franchise
           </a>
-
-          <Link
+<Link
   to="/franchise-brochure"
+  id="download-brochure"
   className="btn brochure-btn"
 >
   📄 Download Franchise Brochure

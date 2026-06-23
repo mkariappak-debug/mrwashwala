@@ -32,19 +32,22 @@ export default function FranchiseBrochure() {
     }
 
     setLoading(true);
+    const API_URL =
+  window.location.hostname === "localhost"
+    ? "http://localhost:5000"
+    : "https://mrwashwala-server.onrender.com";
 
     try {
-        const response = await fetch(
-      "https://mrwashwala-server.onrender.com/api/franchise-leads",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
-
+       const response = await fetch(
+  `${API_URL}/api/franchise-leads`,
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(formData),
+  }
+);
       const data = await response.json();
 
       if (!response.ok) {
