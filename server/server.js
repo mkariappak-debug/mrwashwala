@@ -29,12 +29,25 @@ const app = express();
 app.disable('etag');
 
 // Middleware
-const allowedOrigins = new Set([
+const isProduction = process.env.NODE_ENV === 'production';
+const envOrigins = [
   process.env.FRONTEND_URL,
-  "https://mrwashwala-hwgn.vercel.app",
-  "https://mkariappak-debug-mrwashwala.vercel.app",
-  "http://localhost:5173",
-  "http://localhost:5174",
+  ...(process.env.FRONTEND_URLS || '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean),
+];
+
+const devOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'https://mrwashwala-hwgn.vercel.app',
+  'https://mkariappak-debug-mrwashwala.vercel.app',
+];
+
+const allowedOrigins = new Set([
+  ...envOrigins,
+  ...(isProduction ? [] : devOrigins),
 ].filter(Boolean));
 
 app.use(
