@@ -1,5 +1,6 @@
 import "./FranchiseBrochure.css";
 import React, { useState } from "react";
+import API from "../api/api";
 
 export default function FranchiseBrochure() {
   const [formData, setFormData] = useState({
@@ -32,25 +33,15 @@ export default function FranchiseBrochure() {
     }
 
     setLoading(true);
-    const API_URL =
-  window.location.hostname === "localhost"
-    ? "http://localhost:5000"
-    : "https://mrwashwala-server.onrender.com";
 
     try {
-       const response = await fetch(
-  `${API_URL}/api/franchise-leads`,
-  {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(formData),
-  }
-);
-      const data = await response.json();
+      const response = await API.post(
+        "/api/franchise-leads",
+        formData
+      );
+      const data = response.data;
 
-      if (!response.ok) {
+      if (!data.success) {
         throw new Error(
           data.message || "Failed to save lead information"
         );
