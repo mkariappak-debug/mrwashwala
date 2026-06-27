@@ -18,7 +18,15 @@ export default function FranchiseButton() {
       onClick={handleClick}
       aria-label="Franchise Opportunity"
     >
-      🚀 Franchise
+      <img
+        src="/MrWashwala.svg"
+        alt=""
+        className="franchise-floating-icon"
+        loading="eager"
+        decoding="async"
+        aria-hidden="true"
+      />
+      <span>Franchise</span>
     </button>
   );
 }

@@ -23,11 +23,14 @@ import Franchise from "./components/Franchise";
 import "./index.css";
 import "./styles.css";
 
+const HOME_MASCOT_VIDEOS = ["/home-mascot-loop.mp4", "/home-mascot-pack.mp4"];
+
 export default function App() {
  const [cart, setCart] = useState([]);
 const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
 const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+const [homeMascotVideoIndex, setHomeMascotVideoIndex] = useState(0);
   useEffect(() => {
     import("./animations")
       .then((mod) => {
@@ -157,6 +160,10 @@ const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     }
   };
 
+    const handleHomeMascotVideoEnded = () => {
+      setHomeMascotVideoIndex((prev) => (prev + 1) % HOME_MASCOT_VIDEOS.length);
+    };
+
      return (
   <Routes>
     <Route
@@ -179,6 +186,22 @@ const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 >
   <source
     src={isMobile ? mobileVideo : desktopVideo}
+    type="video/mp4"
+  />
+</video>
+
+<video
+  key={HOME_MASCOT_VIDEOS[homeMascotVideoIndex]}
+  className="home-mascot-loop-video"
+  autoPlay
+  muted
+  playsInline
+  preload="auto"
+  aria-hidden="true"
+  onEnded={handleHomeMascotVideoEnded}
+>
+  <source
+    src={HOME_MASCOT_VIDEOS[homeMascotVideoIndex]}
     type="video/mp4"
   />
 </video>

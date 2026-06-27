@@ -82,6 +82,36 @@
     transition: var(--transition);
 }
 
+  .nav-link.nav-icon-only {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
+  }
+
+  .nav-link.nav-icon-only::after {
+    display: none;
+  }
+
+  .nav-link-icon {
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dark);
+  }
+
+  .nav-link-icon svg {
+    width: 22px;
+    height: 22px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.9;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
 .nav-link::after {
     content: '';
     position: absolute;
@@ -105,6 +135,12 @@
     font-size: 0.75rem;
     font-weight: 700;
 }
+
+  .nav-icon-only .cart-badge {
+    position: absolute;
+    top: -8px;
+    right: -10px;
+  }
 
 .hamburger {
     display: none;
@@ -1309,6 +1345,28 @@ body { font-family: 'Poppins', sans-serif; color: var(--text-dark); background-i
   object-fit: cover;
 
   z-index: -2;
+}
+
+.home-mascot-loop-video {
+  position: fixed;
+  left: 30px;
+  top: 132px;
+  width: clamp(110px, 14vw, 190px);
+  height: auto;
+  border-radius: 14px;
+  box-shadow: 0 10px 28px rgba(22, 29, 58, 0.28);
+  z-index: 14;
+  pointer-events: none;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+@media (max-width: 768px) {
+  .home-mascot-loop-video {
+    left: 16px;
+    top: 96px;
+    width: clamp(86px, 28vw, 140px);
+    border-radius: 12px;
+  }
 }
 
 .app-layout-container::before {
@@ -3695,6 +3753,9 @@ min-height: 500px;
 
   font-size: 0.95rem;
   font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 
   cursor: pointer;
 
@@ -3705,6 +3766,23 @@ min-height: 500px;
     0 0 25px rgba(79,70,229,0.25);
 
   transition: all 0.3s ease;
+}
+
+.franchise-floating-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  flex-shrink: 0;
+  transform: scale(3);
+  transform-origin: center;
+}
+
+@media (max-width: 768px) {
+  .franchise-floating-icon {
+    width: 18px;
+    height: 18px;
+    transform: scale(2.5);
+  }
 }
 
 .franchise-floating-btn:hover {
