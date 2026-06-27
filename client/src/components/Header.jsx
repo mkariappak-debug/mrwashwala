@@ -46,7 +46,9 @@ export default function Header({ cartCount }) {
                   <circle cx="17" cy="20" r="1.7" />
                 </svg>
               </span>
-              <span id="cart-count" className="cart-badge">{cartCount}</span>
+              {cartCount > 0 && (
+                <span id="cart-count" className="cart-badge">{cartCount}</span>
+              )}
             </a>
           </li>
           <li>
