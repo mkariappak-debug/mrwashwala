@@ -53,18 +53,17 @@
   transform: scale(1);
 }
 
-.checkout-stations {
-  position: absolute;
-  bottom: 14px;
-  left: 24px;
-  right: 24px;
+.checkout-progress-stations {
+  position: relative;
+  margin-top: 14px;
+  margin-bottom: 12px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
-  z-index: 3;
+  z-index: 1;
 }
 
-.station {
+.progress-station {
   text-align: center;
   font-size: 12px;
   letter-spacing: 0.08em;
@@ -75,23 +74,6 @@
   border-radius: 999px;
   padding: 8px 10px;
   box-shadow: 0 8px 22px rgba(18, 37, 75, 0.14);
-}
-
-.checkout-mascot {
-  position: absolute;
-  z-index: 4;
-  width: clamp(78px, 10vw, 110px);
-  aspect-ratio: 1;
-  object-fit: contain;
-  left: 8%;
-  bottom: 60px;
-  filter: drop-shadow(0 14px 18px rgba(17, 20, 44, 0.28));
-  animation: mascotRun 4.3s cubic-bezier(0.22, 0.85, 0.24, 1) forwards;
-}
-
-.checkout-scene.stage-done .checkout-mascot {
-  animation-name: mascotCelebrate;
-  animation-duration: 0.8s;
 }
 
 .machine-bubbles {
@@ -182,7 +164,8 @@
   height: 12px;
   border-radius: 999px;
   background: rgba(27, 72, 150, 0.15);
-  overflow: hidden;
+  overflow: visible;
+  position: relative;
 }
 
 .checkout-progress-fill {
@@ -193,6 +176,18 @@
   transition: width 0.08s linear;
 }
 
+.checkout-progress-mascot {
+  position: absolute;
+  top: 50%;
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 8px 14px rgba(17, 20, 44, 0.25));
+  pointer-events: none;
+  z-index: 3;
+}
+
 .checkout-progress-meta {
   margin-top: 8px;
   display: flex;
@@ -200,36 +195,6 @@
   color: #2f4e86;
   font-size: 12px;
   font-weight: 600;
-}
-
-@keyframes mascotRun {
-  0% {
-    transform: translate(0, 0) scale(0.98) rotate(0deg);
-  }
-  25% {
-    transform: translate(32%, -2%) scale(1) rotate(-2deg);
-  }
-  50% {
-    transform: translate(92%, -4%) scale(1.02) rotate(2deg);
-  }
-  78% {
-    transform: translate(154%, -3%) scale(1.03) rotate(-1deg);
-  }
-  100% {
-    transform: translate(188%, -6%) scale(1.04) rotate(0deg);
-  }
-}
-
-@keyframes mascotCelebrate {
-  0% {
-    transform: translate(188%, -6%) scale(1.04) rotate(0deg);
-  }
-  45% {
-    transform: translate(188%, -11%) scale(1.13) rotate(-7deg);
-  }
-  100% {
-    transform: translate(188%, -6%) scale(1.08) rotate(3deg);
-  }
 }
 
 @keyframes bubbleFloat {
@@ -256,21 +221,20 @@
     grid-template-rows: minmax(220px, 42vh) auto;
   }
 
-  .checkout-stations {
-    left: 12px;
-    right: 12px;
-    bottom: 10px;
+  .checkout-progress-stations {
+    margin-top: 12px;
+    margin-bottom: 10px;
     gap: 8px;
   }
 
-  .station {
+  .progress-station {
     font-size: 10px;
     padding: 7px 8px;
   }
 
-  .checkout-mascot {
-    width: 76px;
-    bottom: 46px;
+  .checkout-progress-mascot {
+    width: 34px;
+    height: 34px;
   }
 
   .machine-bubbles {

@@ -1,6 +1,7 @@
 
 import React, { useEffect, useState } from "react";
 import CheckoutTransitionOverlay from "./CheckoutTransitionOverlay";
+import API from "../api/api";
 
 export default function CheckoutModal({
   open,
@@ -55,6 +56,7 @@ const [formData, setFormData] = useState({
   const [locationStatus, setLocationStatus] = useState("");
   const [isTransitionOpen, setIsTransitionOpen] = useState(false);
   const [checkoutRedirectUrl, setCheckoutRedirectUrl] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("whatsapp");
 
   useEffect(() => {
     // Preload checkout animation video to avoid visible lag on submit.
@@ -75,6 +77,7 @@ const [formData, setFormData] = useState({
     if (!open) {
       setIsTransitionOpen(false);
       setCheckoutRedirectUrl("");
+      setPaymentMethod("whatsapp");
       return;
     }
 
@@ -240,6 +243,41 @@ formData.instructions ? `Instructions: ${formData.instructions}` : null,
       ]
         .filter(Boolean)
         .join("\n");
+
+      if (paymentMethod === "online") {
+        const idempotencyKey = `pay-${Date.now()}-${formData.phone}`;
+
+        const response = await API.post("/api/payments/checkout/initiate", {
+          idempotencyKey,
+          customer: {
+            name: formData.name,
+            phone: formData.phone,
+            address: formData.address,
+            instructions: formData.instructions || ""
+          },
+          items: cart,
+          totalAmount: subtotal,
+          currency: "INR",
+          metadata: {
+            pickupDate: formData.pickupDate,
+            pickupTime: formData.pickupTime,
+            locationLink: formData.locationLink || "",
+            flow: "online"
+          }
+        });
+
+        const { providerConfigured, provider = {}, merchantOrderId } = response.data || {};
+
+        if (providerConfigured && provider.checkoutUrl) {
+          window.location.assign(provider.checkoutUrl);
+          return;
+        }
+
+        alert(
+          `Online payment architecture is ready and provider setup is pending. Reference: ${merchantOrderId || "N/A"}. Please use WhatsApp checkout for now.`
+        );
+        return;
+      }
 
       const redirectUrl = `https://api.whatsapp.com/send/?phone=917019436720&text=${encodeURIComponent(message)}&type=phone_number&app_absent=0`;
       setCheckoutRedirectUrl(redirectUrl);
@@ -487,6 +525,58 @@ formData.instructions ? `Instructions: ${formData.instructions}` : null,
                 minHeight: "90px"
               }}
             />
+
+            <div
+              style={{
+                gridColumn: "1 / -1",
+                display: "flex",
+                gap: "12px",
+                flexWrap: "wrap",
+                marginTop: "4px"
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => setPaymentMethod("whatsapp")}
+                style={{
+                  padding: "10px 14px",
+                  borderRadius: "10px",
+                  border: paymentMethod === "whatsapp" ? "2px solid #27187E" : "1px solid #cfd8ea",
+                  background: paymentMethod === "whatsapp" ? "#eef1ff" : "#fff",
+                  color: "#1b2c61",
+                  fontWeight: "600",
+                  cursor: "pointer"
+                }}
+              >
+                WhatsApp Checkout
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setPaymentMethod("online")}
+                style={{
+                  padding: "10px 14px",
+                  borderRadius: "10px",
+                  border: paymentMethod === "online" ? "2px solid #27187E" : "1px solid #cfd8ea",
+                  background: paymentMethod === "online" ? "#eef1ff" : "#fff",
+                  color: "#1b2c61",
+                  fontWeight: "600",
+                  cursor: "pointer"
+                }}
+              >
+                Online Payment
+              </button>
+            </div>
+
+            <div
+              style={{
+                gridColumn: "1 / -1",
+                fontSize: "12px",
+                color: "#5a6b96"
+              }}
+            >
+              Selected: {paymentMethod === "online" ? "Online Payment" : "WhatsApp Checkout"}
+            </div>
           </div>
 
           <div
@@ -517,7 +607,9 @@ formData.instructions ? `Instructions: ${formData.instructions}` : null,
             }}
           >
             {isSubmitting
-              ? "Booking Order..."
+              ? "Processing..."
+              : paymentMethod === "online"
+              ? "Proceed to Online Payment"
               : "Confirm & Order via WhatsApp"}
           </button>
         </form>

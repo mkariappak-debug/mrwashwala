@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "./CheckoutTransitionOverlay.css";
 
-const ANIMATION_DURATION_MS = 4300;
+const DEFAULT_ANIMATION_DURATION_MS = 4300;
 
 function getStage(progress) {
   if (progress < 25) {
@@ -51,6 +51,7 @@ export default function CheckoutTransitionOverlay({
 }) {
   const [progress, setProgress] = useState(0);
   const [isVideoReady, setIsVideoReady] = useState(false);
+  const [durationMs, setDurationMs] = useState(DEFAULT_ANIMATION_DURATION_MS);
 
   const stage = useMemo(() => getStage(progress), [progress]);
 
@@ -58,6 +59,7 @@ export default function CheckoutTransitionOverlay({
     if (!open) {
       setProgress(0);
       setIsVideoReady(false);
+      setDurationMs(DEFAULT_ANIMATION_DURATION_MS);
       return;
     }
 
@@ -66,7 +68,7 @@ export default function CheckoutTransitionOverlay({
 
     const animate = (now) => {
       const elapsed = now - start;
-      const pct = Math.min(100, (elapsed / ANIMATION_DURATION_MS) * 100);
+      const pct = Math.min(100, (elapsed / durationMs) * 100);
       setProgress(pct);
 
       if (pct < 100) {
@@ -85,7 +87,7 @@ export default function CheckoutTransitionOverlay({
     return () => {
       if (frameId) cancelAnimationFrame(frameId);
     };
-  }, [open, onComplete]);
+  }, [open, onComplete, durationMs]);
 
   useEffect(() => {
     if (!open) return;
@@ -106,20 +108,6 @@ export default function CheckoutTransitionOverlay({
 
       <div className="checkout-transition-card">
         <div className={`checkout-scene ${stage.stateClass}`}>
-          <div className="checkout-stations" aria-hidden="true">
-            <div className="station station-basket">Basket</div>
-            <div className="station station-machine">Machine</div>
-            <div className="station station-check">Confirm</div>
-          </div>
-
-          <img
-            src={mascotSrc}
-            alt="Mr Washwala mascot"
-            className="checkout-mascot"
-            loading="eager"
-            decoding="async"
-          />
-
           <div className="machine-bubbles" aria-hidden="true">
             <span />
             <span />
@@ -136,6 +124,13 @@ export default function CheckoutTransitionOverlay({
             playsInline
             preload="auto"
             onLoadedData={() => setIsVideoReady(true)}
+            onLoadedMetadata={(e) => {
+              const durationSeconds = e.currentTarget?.duration;
+              if (Number.isFinite(durationSeconds) && durationSeconds > 0) {
+                const ms = Math.round(durationSeconds * 1000);
+                setDurationMs(Math.max(3000, Math.min(7000, ms)));
+              }
+            }}
           />
         </div>
 
@@ -144,8 +139,22 @@ export default function CheckoutTransitionOverlay({
           <h3>{stage.title}</h3>
           <p>{stage.subtitle}</p>
 
+          <div className="checkout-progress-stations" aria-hidden="true">
+            <div className="progress-station station-basket">Basket</div>
+            <div className="progress-station station-machine">Machine</div>
+            <div className="progress-station station-check">Confirm</div>
+          </div>
+
           <div className="checkout-progress-track" aria-hidden="true">
             <div className="checkout-progress-fill" style={{ width: `${Math.round(progress)}%` }} />
+            <img
+              src={mascotSrc}
+              alt="Mr Washwala mascot"
+              className="checkout-progress-mascot"
+              loading="eager"
+              decoding="async"
+              style={{ left: `${Math.round(progress)}%` }}
+            />
           </div>
 
           <div className="checkout-progress-meta">

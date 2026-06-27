@@ -9,6 +9,7 @@ import serviceRoutes from './routes/serviceRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import reviewRoutes from './routes/reviewRoutes.js';
 import franchiseLeadRoutes from './routes/FranchiseLeadRoutes.js';
+import paymentRoutes from './routes/paymentRoutes.js';
 
 // Load environment variables
 
@@ -81,6 +82,7 @@ app.use('/api/services', serviceRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/franchise-leads', franchiseLeadRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // =========================
 // API Status Route
