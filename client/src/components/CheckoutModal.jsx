@@ -1,5 +1,6 @@
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import CheckoutTransitionOverlay from "./CheckoutTransitionOverlay";
 
 export default function CheckoutModal({
   open,
@@ -7,6 +8,36 @@ export default function CheckoutModal({
   onClose,
   onConfirmOrder
 }) {
+const getLocalDate = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const getRoundedDateTime = (stepMinutes = 15) => {
+  const now = new Date();
+  const rounded = new Date(now);
+
+  const totalMinutes = now.getHours() * 60 + now.getMinutes();
+  const roundedMinutes = Math.ceil(totalMinutes / stepMinutes) * stepMinutes;
+
+  rounded.setHours(0, 0, 0, 0);
+  rounded.setMinutes(roundedMinutes);
+
+  const year = rounded.getFullYear();
+  const month = String(rounded.getMonth() + 1).padStart(2, "0");
+  const day = String(rounded.getDate()).padStart(2, "0");
+  const hours = String(rounded.getHours()).padStart(2, "0");
+  const minutes = String(rounded.getMinutes()).padStart(2, "0");
+
+  return {
+    date: `${year}-${month}-${day}`,
+    time: `${hours}:${minutes}`
+  };
+};
+
 const [formData, setFormData] = useState({
   name: "",
   phone: "",
@@ -22,16 +53,49 @@ const [formData, setFormData] = useState({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
   const [locationStatus, setLocationStatus] = useState("");
+  const [isTransitionOpen, setIsTransitionOpen] = useState(false);
+  const [checkoutRedirectUrl, setCheckoutRedirectUrl] = useState("");
+
+  useEffect(() => {
+    // Preload checkout animation video to avoid visible lag on submit.
+    const preloadVideo = document.createElement("video");
+    preloadVideo.src = "/checkout-transition.mp4";
+    preloadVideo.preload = "auto";
+    preloadVideo.muted = true;
+    preloadVideo.playsInline = true;
+    preloadVideo.load();
+
+    return () => {
+      preloadVideo.removeAttribute("src");
+      preloadVideo.load();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!open) {
+      setIsTransitionOpen(false);
+      setCheckoutRedirectUrl("");
+      return;
+    }
+
+    const today = getLocalDate();
+    const rounded = getRoundedDateTime(15);
+
+    setFormData((prev) => ({
+      ...prev,
+      pickupDate:
+        !prev.pickupDate || prev.pickupDate < today
+          ? rounded.date
+          : prev.pickupDate,
+      pickupTime: prev.pickupTime || rounded.time
+    }));
+  }, [open]);
 
   if (!open) return null;
 
   // Get today's date in YYYY-MM-DD format for minimum date picker value
   const getTodayDate = () => {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+    return getLocalDate();
   };
 
   
@@ -154,11 +218,7 @@ if (!/^\d{10}$/.test(formData.phone)) {
         "Customer Details:",
 `Name: ${formData.name}`,
 `Phone: ${formData.phone}`,
-`Pickup Date: ${
-  formData.pickupDate
-    ? formData.pickupDate.split("-").reverse().join("-")
-    : ""
-}`,`Pickup Date: ${formData.pickupDate
+`Pickup Date: ${formData.pickupDate
   .split("-")
   .reverse()
   .join("-")}`,
@@ -181,16 +241,9 @@ formData.instructions ? `Instructions: ${formData.instructions}` : null,
         .filter(Boolean)
         .join("\n");
 
-      window.open(
-        `https://wa.me/917019436720?text=${encodeURIComponent(message)}`,
-        "_blank"
-      );
-
-      if (onConfirmOrder) {
-        onConfirmOrder();
-      }
-
-      onClose();
+      const redirectUrl = `https://api.whatsapp.com/send/?phone=917019436720&text=${encodeURIComponent(message)}&type=phone_number&app_absent=0`;
+      setCheckoutRedirectUrl(redirectUrl);
+      setIsTransitionOpen(true);
     } catch (err) {
       console.log(err);
       alert("Failed to place order");
@@ -199,6 +252,35 @@ formData.instructions ? `Instructions: ${formData.instructions}` : null,
       setIsSubmitting(false);
     }
   };
+
+  const handleTransitionComplete = () => {
+    if (onConfirmOrder) {
+      onConfirmOrder();
+    }
+
+    onClose();
+
+    if (checkoutRedirectUrl) {
+      const whatsappWindow = window.open(checkoutRedirectUrl, "_blank", "noopener,noreferrer");
+
+      // Keep this tab on the site home page while WhatsApp opens separately.
+      if (whatsappWindow) {
+        window.location.assign("/");
+      } else {
+        // Fallback when popup is blocked.
+        window.location.assign(checkoutRedirectUrl);
+      }
+    }
+  };
+
+  if (isTransitionOpen) {
+    return (
+      <CheckoutTransitionOverlay
+        open={isTransitionOpen}
+        onComplete={handleTransitionComplete}
+      />
+    );
+  }
 
   return (
     <div
@@ -228,12 +310,14 @@ formData.instructions ? `Instructions: ${formData.instructions}` : null,
       >
         <button
           onClick={onClose}
+          disabled={isSubmitting}
           style={{
             float: "right",
             border: "none",
             background: "transparent",
             fontSize: "28px",
-            cursor: "pointer"
+            cursor: isSubmitting ? "not-allowed" : "pointer",
+            opacity: isSubmitting ? 0.5 : 1
           }}
         >
           ×
