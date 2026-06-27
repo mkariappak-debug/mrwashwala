@@ -3,12 +3,17 @@ import React, { useEffect, useState } from "react";
 import CheckoutTransitionOverlay from "./CheckoutTransitionOverlay";
 import API from "../api/api";
 
+const UPI_ID = (import.meta.env.VITE_UPI_ID || "mrwashwala@upi").trim();
+const UPI_PAYEE_NAME = (import.meta.env.VITE_UPI_PAYEE_NAME || "Mr WashWala").trim();
+
 export default function CheckoutModal({
   open,
   cart = [],
   onClose,
   onConfirmOrder
 }) {
+const isOnlinePaymentEnabled = false;
+
 const getLocalDate = () => {
   const now = new Date();
   const year = now.getFullYear();
@@ -56,7 +61,11 @@ const [formData, setFormData] = useState({
   const [locationStatus, setLocationStatus] = useState("");
   const [isTransitionOpen, setIsTransitionOpen] = useState(false);
   const [checkoutRedirectUrl, setCheckoutRedirectUrl] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("whatsapp");
+    const [paymentMethod, setPaymentMethod] = useState("upi");
+  const [showUpiStep, setShowUpiStep] = useState(false);
+  const [upiIntentUrl, setUpiIntentUrl] = useState("");
+  const [upiQrUrl, setUpiQrUrl] = useState("");
+  const [utrNumber, setUtrNumber] = useState("");
 
   useEffect(() => {
     // Preload checkout animation video to avoid visible lag on submit.
@@ -77,7 +86,11 @@ const [formData, setFormData] = useState({
     if (!open) {
       setIsTransitionOpen(false);
       setCheckoutRedirectUrl("");
-      setPaymentMethod("whatsapp");
+      setPaymentMethod("upi");
+      setShowUpiStep(false);
+      setUpiIntentUrl("");
+      setUpiQrUrl("");
+      setUtrNumber("");
       return;
     }
 
@@ -187,6 +200,74 @@ const [formData, setFormData] = useState({
     (sum, item) => sum + item.price * item.quantity,
     0
   );
+
+  const buildWhatsAppMessage = (paymentInfo = null) => {
+    const itemsText = cart
+      .map(
+        (item, index) =>
+          `${index + 1}. ${item.name} - ${item.quantity} ${item.unit}(s) x ₹${item.price} = ₹${item.price * item.quantity}`
+      )
+      .join("\n");
+
+    return [
+      "Hello Mr. WashWala 😊, I would like to place an order through the website.",
+      "",
+      "Customer Details:",
+      `Name: ${formData.name}`,
+      `Phone: ${formData.phone}`,
+      `Pickup Date: ${formData.pickupDate.split("-").reverse().join("-")}`,
+      `Pickup Time: ${formData.pickupTime}`,
+      `Pickup Address: ${formData.address}`,
+      formData.locationLink ? `Google Maps Location: ${formData.locationLink}` : null,
+      formData.instructions ? `Instructions: ${formData.instructions}` : null,
+      paymentInfo ? "" : null,
+      paymentInfo ? "Payment Details:" : null,
+      paymentInfo ? paymentInfo : null,
+      "",
+      "Order Summary:",
+      itemsText,
+      "",
+      `Subtotal: ₹${subtotal}`,
+      "Delivery Charge: Free",
+      `Total: ₹${subtotal}`,
+      "",
+      "Please confirm the pickup.",
+    ]
+      .filter(Boolean)
+      .join("\n");
+  };
+
+  const openWhatsAppWithTransition = (message) => {
+    const redirectUrl = `https://api.whatsapp.com/send/?phone=917019436720&text=${encodeURIComponent(message)}&type=phone_number&app_absent=0`;
+    setCheckoutRedirectUrl(redirectUrl);
+    setIsTransitionOpen(true);
+  };
+
+  const handleStartUpiFlow = () => {
+    const amountInRupees = subtotal.toFixed(2);
+    const note = encodeURIComponent(`Laundry order payment - ${formData.phone}`);
+    const upiUrl = `upi://pay?pa=${encodeURIComponent(UPI_ID)}&pn=${encodeURIComponent(UPI_PAYEE_NAME)}&am=${amountInRupees}&cu=INR&tn=${note}`;
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(upiUrl)}`;
+
+    setUpiIntentUrl(upiUrl);
+    setUpiQrUrl(qrUrl);
+    setShowUpiStep(true);
+  };
+
+  const handleConfirmUpiPayment = () => {
+    if (!utrNumber.trim()) {
+      alert("Please enter UTR / transaction reference number after payment.");
+      return;
+    }
+
+    const message = buildWhatsAppMessage(
+      `Mode: UPI QR (Manual Verification)\nUTR: ${utrNumber.trim()}\nStatus: Payment completed by customer, verification pending.`
+    );
+
+    setShowUpiStep(false);
+    openWhatsAppWithTransition(message);
+  };
+
 const handleSubmit = async (e) => {
     e.preventDefault();
 if (
@@ -208,43 +289,14 @@ if (!/^\d{10}$/.test(formData.phone)) {
     setIsSubmitting(true);
 
     try {
-      const itemsText = cart
-        .map(
-          (item, index) =>
-            `${index + 1}. ${item.name} - ${item.quantity} ${item.unit}(s) x ₹${item.price} = ₹${item.price * item.quantity}`
-        )
-        .join("\n");
-
-     const message = [
-  "Hello Mr. WashWala 😊, I would like to place an order through the website.",
-        "",
-        "Customer Details:",
-`Name: ${formData.name}`,
-`Phone: ${formData.phone}`,
-`Pickup Date: ${formData.pickupDate
-  .split("-")
-  .reverse()
-  .join("-")}`,
-`Pickup Time: ${formData.pickupTime}`,
-`Pickup Address: ${formData.address}`,
-formData.locationLink
-  ? `Google Maps Location: ${formData.locationLink}`
-  : null,
-formData.instructions ? `Instructions: ${formData.instructions}` : null,
-        "",
-        "Order Summary:",
-        itemsText,
-        "",
-        `Subtotal: ₹${subtotal}`,
-        "Delivery Charge: Free",
-        `Total: ₹${subtotal}`,
-        "",
-        "Please confirm the pickup.",
-      ]
-        .filter(Boolean)
-        .join("\n");
+      const message = buildWhatsAppMessage();
 
       if (paymentMethod === "online") {
+        if (!isOnlinePaymentEnabled) {
+          alert("Online Payment Gateway is coming soon. Please use WhatsApp or UPI QR payment for now.");
+          return;
+        }
+
         const idempotencyKey = `pay-${Date.now()}-${formData.phone}`;
 
         const response = await API.post("/api/payments/checkout/initiate", {
@@ -279,9 +331,12 @@ formData.instructions ? `Instructions: ${formData.instructions}` : null,
         return;
       }
 
-      const redirectUrl = `https://api.whatsapp.com/send/?phone=917019436720&text=${encodeURIComponent(message)}&type=phone_number&app_absent=0`;
-      setCheckoutRedirectUrl(redirectUrl);
-      setIsTransitionOpen(true);
+      if (paymentMethod === "upi") {
+        handleStartUpiFlow();
+        return;
+      }
+
+      openWhatsAppWithTransition(message);
     } catch (err) {
       console.log(err);
       alert("Failed to place order");
@@ -317,6 +372,91 @@ formData.instructions ? `Instructions: ${formData.instructions}` : null,
         open={isTransitionOpen}
         onComplete={handleTransitionComplete}
       />
+    );
+  }
+
+  if (showUpiStep) {
+    return (
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          background: "rgba(0,0,0,0.65)",
+          backdropFilter: "blur(8px)",
+          zIndex: 999999,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          padding: "20px"
+        }}
+      >
+        <div
+          style={{
+            width: "100%",
+            maxWidth: "560px",
+            background: "rgba(255,255,255,0.97)",
+            borderRadius: "22px",
+            padding: "24px",
+            boxShadow: "0 25px 60px rgba(0,0,0,0.25)"
+          }}
+        >
+          <h3 style={{ color: "#1d2f66", marginBottom: "10px" }}>Pay with UPI QR</h3>
+          <p style={{ color: "#4d5f8f", marginBottom: "14px", fontSize: "14px" }}>
+            Scan this QR in any UPI app and pay <strong>₹{subtotal}</strong>.
+          </p>
+
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: "14px" }}>
+            <img
+              src={upiQrUrl}
+              alt="UPI Payment QR"
+              style={{ width: "280px", height: "280px", borderRadius: "14px", border: "1px solid #e1e8fb" }}
+            />
+          </div>
+
+          <div style={{ fontSize: "13px", color: "#5f6f98", marginBottom: "14px" }}>
+            UPI ID: <strong>{UPI_ID}</strong>
+          </div>
+
+          <input
+            type="text"
+            value={utrNumber}
+            onChange={(e) => setUtrNumber(e.target.value.trimStart())}
+            placeholder="Enter UTR / Transaction Reference Number"
+            style={{
+              width: "100%",
+              padding: "12px",
+              border: "1px solid #d5ddef",
+              borderRadius: "10px",
+              fontSize: "14px",
+              marginBottom: "14px"
+            }}
+          />
+
+          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+            <button
+              type="button"
+              onClick={() => {
+                window.location.href = upiIntentUrl;
+              }}
+              style={upiBtnPrimary}
+            >
+              Open UPI App
+            </button>
+
+            <button type="button" onClick={handleConfirmUpiPayment} style={upiBtnSecondary}>
+              I Have Paid - Continue
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setShowUpiStep(false)}
+              style={upiBtnGhost}
+            >
+              Back
+            </button>
+          </div>
+        </div>
+      </div>
     );
   }
 
@@ -537,6 +677,40 @@ formData.instructions ? `Instructions: ${formData.instructions}` : null,
             >
               <button
                 type="button"
+                onClick={() => setPaymentMethod("upi")}
+                style={{
+                  position: "relative",
+                  padding: "10px 14px",
+                  borderRadius: "10px",
+                  border: paymentMethod === "upi" ? "2px solid #27187E" : "1px solid #cfd8ea",
+                  background: paymentMethod === "upi" ? "#eef1ff" : "#fff",
+                  color: "#1b2c61",
+                  fontWeight: "600",
+                  cursor: "pointer"
+                }}
+              >
+                UPI QR Payment
+                <span
+                  style={{
+                    position: "absolute",
+                    top: "-8px",
+                    right: "-8px",
+                    padding: "1px 6px",
+                    borderRadius: "999px",
+                    fontSize: "10px",
+                    fontWeight: "800",
+                    background: "#dcfce7",
+                    color: "#166534",
+                    border: "1px solid #86efac",
+                    lineHeight: "1.2"
+                  }}
+                >
+                  Offer
+                </span>
+              </button>
+
+              <button
+                type="button"
                 onClick={() => setPaymentMethod("whatsapp")}
                 style={{
                   padding: "10px 14px",
@@ -554,17 +728,37 @@ formData.instructions ? `Instructions: ${formData.instructions}` : null,
               <button
                 type="button"
                 onClick={() => setPaymentMethod("online")}
+                disabled={!isOnlinePaymentEnabled}
                 style={{
+                  position: "relative",
                   padding: "10px 14px",
                   borderRadius: "10px",
                   border: paymentMethod === "online" ? "2px solid #27187E" : "1px solid #cfd8ea",
                   background: paymentMethod === "online" ? "#eef1ff" : "#fff",
                   color: "#1b2c61",
                   fontWeight: "600",
-                  cursor: "pointer"
+                  cursor: !isOnlinePaymentEnabled ? "not-allowed" : "pointer",
+                  opacity: !isOnlinePaymentEnabled ? 0.55 : 1
                 }}
               >
-                Online Payment
+                <span>Online Payment</span>
+                <span
+                  style={{
+                    position: "absolute",
+                    top: "-8px",
+                    right: "-8px",
+                    padding: "1px 6px",
+                    borderRadius: "999px",
+                    fontSize: "10px",
+                    fontWeight: "800",
+                    background: "#fff3c4",
+                    color: "#8a5a00",
+                    border: "1px solid #f2cf66",
+                    lineHeight: "1.2"
+                  }}
+                >
+                  Offer 5%
+                </span>
               </button>
             </div>
 
@@ -575,8 +769,10 @@ formData.instructions ? `Instructions: ${formData.instructions}` : null,
                 color: "#5a6b96"
               }}
             >
-              Selected: {paymentMethod === "online" ? "Online Payment" : "WhatsApp Checkout"}
+              Selected: {paymentMethod === "online" ? "Online Payment" : paymentMethod === "upi" ? "UPI QR Payment" : "WhatsApp Checkout"}
             </div>
+
+            
           </div>
 
           <div
@@ -610,6 +806,8 @@ formData.instructions ? `Instructions: ${formData.instructions}` : null,
               ? "Processing..."
               : paymentMethod === "online"
               ? "Proceed to Online Payment"
+              : paymentMethod === "upi"
+              ? "Proceed to UPI QR"
               : "Confirm & Order via WhatsApp"}
           </button>
         </form>
@@ -626,5 +824,38 @@ const inputStyle = {
   fontSize: "15px",
   outline: "none",
   boxSizing: "border-box"
+};
+
+const upiBtnPrimary = {
+  flex: "1 1 180px",
+  padding: "12px",
+  border: "none",
+  borderRadius: "10px",
+  background: "#27187E",
+  color: "#fff",
+  fontWeight: "700",
+  cursor: "pointer"
+};
+
+const upiBtnSecondary = {
+  flex: "1 1 220px",
+  padding: "12px",
+  border: "none",
+  borderRadius: "10px",
+  background: "#22a06b",
+  color: "#fff",
+  fontWeight: "700",
+  cursor: "pointer"
+};
+
+const upiBtnGhost = {
+  flex: "1 1 120px",
+  padding: "12px",
+  border: "1px solid #c8d3f2",
+  borderRadius: "10px",
+  background: "#fff",
+  color: "#263a74",
+  fontWeight: "600",
+  cursor: "pointer"
 };
 
