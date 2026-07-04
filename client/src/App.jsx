@@ -1,5 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import FranchiseBrochure from "./pages/FranchiseBrochure";
+import Branches from "./pages/Branches";
+import BranchDetails from "./pages/BranchDetails";
 import desktopVideo from "./assets/background-video.mp4";
 import mobileVideo from "./assets/mobile-background-video.mp4";
 import React, { useState, useEffect } from "react";
@@ -169,6 +171,34 @@ const [homeMascotVideoIndex, setHomeMascotVideoIndex] = useState(0);
     <Route
       path="/franchise-brochure"
       element={<FranchiseBrochure />}
+    />
+
+    <Route
+      path="/branches"
+      element={
+        <div className="app-layout-container subpage-layout">
+          <Header cartCount={cart.reduce((sum, item) => sum + item.quantity, 0)} />
+          <Branches />
+          <Footer />
+          <WhatsAppButton />
+          <CallButton />
+          <EmailButton />
+        </div>
+      }
+    />
+
+    <Route
+      path="/branches/:branchId"
+      element={
+        <div className="app-layout-container subpage-layout">
+          <Header cartCount={cart.reduce((sum, item) => sum + item.quantity, 0)} />
+          <BranchDetails />
+          <Footer />
+          <WhatsAppButton />
+          <CallButton />
+          <EmailButton />
+        </div>
+      }
     />
 
     <Route

@@ -26,7 +26,18 @@ const generateUniqueOrderId = async () => {
 // @access  Public
 router.post('/', async (req, res) => {
   try {
-    const { customer, items, totalAmount } = req.body;
+    const {
+      customer,
+      items,
+      totalAmount,
+      latitude = null,
+      longitude = null,
+      pickupDate = '',
+      pickupTime = '',
+      paymentMethod = '',
+      recommendedBranch = null,
+      selectedBranch = null
+    } = req.body;
 
     if (!customer || !customer.name || !customer.phone || !customer.address) {
       return res.status(400).json({ message: 'Customer details (name, phone, address) are required' });
@@ -43,7 +54,14 @@ router.post('/', async (req, res) => {
       orderId,
       customer,
       items,
-      totalAmount
+      totalAmount,
+      latitude,
+      longitude,
+      pickupDate,
+      pickupTime,
+      paymentMethod,
+      recommendedBranch,
+      selectedBranch
     });
 
     const savedOrder = await order.save();

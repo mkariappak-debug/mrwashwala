@@ -21,7 +21,10 @@ const DATA = {
     ],
 
     Others: [
-      { name: "Carpet (sq ft)", price: 24 }
+      { name: "Carpet (sq ft)", price: 24 },
+      { name: "Toy Cleaning", price: 99 },
+      { name: "Bag Cleaning", price: 79 },
+      { name: "Curtain Cleaning", price: 99 }
     ]
   },
 
@@ -76,7 +79,10 @@ export default function CustomizeSidebar({
       "Sports Shoe": "👟 Sports shoes getting a makeover!",
       "Casual Shoe": "👟 Casual shoes freshening up!",
       "Formal/Leather": "✨ Leather shoes getting polished!",
-      "Boots": "🥾 Boots cleaning in progress!"
+      "Boots": "🥾 Boots cleaning in progress!",
+      "Toy Cleaning": "🧸 Toy cleaning coming up!",
+      "Bag Cleaning": "👜 Bag cleaning in progress!",
+      "Curtain Cleaning": "🪟 Curtains getting a fresh clean!"
     };
 
     return messages[itemName] || `✨ ${itemName} added to cart!`;

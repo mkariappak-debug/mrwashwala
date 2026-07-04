@@ -1,7 +1,12 @@
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import CheckoutTransitionOverlay from "./CheckoutTransitionOverlay";
+import BranchSelector from "./BranchSelector";
+import AddressAutocomplete from "./AddressAutocomplete";
 import API from "../api/api";
+import { branches as branchConfig } from "../config/branches";
+import { rankBranchesByDistance, pickRecommendedBranch, isBranchOpenNow, getBranchStatusLabel } from "../utils/branchLocator";
+import { forwardGeocode } from "../utils/geocode";
 
 const UPI_ID = (import.meta.env.VITE_UPI_ID || "mrwashwala@upi").trim();
 const UPI_PAYEE_NAME = (import.meta.env.VITE_UPI_PAYEE_NAME || "Mr WashWala").trim();
@@ -59,6 +64,171 @@ const [formData, setFormData] = useState({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
   const [locationStatus, setLocationStatus] = useState("");
+
+  // --- Multi-branch recommendation state -----------------------------------
+  const [rankedBranches, setRankedBranches] = useState([]);
+  const [recommendedBranchId, setRecommendedBranchId] = useState(null);
+  const [selectedBranchId, setSelectedBranchId] = useState(null);
+  const lastGeocodedAddressRef = useRef("");
+
+  // The "existing/main" branch shown as the default selection the instant a
+  // customer starts a manual address - first entry in the config, per the
+  // spec's "Existing Branch (Current outlet address)" example.
+  const DEFAULT_BRANCH_ID = branchConfig[0]?.id || null;
+
+  // Tracks which flow produced the coordinates currently in formData, so the
+  // pickup-date/time effect below can tell them apart:
+  //  - "current-location": the existing "Use Current Location" behaviour,
+  //    left completely untouched.
+  //  - "manual": a manually typed/selected address - here the recommendation
+  //    is only ever a suggestion and must never override the customer's
+  //    branch selection.
+  const locationSourceRef = useRef(null);
+
+  // Branch "open now" status must reflect the *scheduled pickup slot*, not
+  // the wall-clock moment the customer happens to be filling the form at.
+  // Previously this used `new Date()` directly, so e.g. filling the form at
+  // 12 AM for a 2 PM pickup made every branch look closed and unselectable,
+  // even though it will clearly be open at pickup time.
+  const getPickupReferenceDate = (data = formData) => {
+    if (!data.pickupDate || !data.pickupTime) return new Date();
+    const [year, month, day] = data.pickupDate.split("-").map(Number);
+    const [hours, minutes] = data.pickupTime.split(":").map(Number);
+    if (![year, month, day, hours, minutes].every(Number.isFinite)) return new Date();
+    const ref = new Date();
+    ref.setFullYear(year, month - 1, day);
+    ref.setHours(hours, minutes, 0, 0);
+    return ref;
+  };
+
+  // Runs the Haversine comparison against every configured branch and picks
+  // the nearest OPEN (at the scheduled pickup time) branch as the
+  // recommendation. Called only after we have real coordinates (current
+  // location fix, or a successful address geocode) - never on every
+  // keystroke.
+  const resolveBranchesFromCoords = (latitude, longitude) => {
+    const referenceDate = getPickupReferenceDate();
+    const ranked = rankBranchesByDistance(branchConfig, latitude, longitude, referenceDate);
+    const recommended = pickRecommendedBranch(ranked);
+
+    setRankedBranches(ranked);
+    setRecommendedBranchId(recommended ? recommended.id : null);
+    setSelectedBranchId(recommended ? recommended.id : null);
+  };
+
+  // Builds the full branch list with no distance info (unknown until we have
+  // coordinates). Used to render the branch selector INSTANTLY for manual
+  // address entry, before any geocoding has even started.
+  const buildBranchListWithoutDistance = () => {
+    const referenceDate = getPickupReferenceDate();
+    return branchConfig
+      .filter((branch) => branch.isActive !== false)
+      .map((branch) => ({
+        ...branch,
+        distanceKm: NaN, // unknown - BranchSelector hides the distance chip for non-finite values
+        isOpenNow: isBranchOpenNow(branch, referenceDate),
+        statusLabel: getBranchStatusLabel(branch, referenceDate)
+      }));
+  };
+
+  // Re-labels open/closed status on whatever branch list is already showing,
+  // without touching distances, the recommendation, or the customer's
+  // selection. Used when only the pickup date/time changes.
+  const refreshBranchStatuses = () => {
+    const referenceDate = getPickupReferenceDate();
+    setRankedBranches((prev) =>
+      prev.map((branch) => ({
+        ...branch,
+        isOpenNow: isBranchOpenNow(branch, referenceDate),
+        statusLabel: getBranchStatusLabel(branch, referenceDate)
+      }))
+    );
+  };
+
+  // Called the instant the customer focuses or starts typing a manual
+  // address. Shows every branch right away - defaulting the selection to the
+  // existing/main branch - so they can pick one immediately, with zero
+  // waiting on geocoding. Never overwrites a list/selection that's already
+  // on screen.
+  const showManualBranchSelectorImmediately = () => {
+    setRankedBranches((prev) => (prev.length ? prev : buildBranchListWithoutDistance()));
+    setSelectedBranchId((prev) => prev || DEFAULT_BRANCH_ID);
+  };
+
+  // Applies the result of a *background* geocode for a manually entered
+  // address: refreshes distances and sets the recommendation, but - unlike
+  // `resolveBranchesFromCoords` above (which backs "Use Current Location" and
+  // is left untouched) - it never overrides the customer's own branch
+  // selection. The recommendation is purely an optional suggestion.
+  // For manual addresses, we recommend the nearest branch regardless of
+  // open/closed status (user can select any branch anyway).
+  const applyBackgroundRecommendation = (latitude, longitude) => {
+    const referenceDate = getPickupReferenceDate();
+    const ranked = rankBranchesByDistance(branchConfig, latitude, longitude, referenceDate);
+    
+    // For manual address flow, recommend the nearest branch (first in ranked list)
+    // regardless of open/closed status, since user can select any branch anyway
+    const recommended = ranked.length > 0 ? ranked[0] : null;
+
+    setRankedBranches(ranked);
+    setRecommendedBranchId(recommended ? recommended.id : null);
+    setSelectedBranchId((prev) => prev || (recommended ? recommended.id : DEFAULT_BRANCH_ID));
+  };
+
+  // Debounced-on-blur geocoding for manually typed addresses - fires only
+  // after the customer leaves the field, never on every keystroke, and never
+  // shows a spinner or blocks the branch selector that's already visible.
+  const handleAddressBlur = async () => {
+    const address = formData.address.trim();
+    if (!address || address === lastGeocodedAddressRef.current) return;
+    if (formData.latitude && formData.longitude && formData.locationLink) {
+      // Coordinates already came from "Use Current Location"; skip re-geocoding.
+      return;
+    }
+
+    // The branch selector is already showing (from focus/typing) with a
+    // default selection - this call only runs silently in the background.
+    try {
+      const coords = await forwardGeocode(address);
+      lastGeocodedAddressRef.current = address;
+
+      if (coords) {
+        locationSourceRef.current = "manual";
+        setFormData((prev) => ({
+          ...prev,
+          latitude: coords.latitude.toString(),
+          longitude: coords.longitude.toString(),
+          locationLink: `https://www.google.com/maps?q=${coords.latitude},${coords.longitude}`
+        }));
+        applyBackgroundRecommendation(coords.latitude, coords.longitude);
+      }
+      // Geocoding failed to find a match: show nothing - no error, no
+      // warning, no recommendation. The customer keeps using whichever
+      // branch they already have selected from the list shown above.
+    } catch (error) {
+      console.error("Forward geocoding error:", error);
+      // Silent failure per spec - the customer is never interrupted.
+    }
+  };
+
+  // Fires when the customer picks a suggestion from the autocomplete
+  // dropdown. We already have exact, confirmed coordinates from Nominatim's
+  // search result here, so there's no free-text parsing/guessing step at
+  // all. Still treated as a background recommendation, not an override - the
+  // customer's own branch choice always wins.
+  const handleAddressSuggestionSelect = (suggestion) => {
+    lastGeocodedAddressRef.current = suggestion.displayName;
+    locationSourceRef.current = "manual";
+    setFormData((prev) => ({
+      ...prev,
+      address: suggestion.displayName,
+      latitude: suggestion.latitude.toString(),
+      longitude: suggestion.longitude.toString(),
+      locationLink: `https://www.google.com/maps?q=${suggestion.latitude},${suggestion.longitude}`
+    }));
+    applyBackgroundRecommendation(suggestion.latitude, suggestion.longitude);
+  };
+
   const [isTransitionOpen, setIsTransitionOpen] = useState(false);
   const [checkoutRedirectUrl, setCheckoutRedirectUrl] = useState("");
     const [paymentMethod, setPaymentMethod] = useState("upi");
@@ -91,6 +261,11 @@ const [formData, setFormData] = useState({
       setUpiIntentUrl("");
       setUpiQrUrl("");
       setUtrNumber("");
+      setRankedBranches([]);
+      setRecommendedBranchId(null);
+      setSelectedBranchId(null);
+      lastGeocodedAddressRef.current = "";
+      locationSourceRef.current = null;
       return;
     }
 
@@ -107,6 +282,36 @@ const [formData, setFormData] = useState({
     }));
   }, [open]);
 
+  // Re-evaluate branch open/closed status whenever the customer changes the
+  // pickup date or time - e.g. they picked "today" while every branch showed
+  // closed for the current moment, then moved the slot to this afternoon; the
+  // branch list should reflect that without requiring them to retype the
+  // address.
+  useEffect(() => {
+    if (!open) return;
+
+    const lat = parseFloat(formData.latitude);
+    const lng = parseFloat(formData.longitude);
+
+    if (Number.isFinite(lat) && Number.isFinite(lng)) {
+      if (locationSourceRef.current === "current-location") {
+        // "Use Current Location" flow - left completely unchanged.
+        resolveBranchesFromCoords(lat, lng);
+      } else {
+        // Manual address flow - refresh distances/recommendation only, never
+        // touch the customer's own branch selection.
+        applyBackgroundRecommendation(lat, lng);
+      }
+    } else if (rankedBranches.length > 0) {
+      // No coordinates yet (address not geocoded, or geocoding failed) -
+      // just refresh open/closed labels against the new pickup slot.
+      refreshBranchStatuses();
+    }
+    // Only the pickup slot should re-trigger this; coordinate changes are
+    // already handled directly by the functions that set them.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.pickupDate, formData.pickupTime, open]);
+
   if (!open) return null;
 
   // Get today's date in YYYY-MM-DD format for minimum date picker value
@@ -116,6 +321,7 @@ const [formData, setFormData] = useState({
 
   
   const handleUseCurrentLocation = async () => {
+    locationSourceRef.current = "current-location";
     setIsLocating(true);
     setLocationStatus("Fetching location...");
 
@@ -168,6 +374,8 @@ const [formData, setFormData] = useState({
             longitude: longitude.toString(),
             locationLink: googleMapsLink
           });
+          lastGeocodedAddressRef.current = address;
+          resolveBranchesFromCoords(latitude, longitude);
 
           setLocationStatus("✓ Location captured successfully");
         } catch (error) {
@@ -182,6 +390,7 @@ const [formData, setFormData] = useState({
             longitude: longitude.toString(),
             locationLink: googleMapsLink
           });
+          resolveBranchesFromCoords(latitude, longitude);
 
           setLocationStatus("✓ Location captured (address lookup not available)");
         } finally {
@@ -201,6 +410,9 @@ const [formData, setFormData] = useState({
     0
   );
 
+  const selectedBranch =
+    rankedBranches.find((b) => b.id === selectedBranchId) || null;
+
   const buildWhatsAppMessage = (paymentInfo = null) => {
     const itemsText = cart
       .map(
@@ -219,6 +431,7 @@ const [formData, setFormData] = useState({
       `Pickup Time: ${formData.pickupTime}`,
       `Pickup Address: ${formData.address}`,
       formData.locationLink ? `Google Maps Location: ${formData.locationLink}` : null,
+      selectedBranch ? `Pickup Branch: ${selectedBranch.name}` : null,
       formData.instructions ? `Instructions: ${formData.instructions}` : null,
       paymentInfo ? "" : null,
       paymentInfo ? "Payment Details:" : null,
@@ -291,6 +504,36 @@ if (!/^\d{10}$/.test(formData.phone)) {
     try {
       const message = buildWhatsAppMessage();
 
+      // Best-effort persistence of the order (including branch recommendation
+      // vs. the customer's final choice) so staff can see which outlet should
+      // process it. This never blocks WhatsApp / UPI checkout if it fails.
+      const recommendedBranch = rankedBranches.find(
+        (b) => b.id === recommendedBranchId
+      );
+      API.post("/api/orders", {
+        customer: {
+          name: formData.name,
+          phone: formData.phone,
+          address: formData.address,
+          instructions: formData.instructions || ""
+        },
+        items: cart,
+        totalAmount: subtotal,
+        latitude: formData.latitude || null,
+        longitude: formData.longitude || null,
+        pickupDate: formData.pickupDate,
+        pickupTime: formData.pickupTime,
+        paymentMethod,
+        recommendedBranch: recommendedBranch
+          ? { id: recommendedBranch.id, name: recommendedBranch.name }
+          : null,
+        selectedBranch: selectedBranch
+          ? { id: selectedBranch.id, name: selectedBranch.name }
+          : null
+      }).catch((err) => {
+        console.log("Order persistence skipped:", err?.message || err);
+      });
+
       if (paymentMethod === "online") {
         if (!isOnlinePaymentEnabled) {
           alert("Online Payment Gateway is coming soon. Please use WhatsApp or UPI QR payment for now.");
@@ -314,7 +557,9 @@ if (!/^\d{10}$/.test(formData.phone)) {
             pickupDate: formData.pickupDate,
             pickupTime: formData.pickupTime,
             locationLink: formData.locationLink || "",
-            flow: "online"
+            flow: "online",
+            recommendedBranch: recommendedBranch ? recommendedBranch.name : "",
+            selectedBranch: selectedBranch ? selectedBranch.name : ""
           }
         });
 
@@ -577,18 +822,42 @@ if (!/^\d{10}$/.test(formData.phone)) {
   required
   style={inputStyle}
 />
-            <textarea
+            <AddressAutocomplete
               placeholder="Pickup Address"
               value={formData.address}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  address: e.target.value
-                })
-              }
+              onFocus={() => {
+                // Show the branch selector the INSTANT the customer focuses
+                // the manual address field - no waiting on geocoding.
+                if (locationSourceRef.current !== "current-location") {
+                  showManualBranchSelectorImmediately();
+                }
+              }}
+              onChange={(text) => {
+                locationSourceRef.current = "manual";
+                setFormData((prev) => ({
+                  ...prev,
+                  address: text,
+                  // Address was edited by hand - old lat/lng no longer trustworthy
+                  // until either a suggestion is picked or blur re-geocodes it.
+                  latitude: "",
+                  longitude: "",
+                  locationLink: ""
+                }));
+                // The previously shown RECOMMENDATION belongs to the OLD
+                // address text - drop it immediately so a stale "nearest
+                // branch" is never shown for an address the customer has
+                // since changed. The branch selector itself, and the
+                // customer's current selection, stay exactly as they were -
+                // they're never blocked or reset while typing.
+                lastGeocodedAddressRef.current = "";
+                setRecommendedBranchId(null);
+                setLocationStatus("");
+                showManualBranchSelectorImmediately();
+              }}
+              onSelectSuggestion={handleAddressSuggestionSelect}
+              onManualBlur={handleAddressBlur}
               style={{
                 ...inputStyle,
-                gridColumn: "1 / -1",
                 minHeight: "100px",
                 marginBottom: "8px"
               }}
@@ -649,6 +918,13 @@ if (!/^\d{10}$/.test(formData.phone)) {
                 {locationStatus}
               </div>
             )}
+
+            <BranchSelector
+              rankedBranches={rankedBranches}
+              recommendedBranchId={recommendedBranchId}
+              selectedBranchId={selectedBranchId}
+              onSelectBranch={setSelectedBranchId}
+            />
 
             <textarea
               placeholder="Special Instructions"

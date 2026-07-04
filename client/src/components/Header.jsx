@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import logo from '../assets/logo.png';
 
 export default function Header({ cartCount }) {
@@ -8,24 +9,33 @@ export default function Header({ cartCount }) {
   return (
     <nav className="navbar sticky-nav">
       <div className="nav-container">
-        <a href="#home" className="nav-logo">
+        <a href="/#home" className="nav-logo">
           <img src={logo} alt="Mr. Wash Wala Logo" className="logo-img" />
         </a>
 
         <ul className={`nav-menu ${isMenuOpen ? 'active' : ''}`}>
           <li>
-            <a href="#home" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+            <a href="/#home" className="nav-link" onClick={() => setIsMenuOpen(false)}>
               Home
             </a>
           </li>
           <li>
-            <a href="#pricing" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+            <a href="/#pricing" className="nav-link" onClick={() => setIsMenuOpen(false)}>
               Services
             </a>
           </li>
           <li>
+            <Link
+              to="/branches"
+              className="nav-link"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Our Branches
+            </Link>
+          </li>
+          <li>
   <a
-  href="#franchise"
+  href="/#franchise"
   className="nav-link"
   onClick={() => setIsMenuOpen(false)}
 >
@@ -33,7 +43,7 @@ export default function Header({ cartCount }) {
 </a>
 </li><li>
             <a
-              href="#cart"
+              href="/#cart"
               className="nav-link nav-icon-only"
               onClick={() => setIsMenuOpen(false)}
               aria-label="Cart"
@@ -53,7 +63,7 @@ export default function Header({ cartCount }) {
           </li>
           <li>
             <a
-              href="#contact"
+              href="/#contact"
               className="nav-link nav-icon-only"
               onClick={() => setIsMenuOpen(false)}
               aria-label="Contact"
@@ -69,7 +79,7 @@ export default function Header({ cartCount }) {
           </li>
           <li>
             <a
-              href="#address"
+              href="/#address"
               className="nav-link nav-icon-only"
               onClick={() => setIsMenuOpen(false)}
               aria-label="Address"

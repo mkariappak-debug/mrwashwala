@@ -1,6 +1,51 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import { branches } from '../config/branches';
+import BranchesMap from './BranchesMap';
+
+const BRANCH_PIN_COLORS = ['#27187E', '#0E9F6E'];
 
 export default function Contact() {
+  const activeBranches = branches.filter((b) => b.isActive);
+  // First branch (Vijayanagar) stays in the left column with the contact
+  // methods; any remaining branches (Bhogadi) move under the map on the
+  // right so both columns end up roughly the same height.
+  const [primaryBranch, ...otherBranches] = activeBranches;
+
+  // Same branch-card markup used in both columns — kept identical to the
+  // original card so styling/animations/content are unchanged, just reused
+  // to avoid duplicating the JSX in two places.
+  const renderBranchCard = (branch, delay) => (
+    <div
+      className="contact-card"
+      data-aos="fade-right"
+      data-aos-delay={delay}
+      key={branch.id}
+    >
+      <h3>📍 {branch.shortName}</h3>
+      <p>
+        {branch.address.line1}
+        <br />
+        {branch.address.line2}
+        <br />
+        {branch.address.line3}
+      </p>
+      <div className="contact-label">Open everyday 9 AM - 8 PM</div>
+      <Link to={`/branches/${branch.id}`} className="contact-branch-link">
+        View branch details →
+      </Link>
+    </div>
+  );
+
+  // Builds a Google Maps embed URL (no API key required) with a labeled
+  // pin for every active branch, so the map always reflects branches.js.
+  const mapQuery = activeBranches
+    .map(
+      (b) => `${b.latitude},${b.longitude}(${encodeURIComponent(b.shortName)})`
+    )
+    .join('|');
+  const mapSrc = `https://maps.google.com/maps?q=${mapQuery}&t=&z=12&ie=UTF8&iwloc=&output=embed`;
+
   return (
     <section id="contact" className="contact-section">
       <div className="container">
@@ -16,86 +61,101 @@ export default function Contact() {
 
         <div className="contact-wrapper">
           <div className="contact-info">
-            {/* Phone */}
-            <div className="contact-card" data-aos="fade-right">
-              <h3>📞 Phone</h3>
-              <p>
-                <a href="tel:7019436720">+91 7019436720</a>
-              </p>
-              <div className="contact-label">Available everyday</div>
-            </div>
-
-            {/* WhatsApp */}
-            <div
-              className="contact-card whatsapp-card"
-              data-aos="fade-right"
-              data-aos-delay="100"
-            >
-              <h3>💬 WhatsApp</h3>
-              <p>
-                <a
-                  href="https://wa.me/7019436720?text=Hi%20Mr.%20WashWala%2C%20I%20want%20to%20know%20about%20your%20services"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Chat with us
-                </a>
-              </p>
-              <div className="contact-label">
-                Quick responses guaranteed
+            {/* Contact Methods Row */}
+            <div className="contact-methods">
+              {/* Phone */}
+              <div className="contact-card" data-aos="fade-right">
+                <h3>📞 Phone</h3>
+                <p>
+                  <a href="tel:7019436720">+91 7019436720</a>
+                </p>
+                <div className="contact-label">Available everyday</div>
               </div>
-            </div>
 
-            {/* Email */}
-            <div
-              className="contact-card"
-              data-aos="fade-right"
-              data-aos-delay="200"
-            >
-              <h3>✉️ Email</h3>
-              <p>
-                <a href="mailto:mrwashwala@gmail.com">
-                  mrwashwala@gmail.com
-                </a>
-              </p>
-              <div className="contact-label">
-                We'll reply within 24 hours
+              {/* WhatsApp */}
+              <div
+                className="contact-card whatsapp-card"
+                data-aos="fade-right"
+                data-aos-delay="100"
+              >
+                <h3>💬 WhatsApp</h3>
+                <p>
+                  <a
+                    href="https://wa.me/7019436720?text=Hi%20Mr.%20WashWala%2C%20I%20want%20to%20know%20about%20your%20services"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Chat with us
+                  </a>
+                </p>
+                <div className="contact-label">
+                  Quick responses guaranteed
+                </div>
+              </div>
+
+              {/* Email */}
+              <div
+                className="contact-card"
+                data-aos="fade-right"
+                data-aos-delay="200"
+              >
+                <h3>✉️ Email</h3>
+                <p>
+                  <a href="mailto:mrwashwala@gmail.com">
+                    mrwashwala@gmail.com
+                  </a>
+                </p>
+                <div className="contact-label">
+                  We'll reply within 24 hours
+                </div>
               </div>
             </div>
 
             {/* Invisible scroll target for navbar Address link */}
             <div id="address"></div>
 
-            {/* Address */}
-            <div
-              className="contact-card"
-              data-aos="fade-right"
-              data-aos-delay="300"
-            >
-              <h3>📍 Address</h3>
-              <p>
-                12 Vani Vilas Layout
-                <br />
-                Vijaynagar, Mysuru
-                <br />
-                Karnataka - 570017
-              </p>
-              <div className="contact-label">
-                Open everyday 9 AM - 8 PM
-              </div>
-            </div>
+            {/* Primary Branch Address (Vijayanagar) */}
+            {primaryBranch && renderBranchCard(primaryBranch, 300)}
           </div>
 
-          {/* Google Map */}
-          <div className="map-container" data-aos="fade-left">
-            <iframe
-              title="Mr. WashWala location"
-              src="https://maps.google.com/maps?q=12%20Vani%20Vilas%20Layout%20Mysuru%20Vijaynagar&t=&z=15&ie=UTF8&iwloc=&output=embed"
-              width="100%"
-              height="100%"
-              style={{ border: 0, display: 'block' }}
-              loading="lazy"
-            />
+          {/* Right Column: Map */}
+          <div className="contact-right-column">
+            <div className="map-premium-wrapper" data-aos="fade-left">
+              <div className="map-container">
+                <BranchesMap branches={activeBranches} fallbackSrc={mapSrc} />
+              </div>
+
+              <div className="map-legend">
+                {activeBranches.map((branch, index) => (
+                  <a
+                    className="map-legend-item"
+                    key={branch.id}
+                    href={`https://www.google.com/maps/dir/?api=1&destination=${branch.latitude},${branch.longitude}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <span
+                      className="map-legend-dot"
+                      style={{
+                        background:
+                          BRANCH_PIN_COLORS[index % BRANCH_PIN_COLORS.length],
+                      }}
+                    />
+                    <span className="map-legend-text">
+                      {branch.shortName}
+                      <small>Get directions →</small>
+                    </span>
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            {/* Remaining Branch Address(es) (Bhogadi) — placed directly
+                beneath the map so this column's height matches the left
+                column instead of leaving empty space below the map. */}
+            {otherBranches.map((branch, index) =>
+              renderBranchCard(branch, 300 + index * 100)
+            )}
           </div>
         </div>
       </div>

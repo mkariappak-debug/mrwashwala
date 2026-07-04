@@ -54,6 +54,40 @@ const orderSchema = new mongoose.Schema(
       type: Number,
       required: true
     },
+    latitude: {
+      type: Number,
+      default: null
+    },
+    longitude: {
+      type: Number,
+      default: null
+    },
+    pickupDate: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    pickupTime: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    paymentMethod: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    // The branch our system automatically recommended based on distance.
+    recommendedBranch: {
+      id: { type: String, default: null },
+      name: { type: String, default: null }
+    },
+    // The branch the customer actually confirmed (may differ from recommendedBranch
+    // if they manually overrode the suggestion).
+    selectedBranch: {
+      id: { type: String, default: null },
+      name: { type: String, default: null }
+    },
     status: {
       type: String,
       enum: ['Pending', 'Picked Up', 'In Process', 'Out for Delivery', 'Delivered', 'Cancelled'],

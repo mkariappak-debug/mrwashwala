@@ -1,16 +1,11 @@
-
-
 import React, { useState, useEffect } from 'react';
 import API from '../api/api';
 
 export default function Testimonials() {
   const [allReviews, setAllReviews] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const REVIEWS_PER_BATCH = 5;
-  const ROTATION_INTERVAL = 8000; // 8 seconds
+  const [isHovered, setIsHovered] = useState(false);
 
   // Fetch reviews from API
   useEffect(() => {
@@ -37,40 +32,6 @@ export default function Testimonials() {
 
     fetchReviews();
   }, []);
-
-  // Auto-rotate reviews every 8 seconds
-  useEffect(() => {
-    if (allReviews.length === 0) return;
-
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => {
-        const nextIndex = prevIndex + REVIEWS_PER_BATCH;
-        if (nextIndex >= allReviews.length) {
-          return 0;
-        }
-        return nextIndex;
-      });
-    }, ROTATION_INTERVAL);
-
-    return () => clearInterval(interval);
-  }, [allReviews.length]);
-
-  // Get current batch of reviews
-  const getCurrentReviews = () => {
-    if (allReviews.length <= REVIEWS_PER_BATCH) {
-      return allReviews;
-    }
-
-    const endIndex = currentIndex + REVIEWS_PER_BATCH;
-
-    if (endIndex > allReviews.length) {
-      const remaining = allReviews.slice(currentIndex);
-      const needed = REVIEWS_PER_BATCH - remaining.length;
-      return [...remaining, ...allReviews.slice(0, needed)];
-    }
-
-    return allReviews.slice(currentIndex, endIndex);
-  };
 
   // Truncate long review text
   const truncateText = (text, maxLength = 150) => {
@@ -99,8 +60,6 @@ export default function Testimonials() {
     return `${years} year${years > 1 ? 's' : ''} ago`;
   };
 
-  const currentReviews = getCurrentReviews();
-
   if (loading) {
     return (
       <section className="testimonials-section">
@@ -111,7 +70,7 @@ export default function Testimonials() {
           <p className="section-subtitle white-bg-subtitle">
             Real feedback from our premium service subscribers
           </p>
-          <div className="testimonials-carousel">
+          <div className="testimonials-carousel-wrapper">
             <div className="loading-message">Loading reviews...</div>
           </div>
         </div>
@@ -129,7 +88,7 @@ export default function Testimonials() {
           <p className="section-subtitle white-bg-subtitle">
             Real feedback from our premium service subscribers
           </p>
-          <div className="testimonials-carousel">
+          <div className="testimonials-carousel-wrapper">
             <div className="error-message">
               {error || 'No reviews available at the moment'}
             </div>
@@ -138,6 +97,10 @@ export default function Testimonials() {
       </section>
     );
   }
+
+  // Duplicate the review list so the marquee can loop seamlessly at -50%,
+  // exactly like the "Our Work Speaks for Itself" gallery carousel.
+  const trackReviews = [...allReviews, ...allReviews];
 
   return (
     <section className="testimonials-section">
@@ -149,66 +112,61 @@ export default function Testimonials() {
           Real feedback from our premium service subscribers
         </p>
 
-        <div className="testimonials-carousel">
-          {currentReviews.map((review, index) => (
-            <div
-              key={`${review._id}-${currentIndex}-${index}`}
-              className="testimonial-card"
-              data-aos="zoom-in"
-              data-aos-delay={index * 100}
-            >
-              {/* Review Header */}
-              <div className="review-header">
-                <div className="reviewer-info">
-                  {review.profilePhoto ? (
-                    <img
-                      src={review.profilePhoto}
-                      alt={review.author}
-                      className="reviewer-avatar"
-                    />
-                  ) : (
-                    <div className="reviewer-avatar-placeholder">
-                      {review.author.charAt(0).toUpperCase()}
-                    </div>
-                  )}
+        <div
+          className="testimonials-carousel-wrapper"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <div className="testimonials-fade-left" />
 
-                  <div className="reviewer-details">
-                    <h4 className="reviewer-name">
-                      {review.author}
-                    </h4>
-                    <p className="review-date">
-                      {formatDate(review.reviewDate)}
-                    </p>
+          <div
+            className={`testimonials-carousel ${
+              isHovered ? 'paused' : 'scrolling'
+            }`}
+          >
+            {trackReviews.map((review, index) => (
+              <div
+                key={`${review._id}-${index}`}
+                className="testimonial-card"
+              >
+                {/* Review Header */}
+                <div className="review-header">
+                  <div className="reviewer-info">
+                    {review.profilePhoto ? (
+                      <img
+                        src={review.profilePhoto}
+                        alt={review.author}
+                        className="reviewer-avatar"
+                      />
+                    ) : (
+                      <div className="reviewer-avatar-placeholder">
+                        {review.author.charAt(0).toUpperCase()}
+                      </div>
+                    )}
+
+                    <div className="reviewer-details">
+                      <h4 className="reviewer-name">{review.author}</h4>
+                      <p className="review-date">
+                        {formatDate(review.reviewDate)}
+                      </p>
+                    </div>
                   </div>
                 </div>
+
+                {/* Star Rating */}
+                <div className="stars">{'★'.repeat(review.rating)}</div>
+
+                {/* Review Text */}
+                <p className="testimonial-text">
+                  {truncateText(review.text)}
+                </p>
               </div>
-
-              {/* Star Rating */}
-              <div className="stars">
-                {'★'.repeat(review.rating)}
-              </div>
-
-              {/* Review Text */}
-              <p className="testimonial-text">
-                {truncateText(review.text)}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        {/* Review Counter */}
-        {allReviews.length > REVIEWS_PER_BATCH && (
-          <div className="review-counter">
-            Showing {currentIndex + 1} -{' '}
-            {Math.min(
-              currentIndex + REVIEWS_PER_BATCH,
-              allReviews.length
-            )}{' '}
-            of {allReviews.length} reviews
+            ))}
           </div>
-        )}
+
+          <div className="testimonials-fade-right" />
+        </div>
       </div>
     </section>
   );
 }
-

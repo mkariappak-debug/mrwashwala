@@ -3,46 +3,25 @@ import React from 'react';
 export default function Footer() {
   return (
     <footer className="footer">
-      <div className="wave-container" aria-hidden="true">
-        <svg
-          className="waves"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 24 150 28"
-          preserveAspectRatio="none"
-          shapeRendering="auto"
-          style={{ width: '100%', height: '100%', display: 'block' }}
-        >
-          <defs>
-            <path
-              id="gentle-wave"
-              d="M-160 44c30 0 58-18 88-18s58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z"
-            />
-          </defs>
-          <g className="parallax">
-            <use href="#gentle-wave" x="48" y="0" fill="rgba(255,255,255,0.7)" />
-            <use href="#gentle-wave" x="48" y="3" fill="rgba(255,255,255,0.5)" />
-            <use href="#gentle-wave" x="48" y="5" fill="rgba(255,255,255,0.3)" />
-            <use href="#gentle-wave" x="48" y="7" fill="#fff" />
-          </g>
-        </svg>
-      </div>
-
       <div className="footer-content container">
 
         <div className="footer-section">
           <h4 style={{ color: '#fff' }}>Quick Links</h4>
           <ul>
             <li>
-              <a href="#home">Home</a>
+              <a href="/#home">Home</a>
             </li>
             <li>
-              <a href="#pricing">Services</a>
+              <a href="/#pricing">Services</a>
             </li>
             <li>
-              <a href="#cart">Cart</a>
+              <a href="/branches">Our Branches</a>
             </li>
             <li>
-              <a href="#contact">Contact</a>
+              <a href="/#cart">Cart</a>
+            </li>
+            <li>
+              <a href="/#contact">Contact</a>
             </li>
           </ul>
         </div>
@@ -61,6 +40,12 @@ export default function Footer() {
             </a>
           </div>
         </div>
+      </div>
+
+      <div className="footer-divider" aria-hidden="true" />
+
+      <div className="footer-bg-text" aria-hidden="true">
+        <span>Mr.WashWala</span>
       </div>
 
       <div className="footer-bottom container">

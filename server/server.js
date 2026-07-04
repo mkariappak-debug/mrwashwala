@@ -1,4 +1,5 @@
 import express from 'express';
+import path from 'path';
 import dotenv from 'dotenv';
 import cors from 'cors';
 
@@ -13,8 +14,12 @@ import paymentRoutes from './routes/paymentRoutes.js';
 
 // Load environment variables
 
+const envPath = path.resolve(process.cwd(), 'config', '.env');
+dotenv.config({ path: envPath });
+
 dotenv.config();
 
+console.log('Using env file:', envPath);
 console.log("SERVER EMAIL_USER =", process.env.EMAIL_USER);
 console.log("SERVER EMAIL_PASS =", process.env.EMAIL_PASS);
 
