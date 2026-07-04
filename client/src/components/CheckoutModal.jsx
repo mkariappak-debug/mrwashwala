@@ -8,7 +8,7 @@ import { branches as branchConfig } from "../config/branches";
 import { rankBranchesByDistance, pickRecommendedBranch, isBranchOpenNow, getBranchStatusLabel } from "../utils/branchLocator";
 import { forwardGeocode } from "../utils/geocode";
 
-const UPI_ID = (import.meta.env.VITE_UPI_ID || "mrwashwala@upi").trim();
+const UPI_ID = (import.meta.env.VITE_UPI_ID || "9008433284@ybl").trim();
 const UPI_PAYEE_NAME = (import.meta.env.VITE_UPI_PAYEE_NAME || "Mr WashWala").trim();
 
 export default function CheckoutModal({

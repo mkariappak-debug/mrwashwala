@@ -19,13 +19,7 @@ export default function Footer() {
               <Link to="/branches">Our Branches</Link>
             </li>
             <li>
-              <Link to="/services">Cart</Link>
-            </li>
-            <li>
               <Link to="/contact">Contact</Link>
-            </li>
-            <li>
-              <Link to="/contact#address">Address</Link>
             </li>
           </ul>
         </div>
