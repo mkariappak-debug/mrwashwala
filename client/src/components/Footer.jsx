@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 export default function Footer() {
   return (
@@ -9,19 +10,22 @@ export default function Footer() {
           <h4 style={{ color: '#fff' }}>Quick Links</h4>
           <ul>
             <li>
-              <a href="/#home">Home</a>
+              <Link to="/home">Home</Link>
             </li>
             <li>
-              <a href="/#pricing">Services</a>
+              <Link to="/services">Services</Link>
             </li>
             <li>
-              <a href="/branches">Our Branches</a>
+              <Link to="/branches">Our Branches</Link>
             </li>
             <li>
-              <a href="/#cart">Cart</a>
+              <Link to="/services">Cart</Link>
             </li>
             <li>
-              <a href="/#contact">Contact</a>
+              <Link to="/contact">Contact</Link>
+            </li>
+            <li>
+              <Link to="/contact#address">Address</Link>
             </li>
           </ul>
         </div>

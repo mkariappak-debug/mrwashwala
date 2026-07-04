@@ -14,7 +14,7 @@ export default function Cart({ cart, onUpdateQuantity, onRemoveItem, onCheckout 
             {cart.length === 0 ? (
               <div className="empty-cart">
                 <p>Your cart is empty</p>
-                <span className="empty-cart-subtitle">Add services from our list above to get started</span>
+                <span className="empty-cart-subtitle">Add services from our list below to get started</span>
               </div>
             ) : (
               <div className="cart-items">

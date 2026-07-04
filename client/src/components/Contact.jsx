@@ -1,11 +1,12 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { branches } from '../config/branches';
 import BranchesMap from './BranchesMap';
 
 const BRANCH_PIN_COLORS = ['#27187E', '#0E9F6E'];
 
 export default function Contact() {
+  const location = useLocation();
   const activeBranches = branches.filter((b) => b.isActive);
   // First branch (Vijayanagar) stays in the left column with the contact
   // methods; any remaining branches (Bhogadi) move under the map on the
@@ -45,6 +46,22 @@ export default function Contact() {
     )
     .join('|');
   const mapSrc = `https://maps.google.com/maps?q=${mapQuery}&t=&z=12&ie=UTF8&iwloc=&output=embed`;
+
+  useEffect(() => {
+    if (location.hash !== '#address') {
+      return;
+    }
+
+    const target = document.getElementById('address');
+    if (!target) {
+      return;
+    }
+
+    // Keep section visible below fixed navbar.
+    const navOffset = 96;
+    const targetY = target.getBoundingClientRect().top + window.scrollY - navOffset;
+    window.scrollTo({ top: targetY, behavior: 'smooth' });
+  }, [location.hash]);
 
   return (
     <section id="contact" className="contact-section">
@@ -111,8 +128,9 @@ export default function Contact() {
               </div>
             </div>
 
-            {/* Invisible scroll target for navbar Address link */}
-            <div id="address"></div>
+            <h3 id="address" className="contact-subsection-title">
+              Branch Addresses
+            </h3>
 
             {/* Primary Branch Address (Vijayanagar) */}
             {primaryBranch && renderBranchCard(primaryBranch, 300)}
