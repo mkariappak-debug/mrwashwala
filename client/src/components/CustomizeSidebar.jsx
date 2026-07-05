@@ -22,9 +22,9 @@ const DATA = {
 
     Others: [
       { name: "Carpet (sq ft)", price: 24 },
-      { name: "Toy Cleaning", price: 99 },
-      { name: "Bag Cleaning", price: 79 },
-      { name: "Curtain Cleaning", price: 99 }
+      { name: "Toy Cleaning", price: 399 },
+      { name: "Bag Cleaning", price: 199 },
+      { name: "Curtain Cleaning(sq ft)", price: 39 }
     ]
   },
 

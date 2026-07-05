@@ -1,7 +1,7 @@
 export default function CallButton() {
   return (
     <a
-      href="tel:7019436720"
+      href="tel:9035999271"
       className="call-float"
       title="Call us"
     >

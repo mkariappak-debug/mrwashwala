@@ -52,8 +52,8 @@ export const branches = [
     // Approximate coordinates for Vani Vilas Layout, Vijaynagar, Mysuru.
     latitude: 12.3192,
     longitude: 76.6172,
-    phone: SHARED_BUSINESS_INFO.phone,
-    whatsapp: SHARED_BUSINESS_INFO.whatsapp,
+    phone: "9035999271",
+    whatsapp: "919035999271",
     email: SHARED_BUSINESS_INFO.email,
     isActive: true,
     businessHours: DEFAULT_BUSINESS_HOURS

@@ -41,7 +41,7 @@ export default function Hero({ onBookPickup }) {
           </button>
 
           <a
-            href="https://wa.me/917019436720?text=Hi%20Mr.%20WashWala%2C%20I%20want%20to%20book%20a%20laundry%20pickup%20service!"
+            href="https://wa.me/919035999271?text=Hi%20Mr.%20WashWala%2C%20I%20want%20to%20book%20a%20laundry%20pickup%20service!"
             target="_blank"
             rel="noopener noreferrer"
             className="btn btn-whatsapp"

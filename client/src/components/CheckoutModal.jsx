@@ -27,15 +27,44 @@ const getLocalDate = () => {
   return `${year}-${month}-${day}`;
 };
 
+const PICKUP_TIME_MIN = "10:00";
+const PICKUP_TIME_MAX = "20:00";
+const PICKUP_TIME_MINUTES = 10 * 60;
+const PICKUP_TIME_MAX_MINUTES = 20 * 60;
+
+const clampPickupTime = (value) => {
+  if (!value) return PICKUP_TIME_MIN;
+
+  const [hoursInput, minutesInput] = value.split(":").map(Number);
+  if (![hoursInput, minutesInput].every(Number.isFinite)) {
+    return PICKUP_TIME_MIN;
+  }
+
+  const totalMinutes = hoursInput * 60 + minutesInput;
+  const clampedMinutes = Math.min(
+    PICKUP_TIME_MAX_MINUTES,
+    Math.max(PICKUP_TIME_MINUTES, totalMinutes)
+  );
+
+  const hours = String(Math.floor(clampedMinutes / 60)).padStart(2, "0");
+  const minutes = String(clampedMinutes % 60).padStart(2, "0");
+
+  return `${hours}:${minutes}`;
+};
+
 const getRoundedDateTime = (stepMinutes = 15) => {
   const now = new Date();
   const rounded = new Date(now);
 
   const totalMinutes = now.getHours() * 60 + now.getMinutes();
   const roundedMinutes = Math.ceil(totalMinutes / stepMinutes) * stepMinutes;
+  const clampedMinutes = Math.min(
+    PICKUP_TIME_MAX_MINUTES,
+    Math.max(PICKUP_TIME_MINUTES, roundedMinutes)
+  );
 
   rounded.setHours(0, 0, 0, 0);
-  rounded.setMinutes(roundedMinutes);
+  rounded.setMinutes(clampedMinutes);
 
   const year = rounded.getFullYear();
   const month = String(rounded.getMonth() + 1).padStart(2, "0");
@@ -450,8 +479,14 @@ const [formData, setFormData] = useState({
       .join("\n");
   };
 
+  const getWhatsAppPhoneForCurrentBranch = () => {
+    const branch = selectedBranch || rankedBranches.find((candidate) => candidate.id === recommendedBranchId) || branchConfig.find((candidate) => candidate.id === DEFAULT_BRANCH_ID) || branchConfig[0];
+    return branch?.whatsapp || "917019436720";
+  };
+
   const openWhatsAppWithTransition = (message) => {
-    const redirectUrl = `https://api.whatsapp.com/send/?phone=917019436720&text=${encodeURIComponent(message)}&type=phone_number&app_absent=0`;
+    const whatsappPhone = getWhatsAppPhoneForCurrentBranch();
+    const redirectUrl = `https://api.whatsapp.com/send/?phone=${whatsappPhone}&text=${encodeURIComponent(message)}&type=phone_number&app_absent=0`;
     setCheckoutRedirectUrl(redirectUrl);
     setIsTransitionOpen(true);
   };
@@ -496,6 +531,16 @@ if (
 
 if (!/^\d{10}$/.test(formData.phone)) {
   alert("Please enter a valid 10-digit phone number");
+  return;
+}
+
+const [hoursValue, minutesValue] = formData.pickupTime.split(":").map(Number);
+const pickupMinutes = Number.isFinite(hoursValue) && Number.isFinite(minutesValue)
+  ? hoursValue * 60 + minutesValue
+  : -1;
+
+if (pickupMinutes < PICKUP_TIME_MINUTES || pickupMinutes > PICKUP_TIME_MAX_MINUTES) {
+  alert("Pickup time must be between 10:00 AM and 8:00 PM.");
   return;
 }
 
@@ -810,18 +855,25 @@ if (!/^\d{10}$/.test(formData.phone)) {
   }}
 />
 
-<input
-  type="time"
-  value={formData.pickupTime}
-  onChange={(e) =>
-    setFormData({
-      ...formData,
-      pickupTime: e.target.value
-    })
-  }
-  required
-  style={inputStyle}
-/>
+<div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+  <input
+    type="time"
+    value={formData.pickupTime}
+    min={PICKUP_TIME_MIN}
+    max={PICKUP_TIME_MAX}
+    onChange={(e) =>
+      setFormData({
+        ...formData,
+        pickupTime: clampPickupTime(e.target.value)
+      })
+    }
+    required
+    style={inputStyle}
+  />
+  <div style={{ fontSize: "12px", color: "#6b7280" }}>
+    Pickup available daily from 10:00 AM to 8:00 PM.
+  </div>
+</div>
             <AddressAutocomplete
               placeholder="Pickup Address"
               value={formData.address}
