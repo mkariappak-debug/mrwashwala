@@ -8,6 +8,20 @@ export default function BranchDetails() {
   const branch = branches.find((b) => b.id === branchId && b.isActive);
   const content = branch ? branchContent[branch.id] : null;
 
+  const branchDisplayNames = {
+    "vijaynagar-mysuru": {
+      shortName: "Vijaynagar 2nd Stage",
+      name: "Mr. WashWala - Vijaynagar 2nd Stage, Mysuru"
+    },
+    "vijaynagar-2nd-stage-mysuru": {
+      shortName: "Vijaynagar 4th Stage",
+      name: "Mr. WashWala - Vijaynagar 4th Stage, Mysuru"
+    }
+  };
+
+  const displayShortName = branch ? (branchDisplayNames[branch.id]?.shortName || branch.shortName) : "";
+  const displayName = branch ? (branchDisplayNames[branch.id]?.name || branch.name) : "";
+
   useEffect(() => {
     import("aos").then((mod) => {
       try {
@@ -27,6 +41,7 @@ export default function BranchDetails() {
   const whatsappUrl = `https://wa.me/${branch.whatsapp}?text=${encodeURIComponent(
     `Hi Mr. WashWala, I'd like to know more about your ${branch.shortName}.`
   )}`;
+  const hasVideo = Boolean(content?.video && typeof content.video === "string" && content.video.trim());
 
   return (
     <div className="branch-details-page">
@@ -34,7 +49,7 @@ export default function BranchDetails() {
       <section className="branch-cover">
         <img
           src={content.coverImage}
-          alt={branch.name}
+          alt={displayName}
           className="branch-cover-image"
         />
         <div className="branch-cover-overlay" />
@@ -47,7 +62,7 @@ export default function BranchDetails() {
             Mr. WashWala
           </span>
           <h1 className="branch-cover-title" data-aos="fade-up" data-aos-delay="100">
-            {branch.shortName}
+            {displayShortName}
           </h1>
           <p className="branch-cover-subtitle" data-aos="fade-up" data-aos-delay="200">
             {content.tagline}
@@ -140,31 +155,32 @@ export default function BranchDetails() {
         </div>
       </section>
 
-      {/* VIDEO */}
-      <section className="branch-video-section">
-        <div className="container">
-          <h2 className="section-title white-bg-heading">Inside The Branch</h2>
-          <div className="branch-video-wrapper" data-aos="fade-up">
-            <video
-              key={content.video}
-              className="branch-video"
-              controls
-              muted
-              loop
-              playsInline
-              preload="metadata"
-            >
-              <source src={content.video} type="video/mp4" />
-            </video>
+      {hasVideo && (
+        <section className="branch-video-section">
+          <div className="container">
+            <h2 className="section-title white-bg-heading">Inside The Branch</h2>
+            <div className="branch-video-wrapper" data-aos="fade-up">
+              <video
+                key={content.video}
+                className="branch-video"
+                controls
+                muted
+                loop
+                playsInline
+                preload="metadata"
+              >
+                <source src={content.video} type="video/mp4" />
+              </video>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* CTA */}
       <section className="branch-cta-section">
         <div className="container branch-cta-inner" data-aos="fade-up">
           <div>
-            <h2>Ready to experience {branch.shortName}?</h2>
+            <h2>Ready to experience {displayShortName}?</h2>
             <p>Book a pickup or get directions straight to our door.</p>
           </div>
           <div className="branch-cta-buttons">

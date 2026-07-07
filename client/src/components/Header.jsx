@@ -1,26 +1,39 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import logo from '../assets/logo.png';
 
 export default function Header({ cartCount }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
+  const handleNavClick = (path) => {
+    setIsMenuOpen(false);
+
+    if (location.pathname === path && typeof window !== 'undefined') {
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   return (
-    <nav className="navbar sticky-nav">
+    <nav className="navbar">
       <div className="nav-container">
-        <Link to="/home" className="nav-logo" onClick={() => setIsMenuOpen(false)}>
+        <Link to="/home" className="nav-logo" onClick={() => handleNavClick('/home')}>
           <img src={logo} alt="Mr. Wash Wala Logo" className="logo-img" />
         </Link>
 
         <ul className={`nav-menu ${isMenuOpen ? 'active' : ''}`}>
           <li>
-            <Link to="/home" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+            <Link to="/home" className="nav-link" onClick={() => handleNavClick('/home')}>
               Home
             </Link>
           </li>
           <li>
-            <Link to="/services" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+            <Link to="/services" className="nav-link" onClick={() => handleNavClick('/services')}>
               <span className="nav-link-with-icon">
                 <span>Services</span>
                 <span className="nav-cart-icon-wrap">
@@ -42,7 +55,7 @@ export default function Header({ cartCount }) {
             <Link
               to="/branches"
               className="nav-link"
-              onClick={() => setIsMenuOpen(false)}
+              onClick={() => handleNavClick('/branches')}
             >
               Our Branches
             </Link>
@@ -51,7 +64,7 @@ export default function Header({ cartCount }) {
             <Link
               to="/franchise"
               className="nav-link"
-              onClick={() => setIsMenuOpen(false)}
+              onClick={() => handleNavClick('/franchise')}
             >
               Franchise
             </Link>
@@ -60,7 +73,7 @@ export default function Header({ cartCount }) {
             <Link
               to="/contact"
               className="nav-link"
-              onClick={() => setIsMenuOpen(false)}
+              onClick={() => handleNavClick('/contact')}
             >
               Contact
             </Link>

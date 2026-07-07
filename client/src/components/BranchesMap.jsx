@@ -7,16 +7,8 @@ import { GoogleMap, MarkerF, InfoWindowF, useJsApiLoader } from "@react-google-m
 const GOOGLE_MAPS_API_KEY = (import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "").trim();
 
 const mapContainerStyle = { width: "100%", height: "100%" };
-const BRANCH_PIN_COLORS = ["#27187E", "#0E9F6E"];
-const buildBranchPinIcon = (color) => ({
-  path: "M12 2C7.03 2 3 6.03 3 11c0 6.3 6.7 10.8 8.54 12.04.48.34 1.1.34 1.58 0C14.3 21.8 21 17.3 21 11c0-4.97-4.03-9-9-9zm0 12a3 3 0 110-6 3 3 0 010 6z",
-  fillColor: color,
-  fillOpacity: 1,
-  strokeColor: "#ffffff",
-  strokeWeight: 2,
-  scale: 1.4,
-  anchor: { x: 12, y: 24 }
-});
+const defaultCenter = { lat: 12.2921, lng: 76.6126 };
+const maxZoom = 16;
 
 // Hide default POI/transit pins so only our two branch markers ever appear
 // on the map, per the "no extra pins" requirement.
@@ -52,8 +44,6 @@ function InteractiveGoogleMap({ branches }) {
     googleMapsApiKey: GOOGLE_MAPS_API_KEY
   });
 
-  // Fit the viewport to both branch pins automatically instead of relying
-  // on a fixed zoom level, so both markers are always visible together.
   const onLoad = useCallback(
     (map) => {
       if (!branches.length) return;
@@ -68,7 +58,13 @@ function InteractiveGoogleMap({ branches }) {
       branches.forEach((branch) => {
         bounds.extend({ lat: branch.latitude, lng: branch.longitude });
       });
-      map.fitBounds(bounds, 60);
+      map.fitBounds(bounds, 80);
+
+      window.google.maps.event.addListenerOnce(map, "idle", () => {
+        if (map.getZoom() > maxZoom) {
+          map.setZoom(maxZoom);
+        }
+      });
     },
     [branches]
   );
@@ -78,13 +74,18 @@ function InteractiveGoogleMap({ branches }) {
   }
 
   return (
-    <GoogleMap mapContainerStyle={mapContainerStyle} onLoad={onLoad} options={mapOptions}>
-      {branches.map((branch, index) => (
+    <GoogleMap
+      mapContainerStyle={mapContainerStyle}
+      onLoad={onLoad}
+      center={defaultCenter}
+      zoom={12}
+      options={mapOptions}
+    >
+      {branches.map((branch) => (
         <MarkerF
           key={branch.id}
           position={{ lat: branch.latitude, lng: branch.longitude }}
           title={branch.name}
-          icon={buildBranchPinIcon(BRANCH_PIN_COLORS[index % BRANCH_PIN_COLORS.length])}
           onClick={() =>
             setActiveBranchId((current) => (current === branch.id ? null : branch.id))
           }

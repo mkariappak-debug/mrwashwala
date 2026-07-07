@@ -40,39 +40,38 @@ const DEFAULT_BUSINESS_HOURS = {
 export const branches = [
   {
     id: "vijaynagar-mysuru",
-    name: "Mr. WashWala - Vijaynagar, Mysuru",
-    shortName: "Vijaynagar Branch",
+    name: "Mr. WashWala - Vijaynagar 4th Stage, Mysuru",
+    shortName: "Vijaynagar 4th Stage",
     businessName: SHARED_BUSINESS_INFO.businessName,
     address: {
       line1: "12 Vani Vilas Layout",
-      line2: "Vijaynagar, Mysuru",
-      line3: "Karnataka - 570017",
-      full: "12 Vani Vilas Layout, Vijaynagar, Mysuru, Karnataka - 570017"
+      line2: "Vijaynagar 2nd Stage, Mysuru",
+      line3: "Karnataka - 570017",      full: "12 Vani Vilas Layout, Vijaynagar 2nd Stage, Mysuru, Karnataka - 570017"
     },
-    // Approximate coordinates for Vani Vilas Layout, Vijaynagar, Mysuru.
+    // Approximate coordinates for Vani Vilas Layout, Vijaynagar 4th Stage, Mysuru.
     latitude: 12.3192,
     longitude: 76.6172,
-    phone: "9035999271",
+    phone: "7019436720",
     whatsapp: "919035999271",
     email: SHARED_BUSINESS_INFO.email,
     isActive: true,
     businessHours: DEFAULT_BUSINESS_HOURS
   },
   {
-    id: "bhogadi-mysuru",
-    name: "Mr. WashWala - Bhogadi, Mysuru",
-    shortName: "Bhogadi Branch",
+    id: "vijaynagar-2nd-stage-mysuru",
+    name: "Mr. WashWala - Vijaynagar 2nd Stage, Mysuru",
+    shortName: "Vijaynagar 2nd Stage",
     businessName: SHARED_BUSINESS_INFO.businessName,
     address: {
       line1: "7700A, 2nd Phase",
-      line2: "Vijayanagar 4th Stage, Bhogadi",
+      line2: "Vijaynagar 2nd Stage, Mysuru",
       line3: "Karnataka 570032",
-      full: "7700A, 2nd Phase, Vijayanagar 4th Stage, Bhogadi, Karnataka 570032"
+      full: "7700A, 2nd Phase, Vijaynagar 4th Stage, Mysuru, Karnataka 570032"
     },
-    // Approximate coordinates for Vijayanagar 4th Stage, Bhogadi, Mysuru.
+    // Approximate coordinates for Vijayanagar 2nd Stage, Mysuru.
     latitude: 12.3505,
     longitude: 76.585,
-    phone: SHARED_BUSINESS_INFO.phone,
+    phone: "9035999271",
     whatsapp: SHARED_BUSINESS_INFO.whatsapp,
     email: SHARED_BUSINESS_INFO.email,
     isActive: true,

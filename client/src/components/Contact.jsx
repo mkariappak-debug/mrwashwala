@@ -9,7 +9,7 @@ export default function Contact() {
   const location = useLocation();
   const activeBranches = branches.filter((b) => b.isActive);
   // First branch (Vijayanagar) stays in the left column with the contact
-  // methods; any remaining branches (Bhogadi) move under the map on the
+  // methods; any remaining branches (Vijaynagar 2nd Stage) move under the map on the
   // right so both columns end up roughly the same height.
   const [primaryBranch, ...otherBranches] = activeBranches;
 

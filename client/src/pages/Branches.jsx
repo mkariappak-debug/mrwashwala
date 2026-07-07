@@ -19,6 +19,17 @@ export default function Branches() {
 
   const activeBranches = branches.filter((b) => b.isActive);
 
+  const branchDisplayNames = {
+    "vijaynagar-mysuru": {
+      shortName: "Vijaynagar 2nd Stage",
+      name: "Mr. WashWala - Vijaynagar 2nd Stage, Mysuru"
+    },
+    "vijaynagar-2nd-stage-mysuru": {
+      shortName: "Vijaynagar 4th Stage",
+      name: "Mr. WashWala - Vijaynagar 4th Stage, Mysuru"
+    }
+  };
+
   return (
     <div className="branches-page">
       {/* HERO */}
@@ -58,11 +69,11 @@ export default function Branches() {
                       loading="lazy"
                     />
                     <div className="branch-card-image-overlay" />
-                    <span className="branch-card-badge">{branch.shortName}</span>
+                    <span className="branch-card-badge">{branchDisplayNames[branch.id]?.shortName || branch.shortName}</span>
                   </div>
 
                   <div className="branch-card-body">
-                    <h3 className="branch-card-name">{branch.name}</h3>
+                    <h3 className="branch-card-name">{branchDisplayNames[branch.id]?.name || branch.name}</h3>
 
                     <p className="branch-card-tagline">{content.tagline}</p>
 

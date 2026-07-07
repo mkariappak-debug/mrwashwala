@@ -19,22 +19,22 @@
 export const branchContent = {
   "vijaynagar-mysuru": {
     tagline: "Our flagship outlet, right in the heart of Vijayanagar.",
-    cardImage: "/branches/vijaynagar-hero.jpg",
-    coverImage: "/branches/vijaynagar-hero.jpg",
+    cardImage: "/branches/vijaynagar-2nd-stage-hero.jpg",
+    coverImage: "/branches/vijaynagar-2nd-stage-hero.jpg",
     gallery: [
       "/branches/vijaynagar-1.jpg",
       "/branches/vijaynagar-2.jpg",
       "/branches/vijaynagar-3.jpg",
       "/branches/vijaynagar-4.jpg",
     ],
-    video: "/" + encodeURIComponent("Trimmerd Cloth fold and Packing.mp4"),
+    video: null,
     about:
       "Our Vijayanagar outlet is where the Mr. WashWala story began. Tucked into Vani Vilas Layout, this flagship branch handles everything from everyday wash-and-fold to delicate saree care and premium dry cleaning, backed by the same attention to detail our customers have trusted us for from day one.",
     features: [
       {
         icon: "⚡",
         title: "Express Turnaround",
-        desc: "Same-day wash & fold for orders placed before noon.",
+        desc: "we promise to deliver within 36 hours.",
       },
       {
         icon: "🧴",
@@ -44,7 +44,7 @@ export const branchContent = {
       {
         icon: "🚴",
         title: "Free Pickup & Drop",
-        desc: "Doorstep collection and delivery across Vijayanagar.",
+        desc: "Doorstep collection and delivery across town.",
       },
       {
         icon: "🌟",
@@ -53,19 +53,19 @@ export const branchContent = {
       },
     ],
   },
-  "bhogadi-mysuru": {
-    tagline: "Modern, spacious and built for the Bhogadi community.",
-    cardImage: "/branches/bogadi-hero.jpg",
-    coverImage: "/branches/bogadi-hero.jpg",
+  "vijaynagar-2nd-stage-mysuru": {
+    tagline: "Modern, spacious and built for the Vijaynagar 2nd Stage community.",
+    cardImage: "/branches/vijaynagar-hero.jpg",
+    coverImage: "/branches/vijaynagar-hero.jpg",
     gallery: [
-      "/branches/bogadi-1.jpg",
-      "/branches/bogadi-2.jpg",
-      "/branches/bogadi-3.jpg",
-      "/branches/bogadi-4.jpg",
+      "/branches/vijaynagar-2nd-stage-1.jpg",
+      "/branches/vijaynagar-2nd-stage-2.jpg",
+      "/branches/vijaynagar-2nd-stage-3.jpg",
+      "/branches/vijaynagar-2nd-stage-4.jpg",
     ],
-    video: "/checkout-transition.mp4",
+    video: null,
     about:
-      "Our Bhogadi branch in Vijayanagar 4th Stage was built to bring the full Mr. WashWala experience closer to home for residents on this side of Mysuru. From shoe cleaning to bulk household laundry, the outlet is equipped with the same premium machines and quality checks as our original location.",
+      "Our Vijaynagar 2nd Stage branch was built to bring the full Mr. WashWala experience closer to home for residents on this side of Mysuru. From shoe cleaning to bulk household laundry, the outlet is equipped with the same premium machines and quality checks as our original location.",
     features: [
       {
         icon: "👟",
@@ -80,7 +80,7 @@ export const branchContent = {
       {
         icon: "🚴",
         title: "Free Pickup & Drop",
-        desc: "Doorstep collection and delivery across Bhogadi.",
+        desc: "Doorstep collection and delivery across Vijaynagar 2nd Stage.",
       },
       {
         icon: "🌟",
@@ -88,5 +88,5 @@ export const branchContent = {
         desc: "Consistently rated 4.9+ by our regular customers.",
       },
     ],
-  },
+  }
 };

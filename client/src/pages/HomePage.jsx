@@ -1,11 +1,11 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import HomeBackgroundMedia from "../components/HomeBackgroundMedia";
 
 import Hero from "../components/Hero";
 import WhyChooseUs from "../components/WhyChooseUs";
 import Gallery from "../components/Gallery";
 import Testimonials from "../components/Testimonials";
+import BranchesSection from "../components/BranchesSection";
 
 export default function HomePage({
   isMobile,
@@ -20,17 +20,17 @@ export default function HomePage({
 
   return (
     <>
-      <HomeBackgroundMedia
+      <Hero
         isMobile={isMobile}
         homeMascotVideoIndex={homeMascotVideoIndex}
         onHomeMascotVideoEnded={onHomeMascotVideoEnded}
+        onBookPickup={handleBookPickup}
       />
-
-      <Hero onBookPickup={handleBookPickup} />
       <WhyChooseUs />
       <Gallery />
 
       <Testimonials />
+      <BranchesSection />
     </>
   );
 }
