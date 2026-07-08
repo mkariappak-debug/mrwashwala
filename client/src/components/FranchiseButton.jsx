@@ -1,8 +1,19 @@
 import React from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function FranchiseButton() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const handleClick = () => {
-    const section = document.getElementById("download-brochure");
+    window.dispatchEvent(new CustomEvent("mrwashwala:close-branch-drawer"));
+
+    if (location.pathname !== "/franchise") {
+      navigate("/franchise", { state: { scrollToFranchiseEnquiry: true } });
+      return;
+    }
+
+    const section = document.getElementById("franchise-enquiry");
 
     if (section) {
       section.scrollIntoView({
@@ -14,6 +25,7 @@ export default function FranchiseButton() {
 
   return (
     <button
+      type="button"
       className="franchise-floating-btn"
       onClick={handleClick}
       aria-label="Franchise Opportunity"

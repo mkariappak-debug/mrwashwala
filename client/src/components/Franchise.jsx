@@ -108,6 +108,7 @@ export default function Franchise() {
             target="_blank"
             rel="noopener noreferrer"
             className="btn btn-primary franchise-btn"
+            id="franchise-enquiry"
           >
             Enquire About Franchise
           </a>

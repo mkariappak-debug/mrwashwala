@@ -28,6 +28,18 @@ export default function Hero({ isMobile, homeMascotVideoIndex, onHomeMascotVideo
     };
   }, [isBranchPanelOpen]);
 
+  useEffect(() => {
+    const handleCloseBranchDrawer = () => {
+      setIsBranchPanelOpen(false);
+    };
+
+    window.addEventListener("mrwashwala:close-branch-drawer", handleCloseBranchDrawer);
+
+    return () => {
+      window.removeEventListener("mrwashwala:close-branch-drawer", handleCloseBranchDrawer);
+    };
+  }, []);
+
   const handleOpenBranchesPanel = () => {
     setIsBranchPanelOpen(true);
   };

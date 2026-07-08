@@ -437,6 +437,49 @@ canvas-hero {
     transition: transform 0.3s ease;
 }
 
+@media (min-width: 1024px) {
+  .hero-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-inline: auto;
+  }
+
+  .hero-content-mobile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .hero-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .hero-badge {
+    position: relative;
+    left: 20px;
+  }
+
+  .hero-title,
+  .hero-subtitle {
+    text-align: center;
+  }
+
+  .hero-cta {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
 @media (max-width: 1024px) {
     .hero-copy {
         max-width: 100%;

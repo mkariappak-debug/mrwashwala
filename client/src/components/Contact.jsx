@@ -85,6 +85,8 @@ export default function Contact() {
                 <h3>📞 Phone</h3>
                 <p>
                   <a href="tel:9035999271">+91 9035999271</a>
+                  <br />
+                  <a href="tel:+917019436720">+91 7019436720</a>
                 </p>
                 <div className="contact-label">Available everyday</div>
               </div>

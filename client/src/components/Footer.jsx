@@ -27,6 +27,11 @@ export default function Footer() {
         <div className="footer-section">
           <h4 style={{ color: '#fff' }}>Contact Us</h4>
           <p style={{ fontSize: '0.9rem', color: '#e3f2fd' }}>📞 +91 9035999271</p>
+          <p style={{ fontSize: '0.9rem', color: '#e3f2fd', marginTop: '5px' }}>
+            <a href="tel:+917019436720" style={{ color: 'inherit', textDecoration: 'none' }}>
+              📞 +91 7019436720
+            </a>
+          </p>
           <p style={{ fontSize: '0.9rem', color: '#e3f2fd', marginTop: '5px' }}>✉️ mrwashwala@gmail.com</p>
 
           <div className="social-links">

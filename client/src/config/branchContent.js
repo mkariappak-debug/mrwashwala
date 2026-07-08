@@ -65,7 +65,7 @@ export const branchContent = {
     ],
     video: null,
     about:
-      "Our Vijaynagar 2nd Stage branch was built to bring the full Mr. WashWala experience closer to home for residents on this side of Mysuru. From shoe cleaning to bulk household laundry, the outlet is equipped with the same premium machines and quality checks as our original location.",
+      "Our Vijaynagar 4th Stage branch was built to bring the full Mr. WashWala experience closer to home for residents on this side of Mysuru. From shoe cleaning to bulk household laundry, the outlet is equipped with the same premium machines and quality checks as our original location.",
     features: [
       {
         icon: "👟",
