@@ -1,5 +1,6 @@
 import React from 'react';
 import { branchContent } from '../config/branchContent';
+import { branches as branchConfig } from '../config/branches';
 
 const branches = [
   {
@@ -12,7 +13,7 @@ const branches = [
     image:
       branchContent?.['vijaynagar-mysuru']?.cardImage ||
       '/branches/vijaynagar-2nd-stage-hero.jpg',
-    mapLink: 'https://maps.google.com/?q=Vijayanagar+2nd+Stage+Mysuru',
+    mapLink: branchConfig.find((branch) => branch.id === 'vijaynagar-mysuru')?.mapsUrl || 'https://www.google.com/maps/search/?api=1&query=12,+Vani+Vilas+Layout,+Stage+2,+Vijayanagar,+Mysuru,+Karnataka+570017',
     phone: '9035999271',
     whatsapp: '917019436720',
     isNew: false,
@@ -27,7 +28,7 @@ const branches = [
     image:
       branchContent?.['vijayanagar-2nd-stage-mysuru']?.cardImage ||
       '/branches/vijaynagar-hero.jpg',
-    mapLink: 'https://maps.google.com/?q=Vijayanagar+4th+Stage+Mysuru',
+    mapLink: branchConfig.find((branch) => branch.id === 'vijaynagar-2nd-stage-mysuru')?.mapsUrl || 'https://www.google.com/maps/search/?api=1&query=7700A,+2nd+Phase,+Vijayanagar+4th+Stage,+Bhogadi,+Karnataka+570032',
     phone: '7019436720',
     whatsapp: '919035999271',
     isNew: true,
@@ -103,7 +104,7 @@ export default function BranchesSection() {
                     href={branch.mapLink}
                     className="branches-home-action branches-home-action-primary"
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                   >
                     View on Maps
                   </a>

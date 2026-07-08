@@ -37,7 +37,7 @@ export default function BranchDetails() {
     return <Navigate to="/branches" replace />;
   }
 
-  const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${branch.latitude},${branch.longitude}`;
+  const directionsUrl = branch?.mapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(branch?.address?.full || branch?.shortName || "Mr WashWala")}`;
   const whatsappUrl = `https://wa.me/${branch.whatsapp}?text=${encodeURIComponent(
     `Hi Mr. WashWala, I'd like to know more about your ${branch.shortName}.`
   )}`;

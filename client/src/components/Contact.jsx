@@ -148,9 +148,9 @@ export default function Contact() {
                   <a
                     className="map-legend-item"
                     key={branch.id}
-                    href={`https://www.google.com/maps/dir/?api=1&destination=${branch.latitude},${branch.longitude}`}
+                    href={branch.mapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(branch.address.full)}`}
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                   >
                     <span
                       className="map-legend-dot"

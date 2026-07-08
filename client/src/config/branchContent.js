@@ -54,7 +54,7 @@ export const branchContent = {
     ],
   },
   "vijaynagar-2nd-stage-mysuru": {
-    tagline: "Modern, spacious and built for the Vijaynagar 2nd Stage community.",
+    tagline: "Modern, spacious and built for the Vijaynagar 4th Stage community.",
     cardImage: "/branches/vijaynagar-hero.jpg",
     coverImage: "/branches/vijaynagar-hero.jpg",
     gallery: [

@@ -40,15 +40,17 @@ const DEFAULT_BUSINESS_HOURS = {
 export const branches = [
   {
     id: "vijaynagar-mysuru",
-    name: "Mr. WashWala - Vijaynagar 4th Stage, Mysuru",
-    shortName: "Vijaynagar 4th Stage",
+    name: "Mr. WashWala - Vijayanagar 2nd Stage, Mysuru",
+    shortName: "Vijayanagar 2nd Stage",
     businessName: SHARED_BUSINESS_INFO.businessName,
     address: {
-      line1: "12 Vani Vilas Layout",
-      line2: "Vijaynagar 2nd Stage, Mysuru",
-      line3: "Karnataka - 570017",      full: "12 Vani Vilas Layout, Vijaynagar 2nd Stage, Mysuru, Karnataka - 570017"
+      line1: "12, Vani Vilas Layout",
+      line2: "Stage 2, Vijayanagar",
+      line3: "Mysuru, Karnataka 570017",
+      full: "12, Vani Vilas Layout, Stage 2, Vijayanagar, Mysuru, Karnataka 570017"
     },
-    // Approximate coordinates for Vani Vilas Layout, Vijaynagar 4th Stage, Mysuru.
+    mapsUrl: "https://www.google.com/maps/search/?api=1&query=12,+Vani+Vilas+Layout,+Stage+2,+Vijayanagar,+Mysuru,+Karnataka+570017",
+    // Approximate coordinates for Vani Vilas Layout, Vijayanagar 2nd Stage, Mysuru.
     latitude: 12.3192,
     longitude: 76.6172,
     phone: "7019436720",
@@ -59,16 +61,17 @@ export const branches = [
   },
   {
     id: "vijaynagar-2nd-stage-mysuru",
-    name: "Mr. WashWala - Vijaynagar 2nd Stage, Mysuru",
-    shortName: "Vijaynagar 2nd Stage",
+    name: "Mr. WashWala - Vijayanagar 4th Stage, Mysuru",
+    shortName: "Vijayanagar 4th Stage",
     businessName: SHARED_BUSINESS_INFO.businessName,
     address: {
       line1: "7700A, 2nd Phase",
-      line2: "Vijaynagar 2nd Stage, Mysuru",
+      line2: "Vijayanagar 4th Stage, Bhogadi",
       line3: "Karnataka 570032",
-      full: "7700A, 2nd Phase, Vijaynagar 4th Stage, Mysuru, Karnataka 570032"
+      full: "7700A, 2nd Phase, Vijayanagar 4th Stage, Bhogadi, Karnataka 570032"
     },
-    // Approximate coordinates for Vijayanagar 2nd Stage, Mysuru.
+    mapsUrl: "https://www.google.com/maps/search/?api=1&query=7700A,+2nd+Phase,+Vijayanagar+4th+Stage,+Bhogadi,+Karnataka+570032",
+    // Approximate coordinates for Vijayanagar 4th Stage, Mysuru.
     latitude: 12.3505,
     longitude: 76.585,
     phone: "9035999271",

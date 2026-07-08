@@ -32,9 +32,9 @@ export default function AddressPage() {
                 <div className="contact-label">Open everyday 9 AM - 8 PM</div>
                 <a
                   className="contact-branch-link"
-                  href={`https://www.google.com/maps/dir/?api=1&destination=${branch.latitude},${branch.longitude}`}
+                  href={branch.mapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(branch.address.full)}`}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                 >
                   Get directions →
                 </a>

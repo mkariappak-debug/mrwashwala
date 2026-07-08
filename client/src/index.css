@@ -1625,9 +1625,31 @@ body {
     transform: translateY(-3px);
 }
 
+.social-links .instagram-link {
+    width: auto;
+    min-height: 40px;
+    padding: 0 14px;
+    border-radius: 999px;
+    gap: 8px;
+    text-decoration: none;
+}
+
+.social-links .instagram-link .instagram-username {
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.social-links .instagram-link:hover .instagram-username {
+    color: #ffffff;
+}
+
 .social-links svg {
     width: 20px;
     height: 20px;
+    flex-shrink: 0;
 }
 
 .footer-bottom {
