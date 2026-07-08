@@ -1,10 +1,49 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import HomeBackgroundMedia from "../components/HomeBackgroundMedia";
 import HeroBadge from "./HeroBadge";
 import HeroNowServingCard from "./HeroNowServingCard";
 
 export default function Hero({ isMobile, homeMascotVideoIndex, onHomeMascotVideoEnded, onBookPickup }) {
   const [isBranchPanelOpen, setIsBranchPanelOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isBranchPanelOpen) {
+      return undefined;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        setIsBranchPanelOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isBranchPanelOpen]);
+
+  const handleOpenBranchesPanel = () => {
+    setIsBranchPanelOpen(true);
+  };
+
+  const handleCloseBranchesPanel = () => {
+    setIsBranchPanelOpen(false);
+  };
+
+  const handleExploreBranches = () => {
+    handleCloseBranchesPanel();
+
+    const branchSection = document.getElementById("branches-section");
+    if (branchSection) {
+      branchSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
   return (
     <>
@@ -63,32 +102,37 @@ export default function Hero({ isMobile, homeMascotVideoIndex, onHomeMascotVideo
         </div>
       </div>
 
-      <div className="hero-left-overlay" aria-hidden="true">
+      <div className="hero-left-overlay">
         <div className="hero-floating-animation-space" />
         {isMobile ? (
           <>
             <button
               type="button"
               className="hero-mobile-branch-tab"
-              onClick={() => setIsBranchPanelOpen(true)}
+              onClick={handleOpenBranchesPanel}
               aria-label="Open branch locations"
             >
               📍 Branches
             </button>
             <div
               className={`hero-mobile-branch-overlay ${isBranchPanelOpen ? "is-open" : ""}`}
-              onClick={() => setIsBranchPanelOpen(false)}
+              onClick={handleCloseBranchesPanel}
             />
-            <div className={`hero-mobile-branch-card ${isBranchPanelOpen ? "is-open" : ""}`}>
+            <div
+              className={`hero-mobile-branch-card ${isBranchPanelOpen ? "is-open" : ""}`}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Now serving from two locations in Mysuru"
+            >
               <button
                 type="button"
                 className="hero-mobile-branch-close"
-                onClick={() => setIsBranchPanelOpen(false)}
+                onClick={handleCloseBranchesPanel}
                 aria-label="Close branch locations"
               >
                 ×
               </button>
-              <HeroNowServingCard />
+              <HeroNowServingCard onExplore={handleExploreBranches} />
             </div>
           </>
         ) : (

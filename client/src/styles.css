@@ -459,6 +459,7 @@ canvas-hero {
         min-height: auto;
         padding-bottom: 40px;
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
     }
@@ -475,6 +476,7 @@ canvas-hero {
     .hero-content-mobile {
         width: min(90%, 420px);
         margin-inline: auto;
+        align-self: center;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -557,6 +559,7 @@ canvas-hero {
         align-items: center;
         justify-content: center;
         margin: 18px 0 0;
+        pointer-events: auto;
     }
 
     .hero-floating-animation-space {
@@ -615,8 +618,8 @@ canvas-hero {
         left: 0;
         top: 50%;
         transform: translateX(-100%);
-        width: min(88vw, 320px);
-        max-width: 320px;
+        width: min(84vw, 340px);
+        max-width: 340px;
         z-index: 45;
         transition: transform 0.3s ease;
     }

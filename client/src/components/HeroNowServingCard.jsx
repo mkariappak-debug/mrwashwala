@@ -1,8 +1,13 @@
 import React from "react";
 
-export default function HeroNowServingCard() {
+export default function HeroNowServingCard({ onExplore }) {
   const handleExplore = () => {
-    const branchSection = document.getElementById("our-branches");
+    if (typeof onExplore === "function") {
+      onExplore();
+      return;
+    }
+
+    const branchSection = document.getElementById("branches-section");
     if (branchSection) {
       branchSection.scrollIntoView({ behavior: "smooth", block: "start" });
     }

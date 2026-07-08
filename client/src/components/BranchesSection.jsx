@@ -63,7 +63,7 @@ export default function BranchesSection() {
   };
 
   return (
-    <section className="branches-home-section" id="our-branches">
+    <section className="branches-home-section" id="branches-section">
       <div className="container">
         <div className="branches-home-intro" data-aos="fade-up">
           <p className="branches-home-eyebrow">Our Branches</p>
