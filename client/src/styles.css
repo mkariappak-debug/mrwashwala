@@ -195,6 +195,28 @@
     transition: var(--transition);
 }
 
+/* Desktop sticky navbar */
+@media (min-width: 1024px) {
+    .navbar {
+        position: sticky;
+        top: 0;
+    }
+}
+
+/* Mobile fixed navbar */
+@media (max-width: 768px) {
+    .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+    }
+
+    body {
+        padding-top: 70px;
+    }
+}
+
 /* CONTAINER & LAYOUT */
 .container {
     max-width: 1200px;
@@ -320,7 +342,7 @@ canvas-hero {
 
 .hero-floating-animation-space {
     width: clamp(110px, 14vw, 190px);
-    height: clamp(110px, 16vh, 150px);
+    height: clamp(165px, 20vh, 200px);
     flex-shrink: 0;
 }
 
@@ -489,6 +511,10 @@ canvas-hero {
         width: min(280px, 32vw);
         padding-left: clamp(8px, 1.8vw, 16px);
         padding-top: clamp(96px, 14vh, 144px);
+    }
+
+    .hero-floating-animation-space {
+        height: clamp(155px, 18vh, 180px);
     }
 
     .hero-now-serving-card {
@@ -1963,9 +1989,9 @@ body { font-family: 'Poppins', sans-serif; color: var(--text-dark); background-i
 }
 
 .home-mascot-loop-video {
-  position: fixed;
+  position: absolute;
   left: 30px;
-  top: 180px;
+  top: 150px;
   width: clamp(110px, 14vw, 190px);
   height: auto;
   border-radius: 14px;
@@ -1977,8 +2003,9 @@ body { font-family: 'Poppins', sans-serif; color: var(--text-dark); background-i
 
 @media (max-width: 768px) {
   .home-mascot-loop-video {
-    left: 16px;
-    top: 140px;
+    left: auto;
+    right: 20px;
+    top: 110px;
     width: clamp(86px, 28vw, 140px);
     border-radius: 12px;
   }

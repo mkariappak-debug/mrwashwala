@@ -3,6 +3,8 @@ import HomeBackgroundMedia from "../components/HomeBackgroundMedia";
 import HeroBadge from "./HeroBadge";
 import HeroNowServingCard from "./HeroNowServingCard";
 
+const HOME_MASCOT_VIDEOS = ["/home-mascot-loop.mp4", "/home-mascot-pack.mp4"];
+
 export default function Hero({ isMobile, homeMascotVideoIndex, onHomeMascotVideoEnded, onBookPickup }) {
   const [isBranchPanelOpen, setIsBranchPanelOpen] = useState(false);
 
@@ -61,8 +63,6 @@ export default function Hero({ isMobile, homeMascotVideoIndex, onHomeMascotVideo
     <>
       <HomeBackgroundMedia
         isMobile={isMobile}
-        homeMascotVideoIndex={homeMascotVideoIndex}
-        onHomeMascotVideoEnded={onHomeMascotVideoEnded}
       />
       <section id="home" className="hero-section">
       <div id="canvas-hero" className="hero-gradient-bg" />
@@ -151,6 +151,19 @@ export default function Hero({ isMobile, homeMascotVideoIndex, onHomeMascotVideo
           <HeroNowServingCard />
         )}
       </div>
+
+      <video
+        key={HOME_MASCOT_VIDEOS[homeMascotVideoIndex]}
+        className="home-mascot-loop-video"
+        autoPlay
+        muted
+        playsInline
+        preload="auto"
+        aria-hidden="true"
+        onEnded={onHomeMascotVideoEnded}
+      >
+        <source src={HOME_MASCOT_VIDEOS[homeMascotVideoIndex]} type="video/mp4" />
+      </video>
     </section>
     </>
   );

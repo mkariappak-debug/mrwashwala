@@ -306,6 +306,28 @@ body {
     transition: var(--transition);
 }
 
+/* Desktop sticky navbar */
+@media (min-width: 1024px) {
+    .navbar {
+        position: sticky;
+        top: 0;
+    }
+}
+
+/* Mobile fixed navbar */
+@media (max-width: 768px) {
+    .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+    }
+
+    body {
+        padding-top: 70px;
+    }
+}
+
 /* ============================================
    CONTAINER & LAYOUT
    ============================================ */
