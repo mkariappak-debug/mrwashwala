@@ -1,26 +1,25 @@
-import bgVideo from "./assets/background-video.mp4";
+import { Routes, Route, Navigate } from "react-router-dom";
+import FranchiseBrochure from "./pages/FranchiseBrochure";
+import Branches from "./pages/Branches";
+import BranchDetails from "./pages/BranchDetails";
+import HomePage from "./pages/HomePage";
+import ServicesPage from "./pages/ServicesPage";
+import FranchisePage from "./pages/FranchisePage";
+import ContactPage from "./pages/ContactPage";
+import SiteLayout from "./layouts/SiteLayout";
 import React, { useState, useEffect } from "react";
-import Header from "./components/Header";
-import Hero from "./components/Hero";
-import WhyChooseUs from "./components/WhyChooseUs";
-import Pricing from "./components/Pricing";
-import CustomizeSidebar from "./components/CustomizeSidebar";
-import Cart from "./components/Cart";
-import Testimonials from "./components/Testimonials";
-import CheckoutModal from "./components/CheckoutModal";
-import Contact from "./components/Contact";
-import Footer from "./components/Footer";
-import WhatsAppButton from "./components/WhatsAppButton";
-import Franchise from "./components/Franchise";
 
 import "./index.css";
 import "./styles.css";
+
+const HOME_MASCOT_VIDEOS = ["/home-mascot-loop.mp4", "/home-mascot-pack.mp4"];
 
 export default function App() {
   const [cart, setCart] = useState([]);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
-
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [homeMascotVideoIndex, setHomeMascotVideoIndex] = useState(0);
   useEffect(() => {
     import("./animations")
       .then((mod) => {
@@ -56,6 +55,17 @@ export default function App() {
       console.log(e);
     }
   }, [cart]);
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   const handleUpdateQuantity = (
     name,
@@ -100,9 +110,8 @@ export default function App() {
     );
   };
   const openCheckout = () => {
-  console.log("OPEN CHECKOUT CLICKED");
-  setIsCheckoutOpen(true);
-};
+    setIsCheckoutOpen(true);
+  };
 
   const closeCheckout = () => {
     setIsCheckoutOpen(false);
@@ -117,92 +126,107 @@ export default function App() {
   };
 
 
-  const handleBookPickup = () => {
-  const el = document.getElementById("pricing");
-
-  if (el) {
-    el.scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
-  }
-};
-
-  const handleViewServices = () => {
-    const el = document.getElementById("pricing");
-
-    if (el) {
-      el.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-      });
-    }
+  const handleHomeMascotVideoEnded = () => {
+    setHomeMascotVideoIndex((prev) => (prev + 1) % HOME_MASCOT_VIDEOS.length);
   };
 
-      return (
-  <div className="app-layout-container">
+  const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-    <video
-      className="site-background-video"
-      autoPlay
-      muted
-      loop
-      playsInline
-    >
-      <source src={bgVideo} type="video/mp4" />
-    </video>
+  const renderHome = () => (
+    <SiteLayout cartCount={cartCount} showFranchiseButton>
+      <HomePage
+        isMobile={isMobile}
+        homeMascotVideoIndex={homeMascotVideoIndex}
+        onHomeMascotVideoEnded={handleHomeMascotVideoEnded}
+      />
+    </SiteLayout>
+  );
 
-      <Header
-        cartCount={cart.reduce(
-          (sum, item) => sum + item.quantity,
-          0
-        )}
+  return (
+    <Routes>
+      <Route path="/franchise-brochure" element={<FranchiseBrochure />} />
+
+      <Route
+        path="/branches"
+        element={
+          <SiteLayout cartCount={cartCount} className="subpage-layout">
+            <Branches />
+          </SiteLayout>
+        }
       />
 
-      <Hero
-        onBookPickup={handleBookPickup}
-        onViewServices={handleViewServices}
+      <Route
+        path="/branches/:branchId"
+        element={
+          <SiteLayout cartCount={cartCount} className="subpage-layout">
+            <BranchDetails />
+          </SiteLayout>
+        }
       />
 
-      <WhyChooseUs />
+      <Route path="/" element={renderHome()} />
+      <Route path="/home" element={renderHome()} />
 
-      <Pricing
-        cart={cart}
-        onUpdateQuantity={handleUpdateQuantity}
-        onCustomize={openCustomize}
+      <Route
+        path="/services"
+        element={
+          <SiteLayout
+            cartCount={cartCount}
+            showHomeBackground
+            isMobile={isMobile}
+            homeMascotVideoIndex={homeMascotVideoIndex}
+            onHomeMascotVideoEnded={handleHomeMascotVideoEnded}
+          >
+            <ServicesPage
+              cart={cart}
+              onUpdateQuantity={handleUpdateQuantity}
+              isCustomizeOpen={isCustomizeOpen}
+              onOpenCustomize={openCustomize}
+              onCloseCustomize={closeCustomize}
+              onRemoveItem={handleRemoveItem}
+              onOpenCheckout={openCheckout}
+              isCheckoutOpen={isCheckoutOpen}
+              onCloseCheckout={closeCheckout}
+            />
+          </SiteLayout>
+        }
       />
 
-      <CustomizeSidebar
-        isOpen={isCustomizeOpen}
-        onClose={closeCustomize}
-        onUpdateQuantity={handleUpdateQuantity}
-        cart={cart}
-      />
-      
+      <Route path="/cart" element={<Navigate to="/services" replace />} />
 
-
-
-
-      <Cart
-        cart={cart}
-        onUpdateQuantity={handleUpdateQuantity}
-        onRemoveItem={handleRemoveItem}
-        onCheckout={openCheckout}
-      />
-
-      <Testimonials />
-
-      <CheckoutModal
-        open={isCheckoutOpen}
-        cart={cart}
-        onClose={closeCheckout}
+      <Route
+        path="/franchise"
+        element={
+          <SiteLayout
+            cartCount={cartCount}
+            showHomeBackground
+            isMobile={isMobile}
+            homeMascotVideoIndex={homeMascotVideoIndex}
+            onHomeMascotVideoEnded={handleHomeMascotVideoEnded}
+          >
+            <FranchisePage />
+          </SiteLayout>
+        }
       />
 
-      <Contact />
-       <Franchise/>
-      <Footer />
-      <WhatsAppButton />
+      <Route
+        path="/contact"
+        element={
+          <SiteLayout
+            cartCount={cartCount}
+            showHomeBackground
+            isMobile={isMobile}
+            homeMascotVideoIndex={homeMascotVideoIndex}
+            onHomeMascotVideoEnded={handleHomeMascotVideoEnded}
+          >
+            <ContactPage />
+          </SiteLayout>
+        }
+      />
 
-    </div>
+      <Route path="/address" element={<Navigate to="/contact#address" replace />} />
+
+      <Route path="*" element={<Navigate to="/home" replace />} />
+    </Routes>
   );
 }

@@ -9,6 +9,17 @@ export default function Pricing({
 }) {
   const [servicesList, setServicesList] = useState([]);
   const pricingRef = useRef(null);
+  const getServiceImage = (serviceName) => {
+  const images = {
+    "Wash & Fold": "/pricing/fold.jpg",
+    "Wash & Iron": "/pricing/shoe.jpg",
+    "Dry Cleaning": "/pricing/dry.jpg",
+    "Shoes Cleaning": "/pricing/iron.jpg",
+    "Blanket Cleaning": "/pricing/bedsheet.jpg",
+    "Customize Your Service": "/pricing/wash.jpg"
+  };
+  return images[serviceName] || "/pricing/fold.jpg";
+};
 
   useEffect(() => {
     fetchServices();
@@ -56,12 +67,12 @@ export default function Pricing({
     <section id="pricing" className="pricing-section">
       <div className="container">
 
-      <h2 className="section-title">
-  Our Premium Services & Pricing
+      <h2 className="section-title white-bg-heading">
+  <span className="services-our">Our</span> <span className="services-premium">Premium</span> <span className="services-services">Services</span>
 </h2>
       
 
-        <p className="section-subtitle">
+        <p className="section-subtitle white-bg-subtitle">
           Transparent pricing with no hidden charges
         </p>
 
@@ -89,6 +100,7 @@ export default function Pricing({
                 : 0;
 
               const delay = i * 100;
+              console.log(service.name);
 
               return (
                 <div
@@ -107,7 +119,14 @@ export default function Pricing({
                     </div>
                   )}
 
-                  <h3>{service.name}</h3>
+                  <div className="card-image">
+  <img
+    src={getServiceImage(service.name)}
+    alt={service.name}
+  />
+</div>
+
+<h3>{service.name}</h3>
 
                   <p className="pricing-unit">
                     per {service.unit}

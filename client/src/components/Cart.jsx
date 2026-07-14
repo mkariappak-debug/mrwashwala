@@ -7,14 +7,14 @@ export default function Cart({ cart, onUpdateQuantity, onRemoveItem, onCheckout 
   return (
     <section id="cart" className="cart-section">
       <div className="container">
-        <h2 className="section-title">Your Shopping Cart</h2>
+        <h2 className="section-title white-bg-heading">Your Shopping Cart</h2>
 
         <div className="cart-wrapper">
           <div className="cart-items-container">
             {cart.length === 0 ? (
               <div className="empty-cart">
                 <p>Your cart is empty</p>
-                <span className="empty-cart-subtitle">Add services from our list above to get started</span>
+                <span className="empty-cart-subtitle">Add services from our list below to get started</span>
               </div>
             ) : (
               <div className="cart-items">

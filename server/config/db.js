@@ -5,7 +5,7 @@ const connectDB = async () => {
   try {
     if (!process.env.MONGO_URI) {
       console.warn('\x1b[33mWarning: MONGO_URI is not set. Skipping MongoDB connection.\x1b[0m');
-      console.warn('Add MONGO_URI to server/.env to enable database features.');
+      console.warn('Add MONGO_URI to server/config/.env or server/.env to enable database features.');
       return;
     }
 

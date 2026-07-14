@@ -1,59 +1,82 @@
 import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import logo from '../assets/logo.png';
 
 export default function Header({ cartCount }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
+  const handleNavClick = (path) => {
+    setIsMenuOpen(false);
+
+    if (location.pathname === path && typeof window !== 'undefined') {
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   return (
-    <nav className="navbar sticky-nav">
+    <nav className="navbar">
       <div className="nav-container">
-        <div 
-          className="nav-logo" 
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          style={{ cursor: 'pointer' }}
-        >
-          <img src={logo} alt="Mr. WashWala Logo" className="logo-img logo-img-large" />
-          <span className="logo-text">
-            <span className="logo-mr">Mr. </span>
-            <span className="logo-wash">WashWala</span>
-          </span>
-        </div>
+        <Link to="/home" className="nav-logo" onClick={() => handleNavClick('/home')}>
+          <img src={logo} alt="Mr. Wash Wala Logo" className="logo-img" />
+        </Link>
 
         <ul className={`nav-menu ${isMenuOpen ? 'active' : ''}`}>
           <li>
-            <a href="#home" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+            <Link to="/home" className="nav-link" onClick={() => handleNavClick('/home')}>
               Home
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="#pricing" className="nav-link" onClick={() => setIsMenuOpen(false)}>
-              Services
-            </a>
+            <Link to="/services" className="nav-link" onClick={() => handleNavClick('/services')}>
+              <span className="nav-link-with-icon">
+                <span>Services</span>
+                <span className="nav-cart-icon-wrap">
+                  <span className="nav-link-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" role="img">
+                      <path d="M3 4h2l2.2 10.3A2 2 0 0 0 9.2 16H18a2 2 0 0 0 1.9-1.4L22 7H7.1" />
+                      <circle cx="10" cy="20" r="1.7" />
+                      <circle cx="17" cy="20" r="1.7" />
+                    </svg>
+                  </span>
+                  {cartCount > 0 && (
+                    <span id="cart-count" className="cart-badge">{cartCount}</span>
+                  )}
+                </span>
+              </span>
+            </Link>
           </li>
           <li>
-            <a href="#pricing" className="nav-link" onClick={() => setIsMenuOpen(false)}>
-              Pricing
-            </a>
+            <Link
+              to="/branches"
+              className="nav-link"
+              onClick={() => handleNavClick('/branches')}
+            >
+              Our Branches
+            </Link>
           </li>
           <li>
-  <a
-    href="#franchise"
-    className="nav-link"
-    onClick={() => setIsMenuOpen(false)}
-  >
-    Franchise
-  </a>
-</li>
-          <li>
-            <a href="#cart" className="nav-link" onClick={() => setIsMenuOpen(false)}>
-              Cart <span id="cart-count" className="cart-badge">{cartCount}</span>
-            </a>
+            <Link
+              to="/franchise"
+              className="nav-link"
+              onClick={() => handleNavClick('/franchise')}
+            >
+              Franchise
+            </Link>
           </li>
           <li>
-            <a href="#contact" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+            <Link
+              to="/contact"
+              className="nav-link"
+              onClick={() => handleNavClick('/contact')}
+            >
               Contact
-            </a>
+            </Link>
           </li>
         </ul>
 
