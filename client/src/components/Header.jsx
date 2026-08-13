@@ -71,6 +71,15 @@ export default function Header({ cartCount }) {
           </li>
           <li>
             <Link
+              to="/admin/login"
+              className="nav-link"
+              onClick={() => handleNavClick('/admin/login')}
+            >
+              Admin
+            </Link>
+          </li>
+          <li>
+            <Link
               to="/contact"
               className="nav-link"
               onClick={() => handleNavClick('/contact')}

@@ -1006,7 +1006,7 @@ html {
   font-size: 20px;
 }
 /* Use --background-image to customize the site's background. Edit this variable to change the image. */
-body { font-family: 'Poppins', sans-serif; color: var(--text-dark); background-image: var(--background-image); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed; line-height: 1.6; overflow-x: hidden; }
+body { font-family: 'Poppins', sans-serif; color: var(--text-dark); background-image: var(--background-image); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed; line-height: 1.6; overflow-x: auto; }
 
 /* AOS visibility fallback */
 [data-aos] { opacity: 1 !important; }

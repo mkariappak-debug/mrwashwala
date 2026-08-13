@@ -27,7 +27,9 @@ export default function Pricing({
 
   const fetchServices = async () => {
     try {
-      const response = await API.get("/api/services");
+      const response = await API.get("/api/services", {
+        params: { displayType: 'main' }
+      });
 
       setServicesList([
         ...response.data,

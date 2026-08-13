@@ -13,17 +13,37 @@ const franchiseLeadSchema = new mongoose.Schema(
       trim: true,
     },
     email: {
-  type: String,
-  required: false,
-  default: "",
-  trim: true,
-  lowercase: true,
-},
+      type: String,
+      required: false,
+      default: "",
+      trim: true,
+      lowercase: true,
+    },
     city: {
       type: String,
       default: "",
       trim: true,
     },
+    status: {
+      type: String,
+      enum: ['New', 'Contacted', 'Interested', 'Closed', 'Rejected'],
+      default: 'New',
+      trim: true,
+    },
+    assignedTo: {
+      type: String,
+      default: '',
+      trim: true,
+    },
+    notes: {
+      type: String,
+      default: '',
+      trim: true,
+    },
+    branch: {
+      id: { type: String, default: null },
+      name: { type: String, default: null }
+    }
   },
   {
     timestamps: true,

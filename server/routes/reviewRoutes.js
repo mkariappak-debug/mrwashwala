@@ -1,5 +1,6 @@
 import express from 'express';
 import Review from '../models/Review.js';
+import { adminAuth } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
@@ -10,9 +11,9 @@ const router = express.Router();
  */
 router.get('/', async (req, res) => {
   try {
-    const reviews = await Review.find({ rating: 5 })
+    const reviews = await Review.find({ approved: true, hidden: false })
       .sort({ reviewDate: -1 })
-      .select('author rating text profilePhoto reviewDate source')
+      .select('author rating text profilePhoto reviewDate source reply')
       .lean();
 
     res.status(200).json({
@@ -35,9 +36,9 @@ router.get('/', async (req, res) => {
  * Create a new review (for manual entry or future automation)
  * Body: { author, rating, text, profilePhoto, reviewDate, source }
  */
-router.post('/', async (req, res) => {
+router.post('/', adminAuth, async (req, res) => {
   try {
-    const { author, rating, text, profilePhoto, reviewDate, source } = req.body;
+    const { author, rating, text, profilePhoto, reviewDate, source, approved, hidden, reply } = req.body;
 
     // Validate required fields
     if (!author || !text || rating === undefined) {
@@ -61,6 +62,9 @@ router.post('/', async (req, res) => {
       text,
       profilePhoto: profilePhoto || null,
       reviewDate: reviewDate || new Date(),
+      approved: approved !== undefined ? approved : true,
+      hidden: hidden !== undefined ? hidden : false,
+      reply: reply || '',
       source: source || 'manual'
     });
 
@@ -105,6 +109,50 @@ router.get('/:id', async (req, res) => {
       message: 'Failed to fetch review',
       error: error.message
     });
+  }
+});
+
+// @desc    Update review moderation or reply
+// @route   PATCH /api/reviews/:id
+// @access  Admin
+router.patch('/:id', adminAuth, async (req, res) => {
+  try {
+    const { approved, hidden, reply, author, rating, text } = req.body;
+    const review = await Review.findById(req.params.id);
+    if (!review) {
+      return res.status(404).json({ success: false, message: 'Review not found' });
+    }
+
+    if (approved !== undefined) review.approved = approved;
+    if (hidden !== undefined) review.hidden = hidden;
+    if (typeof reply === 'string') review.reply = reply;
+    if (author) review.author = author;
+    if (rating) review.rating = rating;
+    if (text) review.text = text;
+
+    const updatedReview = await review.save();
+    res.status(200).json({ success: true, data: updatedReview });
+  } catch (error) {
+    console.error('Error updating review:', error);
+    res.status(500).json({ success: false, message: 'Failed to update review', error: error.message });
+  }
+});
+
+// @desc    Delete review
+// @route   DELETE /api/reviews/:id
+// @access  Admin
+router.delete('/:id', adminAuth, async (req, res) => {
+  try {
+    const review = await Review.findById(req.params.id);
+    if (!review) {
+      return res.status(404).json({ success: false, message: 'Review not found' });
+    }
+
+    await review.remove();
+    res.status(200).json({ success: true, message: 'Review deleted' });
+  } catch (error) {
+    console.error('Error deleting review:', error);
+    res.status(500).json({ success: false, message: 'Failed to delete review', error: error.message });
   }
 });
 

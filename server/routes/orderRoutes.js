@@ -1,5 +1,6 @@
 import express from 'express';
 import Order from '../models/Order.js';
+import { adminAuth } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
@@ -34,7 +35,10 @@ router.post('/', async (req, res) => {
       longitude = null,
       pickupDate = '',
       pickupTime = '',
+      deliveryDate = '',
       paymentMethod = '',
+      paymentStatus = 'Pending',
+      orderSummary = '',
       recommendedBranch = null,
       selectedBranch = null
     } = req.body;
@@ -42,6 +46,20 @@ router.post('/', async (req, res) => {
     if (!customer || !customer.name || !customer.phone || !customer.address) {
       return res.status(400).json({ message: 'Customer details (name, phone, address) are required' });
     }
+
+    const normalizedPaymentStatus = (() => {
+      if (paymentStatus && paymentStatus !== 'Pending') return paymentStatus;
+      if (['QR Payment', 'Online Payment'].includes(paymentMethod)) return 'Paid';
+      if (paymentMethod === 'WhatsApp Checkout') return 'Pending';
+      return 'Pending';
+    })();
+
+    const normalizedOrderSummary = orderSummary && orderSummary.trim()
+      ? orderSummary.trim()
+      : items?.map((item) => {
+          const unitText = item.unit ? ` ${item.unit}` : '';
+          return `${item.name} (${item.quantity}${unitText})`;
+        }).join(', ');
 
     if (!items || items.length === 0) {
       return res.status(400).json({ message: 'Cart items are required' });
@@ -59,7 +77,10 @@ router.post('/', async (req, res) => {
       longitude,
       pickupDate,
       pickupTime,
+      deliveryDate,
       paymentMethod,
+      paymentStatus: normalizedPaymentStatus,
+      orderSummary: normalizedOrderSummary,
       recommendedBranch,
       selectedBranch
     });
@@ -73,10 +94,40 @@ router.post('/', async (req, res) => {
 
 // @desc    Get all orders (Admin use)
 // @route   GET /api/orders
-// @access  Public (Admin in future)
-router.get('/', async (req, res) => {
+// @access  Admin
+router.get('/', adminAuth, async (req, res) => {
   try {
-    const orders = await Order.find({}).sort({ createdAt: -1 });
+    const { branch, status, paymentStatus, paymentMethod, search } = req.query;
+    const filter = {};
+
+    if (branch && branch !== 'all') {
+      filter['selectedBranch.id'] = branch;
+    }
+
+    if (status) {
+      filter.status = status;
+    }
+
+    if (paymentStatus) {
+      filter.paymentStatus = paymentStatus;
+    }
+
+    if (paymentMethod) {
+      filter.paymentMethod = paymentMethod;
+    }
+
+    if (search) {
+      const regex = new RegExp(search.trim(), 'i');
+      filter.$or = [
+        { orderId: regex },
+        { 'customer.name': regex },
+        { 'customer.phone': regex },
+        { 'customer.address': regex },
+        { 'selectedBranch.name': regex }
+      ];
+    }
+
+    const orders = await Order.find(filter).sort({ createdAt: -1 });
     res.json(orders);
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch orders', error: error.message });
@@ -100,8 +151,8 @@ router.get('/:orderId', async (req, res) => {
 
 // @desc    Update order status
 // @route   PATCH /api/orders/:orderId/status
-// @access  Public (Admin in future)
-router.patch('/:orderId/status', async (req, res) => {
+// @access  Admin
+router.patch('/:orderId/status', adminAuth, async (req, res) => {
   try {
     const { status } = req.body;
     

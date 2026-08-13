@@ -29,6 +29,21 @@ const serviceSchema = new mongoose.Schema(
     featured: {
       type: Boolean,
       default: false
+    },
+    displayType: {
+      type: String,
+      enum: ['main', 'customize'],
+      default: 'main'
+    },
+    customizeCategory: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    customizeSubcategory: {
+      type: String,
+      trim: true,
+      default: ''
     }
   },
   {

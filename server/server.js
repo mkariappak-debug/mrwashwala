@@ -1,3 +1,7 @@
+import dns from "node:dns";
+
+dns.setServers(["8.8.8.8"]);
+import fs from 'fs';
 import express from 'express';
 import path from 'path';
 import dotenv from 'dotenv';
@@ -9,19 +13,31 @@ import Service from './models/Service.js';
 import serviceRoutes from './routes/serviceRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import reviewRoutes from './routes/reviewRoutes.js';
+import authRoutes from './routes/authRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 import franchiseLeadRoutes from './routes/FranchiseLeadRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
+import walkinOrderRoutes from './routes/walkinOrderRoutes.js';
 
 // Load environment variables
 
 const envPath = path.resolve(process.cwd(), 'config', '.env');
-dotenv.config({ path: envPath });
+const rootEnvPath = path.resolve(process.cwd(), '.env');
 
-dotenv.config();
+if (fs.existsSync(envPath)) {
+  dotenv.config({ path: envPath });
+  console.log('Loaded env from:', envPath);
+} else if (fs.existsSync(rootEnvPath)) {
+  dotenv.config({ path: rootEnvPath });
+  console.log('Loaded env from:', rootEnvPath);
+} else {
+  dotenv.config();
+  console.log('Loaded env using default dotenv behavior');
+}
 
-console.log('Using env file:', envPath);
-console.log("SERVER EMAIL_USER =", process.env.EMAIL_USER);
-console.log("SERVER EMAIL_PASS =", process.env.EMAIL_PASS);
+console.log('ADMIN_EMAIL=', process.env.ADMIN_EMAIL);
+console.log('ADMIN_PASSWORD=', process.env.ADMIN_PASSWORD ? 'FOUND' : 'MISSING');
+console.log('JWT_SECRET=', process.env.JWT_SECRET ? 'FOUND' : 'MISSING');
 
 console.log("EMAIL_USER =", process.env.EMAIL_USER);
 console.log("EMAIL_PASS =", process.env.EMAIL_PASS ? "FOUND" : "MISSING");
@@ -83,8 +99,11 @@ app.use('/api', (req, res, next) => {
 // API Routes
 // =========================
 
+app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/walkin-orders', walkinOrderRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/franchise-leads', franchiseLeadRoutes);
 app.use('/api/payments', paymentRoutes);

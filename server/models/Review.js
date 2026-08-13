@@ -26,10 +26,26 @@ const reviewSchema = new mongoose.Schema(
       type: Date,
       default: Date.now
     },
+    approved: {
+      type: Boolean,
+      default: true
+    },
+    hidden: {
+      type: Boolean,
+      default: false
+    },
+    reply: {
+      type: String,
+      default: ''
+    },
     source: {
       type: String,
       enum: ['google', 'manual', 'api'],
       default: 'manual'
+    },
+    branch: {
+      id: { type: String, default: null },
+      name: { type: String, default: null }
     }
   },
   { timestamps: true }

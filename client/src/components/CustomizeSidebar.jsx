@@ -1,46 +1,6 @@
 
-import React, { useState } from "react";
-
-const DATA = {
-  "Dry Clean": {
-    "Men's Wear": [
-      { name: "Shirt/T-Shirt", price: 39 },
-      { name: "Formal/Jeans", price: 44 },
-      { name: "Coat", price: 149 },
-      { name: "Suit (2 Piece)", price: 249 },
-      { name: "Suit (3 Piece)", price: 299 },
-      { name: "Jacket", price: 99 }
-    ],
-
-    "Women's Wear": [
-      { name: "Kurta", price: 75 },
-      { name: "Salwar", price: 75 },
-      { name: "Saree", price: 159 },
-      { name: "Dress", price: 100 },
-      { name: "Western", price: 99 }
-    ],
-
-    Others: [
-      { name: "Carpet (sq ft)", price: 24 },
-      { name: "Toy Cleaning", price: 399 },
-      { name: "Bag Cleaning", price: 199 },
-      { name: "Curtain Cleaning(sq ft)", price: 39 }
-    ]
-  },
-
-  "Bed Set Clean": [
-    { name: "Big Blankets", price: 225 },
-    { name: "Small Blankets", price: 199 },
-    { name: "Bedsheets", price: 129 }
-  ],
-
-  "Shoe Cleaning": [
-    { name: "Sports Shoe", price: 210 },
-    { name: "Casual Shoe", price: 200 },
-    { name: "Formal/Leather", price: 299 },
-    { name: "Boots", price: 299 }
-  ]
-};
+import React, { useEffect, useMemo, useState } from "react";
+import API from "../api/api";
 
 export default function CustomizeSidebar({
   isOpen,
@@ -49,13 +9,59 @@ export default function CustomizeSidebar({
   cart
 }) {
   const [toast, setToast] = useState("");
+  const [services, setServices] = useState([]);
+  const [openSections, setOpenSections] = useState({});
 
-  const [openSections, setOpenSections] = useState({
-    dry: true,
-    men: false,
-    women: false,
-    others: false
-  });
+  useEffect(() => {
+    const fetchCustomizeServices = async () => {
+      try {
+        const response = await API.get('/api/services', {
+          params: { displayType: 'customize' }
+        });
+        setServices(response.data || []);
+      } catch (error) {
+        console.error('Failed to load customize services', error);
+      }
+    };
+
+    fetchCustomizeServices();
+  }, []);
+
+  const groupedServices = useMemo(() => {
+    return services.reduce((result, service) => {
+      const category = service.customizeCategory || 'Other';
+      const subcategory = service.customizeSubcategory || '';
+
+      if (!result[category]) {
+        result[category] = {
+          subcategories: {},
+          items: []
+        };
+      }
+
+      if (subcategory) {
+        if (!result[category].subcategories[subcategory]) {
+          result[category].subcategories[subcategory] = [];
+        }
+        result[category].subcategories[subcategory].push(service);
+      } else {
+        result[category].items.push(service);
+      }
+
+      return result;
+    }, {});
+  }, [services]);
+
+  useEffect(() => {
+    const nextOpen = {};
+    Object.keys(groupedServices).forEach((category) => {
+      nextOpen[`category-${category}`] = true;
+      Object.keys(groupedServices[category].subcategories).forEach((subcategory) => {
+        nextOpen[`subcategory-${category}-${subcategory}`] = false;
+      });
+    });
+    setOpenSections((prev) => ({ ...nextOpen, ...prev }));
+  }, [groupedServices]);
 
   const getCartQty = (itemName) => {
     const item = cart.find((i) => i.name === itemName);
@@ -143,86 +149,70 @@ export default function CustomizeSidebar({
           </button>
         </div>
 
-        <div className="sidebar-section">
-          <h3
-            onClick={() =>
-              setOpenSections((s) => ({
-                ...s,
-                dry: !s.dry
-              }))
-            }
-          >
-            Dry Clean
-          </h3>
+          {Object.entries(groupedServices).length === 0 ? (
+          <div className="sidebar-section">
+            <p className="admin-empty-state">No customize services available.</p>
+          </div>
+        ) : (
+          Object.entries(groupedServices).map(([category, group]) => {
+            const categoryKey = `category-${category}`;
+            return (
+              <div className="sidebar-section" key={category}>
+                <h3
+                  onClick={() =>
+                    setOpenSections((s) => ({
+                      ...s,
+                      [categoryKey]: !s[categoryKey]
+                    }))
+                  }
+                >
+                  {category}
+                </h3>
 
-          {openSections.dry && (
-            <>
-              {["Men's Wear", "Women's Wear", "Others"].map(
-                (group) => {
-                  const key =
-                    group === "Men's Wear"
-                      ? "men"
-                      : group === "Women's Wear"
-                      ? "women"
-                      : "others";
+                {openSections[categoryKey] && (
+                  <>
+                    {group.items.map((item) => (
+                      <ItemRow
+                        key={item.id || item.name}
+                        item={item}
+                        quantity={getCartQty(item.name)}
+                        onChange={updateQty}
+                      />
+                    ))}
 
-                  return (
-                    <div key={group}>
-                      <h4
-                        onClick={() =>
-                          setOpenSections((s) => ({
-                            ...s,
-                            [key]: !s[key]
-                          }))
-                        }
-                      >
-                        {group}
-                      </h4>
+                    {Object.entries(group.subcategories).map(([subcategory, items]) => {
+                      const subcategoryKey = `subcategory-${category}-${subcategory}`;
+                      return (
+                        <div key={subcategory}>
+                          <h4
+                            onClick={() =>
+                              setOpenSections((s) => ({
+                                ...s,
+                                [subcategoryKey]: !s[subcategoryKey]
+                              }))
+                            }
+                          >
+                            {subcategory}
+                          </h4>
 
-                      {openSections[key] &&
-                        DATA["Dry Clean"][group].map(
-                          (item) => (
-                            <ItemRow
-                              key={item.name}
-                              item={item}
-                              quantity={getCartQty(item.name)}
-                              onChange={updateQty}
-                            />
-                          )
-                        )}
-                    </div>
-                  );
-                }
-              )}
-            </>
-          )}
-        </div>
-
-        <div className="sidebar-section">
-          <h3>Bed Set Clean</h3>
-
-          {DATA["Bed Set Clean"].map((item) => (
-            <ItemRow
-              key={item.name}
-              item={item}
-              quantity={getCartQty(item.name)}
-              onChange={updateQty}
-            />
-          ))}
-        </div>
-
-        <div className="sidebar-section">
-          <h3>Shoe Cleaning</h3>
-
-          {DATA["Shoe Cleaning"].map((item) => (
-            <ItemRow
-              key={item.name}
-              item={item}
-              quantity={getCartQty(item.name)}
-              onChange={updateQty}
-            />
-          ))}
-        </div>
+                          {openSections[subcategoryKey] &&
+                            items.map((item) => (
+                              <ItemRow
+                                key={item.id || item.name}
+                                item={item}
+                                quantity={getCartQty(item.name)}
+                                onChange={updateQty}
+                              />
+                            ))}
+                        </div>
+                      );
+                    })}
+                  </>
+                )}
+              </div>
+            );
+          })
+        )}
 
         <div className="sidebar-footer">
           <div className="sidebar-summary">

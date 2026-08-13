@@ -7,6 +7,16 @@ import ServicesPage from "./pages/ServicesPage";
 import FranchisePage from "./pages/FranchisePage";
 import ContactPage from "./pages/ContactPage";
 import SiteLayout from "./layouts/SiteLayout";
+import AdminLayout from "./layouts/AdminLayout.jsx";
+import AdminLogin from "./pages/admin/Login.jsx";
+import AdminDashboard from "./pages/admin/Dashboard.jsx";
+import AdminOrders from "./pages/admin/Orders.jsx";
+import AdminCustomers from "./pages/admin/Customers.jsx";
+import AdminServices from "./pages/admin/Services.jsx";
+import AdminReviews from "./pages/admin/Reviews.jsx";
+import AdminFranchiseLeads from "./pages/admin/FranchiseLeads.jsx";
+import AdminWalkInOrders from "./pages/admin/WalkInOrders.jsx";
+import ProtectedRoute from "./components/admin/ProtectedRoute.jsx";
 import React, { useState, useEffect } from "react";
 
 import "./index.css";
@@ -223,6 +233,17 @@ export default function App() {
           </SiteLayout>
         }
       />
+
+      <Route path="/admin/login" element={<AdminLogin />} />
+      <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
+        <Route index element={<AdminDashboard />} />
+        <Route path="orders" element={<AdminOrders />} />
+        <Route path="walkin-orders" element={<AdminWalkInOrders />} />
+        <Route path="customers" element={<AdminCustomers />} />
+        <Route path="services" element={<AdminServices />} />
+        <Route path="reviews" element={<AdminReviews />} />
+        <Route path="franchise-leads" element={<AdminFranchiseLeads />} />
+      </Route>
 
       <Route path="/address" element={<Navigate to="/contact#address" replace />} />
 

@@ -3,6 +3,7 @@ dotenv.config();
 import nodemailer from "nodemailer";
 import express from "express";
 import FranchiseLead from "../models/FranchiseLead.js";
+import { adminAuth } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 console.log("EMAIL_USER =", process.env.EMAIL_USER);
@@ -69,6 +70,53 @@ console.log("EMAIL SENT:", info.messageId);
       success: false,
       message: "Server Error",
     });
+  }
+});
+
+// @desc    Get all franchise leads for admin
+// @route   GET /api/franchise-leads
+// @access  Admin
+router.get('/', adminAuth, async (req, res) => {
+  try {
+    const { branch } = req.query;
+    const filter = {};
+    if (branch && branch !== 'all') {
+      filter['branch.id'] = branch;
+    }
+    const leads = await FranchiseLead.find(filter).sort({ createdAt: -1 });
+    res.status(200).json({ success: true, count: leads.length, data: leads });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Failed to fetch franchise leads', error: error.message });
+  }
+});
+
+// @desc    Update franchise lead status and notes
+// @route   PATCH /api/franchise-leads/:id/status
+// @access  Admin
+router.patch('/:id/status', adminAuth, async (req, res) => {
+  try {
+    const { status, assignedTo, notes } = req.body;
+
+    const validStatuses = ['New', 'Contacted', 'Interested', 'Closed', 'Rejected'];
+    if (status && !validStatuses.includes(status)) {
+      return res.status(400).json({ message: 'Invalid status' });
+    }
+
+    const lead = await FranchiseLead.findById(req.params.id);
+    if (!lead) {
+      return res.status(404).json({ message: 'Lead not found' });
+    }
+
+    if (status) lead.status = status;
+    if (typeof assignedTo === 'string') lead.assignedTo = assignedTo;
+    if (typeof notes === 'string') lead.notes = notes;
+
+    const updatedLead = await lead.save();
+    res.status(200).json({ success: true, data: updatedLead });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Failed to update lead', error: error.message });
   }
 });
 
