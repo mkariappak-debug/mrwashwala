@@ -88,5 +88,38 @@ export const branchContent = {
         desc: "Consistently rated 4.9+ by our regular customers.",
       },
     ],
+  },
+  "kuvempunagar-mysuru": {
+    tagline: "Coming soon to serve Kuvempunagar with premium garment care.",
+    cardImage: "/branches/kuvempunagar-coming-soon.jpg",
+    coverImage: "/branches/kuvempunagar-coming-soon.jpg",
+    gallery: [
+      "/branches/kuvempunagar-coming-soon.jpg"
+    ],
+    video: null,
+    about:
+      "We are expanding! Our upcoming Kuvempunagar outlet will bring Mr. WashWala's trusted premium laundry, dry cleaning, steam ironing, and doorstep pickup services to Kuvempunagar and surrounding areas.",
+    features: [
+      {
+        icon: "⚡",
+        title: "Express Turnaround",
+        desc: "Fast delivery right to your doorstep.",
+      },
+      {
+        icon: "🧴",
+        title: "Premium Fabric Care",
+        desc: "Specialised handling for all fabric types.",
+      },
+      {
+        icon: "🚴",
+        title: "Free Pickup & Drop",
+        desc: "Doorstep collection across Kuvempunagar.",
+      },
+      {
+        icon: "🌟",
+        title: "5-Star Standard",
+        desc: "Consistent quality backed by modern equipment.",
+      },
+    ],
   }
 };

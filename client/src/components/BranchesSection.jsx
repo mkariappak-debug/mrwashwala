@@ -33,6 +33,22 @@ const branches = [
     whatsapp: '919035999271',
     isNew: true,
   },
+  {
+    id: 3,
+    title: 'Kuvempunagar',
+    badge: 'Coming Soon',
+    description:
+      'Our upcoming Mr. WashWala outlet bringing premium laundry service, dry cleaning, and doorstep delivery convenience to Kuenpon Nagar, Kuenpon Nagar, Mysore.',
+    location: 'Kuvempunagar, Mysuru',
+    image:
+      branchContent?.['kuvempunagar-mysuru']?.cardImage ||
+      '/branches/kuvempunagar-coming-soon.jpg',
+    mapLink: branchConfig.find((branch) => branch.id === 'kuvempunagar-mysuru')?.mapsUrl || 'https://www.google.com/maps/search/?api=1&query=Kuvempunagar,+Mysuru,+Karnataka',
+    phone: '9035999271',
+    whatsapp: '917019436720',
+    isNew: false,
+    isComingSoon: true,
+  },
 ];
 
 export default function BranchesSection() {
@@ -85,6 +101,7 @@ export default function BranchesSection() {
                 <img src={branch.image} alt={`${branch.title} branch`} />
                 <span className="branches-home-card-badge">{branch.badge}</span>
                 {branch.isNew && <span className="branches-home-card-new">NEW</span>}
+                {branch.isComingSoon && <span className="branches-home-card-new">SOON</span>}
               </div>
 
               <div className="branches-home-card-body">
@@ -100,21 +117,34 @@ export default function BranchesSection() {
                 </div>
 
                 <div className="branches-home-card-actions">
-                  <a
-                    href={branch.mapLink}
-                    className="branches-home-action branches-home-action-primary"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    View on Maps
-                  </a>
-                  <button
-                    type="button"
-                    className="branches-home-action branches-home-action-secondary"
-                    onClick={() => handleContactBranch(branch)}
-                  >
-                    Contact Branch
-                  </button>
+                  {branch.isComingSoon ? (
+                    <button
+                      type="button"
+                      className="branches-home-action branches-home-action-secondary"
+                      disabled
+                      style={{ cursor: "default", opacity: 0.85, width: "100%", justifyContent: "center" }}
+                    >
+                      Coming Soon
+                    </button>
+                  ) : (
+                    <>
+                      <a
+                        href={branch.mapLink}
+                        className="branches-home-action branches-home-action-primary"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        View on Maps
+                      </a>
+                      <button
+                        type="button"
+                        className="branches-home-action branches-home-action-secondary"
+                        onClick={() => handleContactBranch(branch)}
+                      >
+                        Contact Branch
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             </article>

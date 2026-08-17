@@ -37,6 +37,20 @@ export default function HeroNowServingCard({ onExplore }) {
           </span>
           <span>Vijayanagar 4th Stage</span>
         </li>
+        <li className="hero-kuvempunagar-card">
+          <div className="hero-now-serving-item hero-now-serving-badge" style={{ background: "transparent", padding: 0, margin: 0, display: "flex" }}>
+            <span className="hero-now-serving-icon" aria-hidden="true">
+              ⏳
+            </span>
+            <span>Coming Soon</span>
+          </div>
+          <div className="hero-now-serving-item" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <span className="hero-now-serving-icon" aria-hidden="true">
+              📍
+            </span>
+            <span>Kuvempunagar</span>
+          </div>
+        </li>
       </ul>
 
       <button type="button" className="hero-now-serving-explore" onClick={handleExplore}>
