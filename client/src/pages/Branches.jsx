@@ -17,7 +17,8 @@ export default function Branches() {
     window.scrollTo(0, 0);
   }, []);
 
-  const activeBranches = branches.filter((b) => b.isActive);
+  // Render all branches here so the coming soon branch is visible
+  const allBranches = branches;
 
   const branchDisplayNames = {
     "vijaynagar-mysuru": {
@@ -27,6 +28,10 @@ export default function Branches() {
     "vijaynagar-2nd-stage-mysuru": {
       shortName: "Vijaynagar 4th Stage",
       name: "Mr. WashWala - Vijaynagar 4th Stage, Mysuru"
+    },
+    "kuvempunagar-mysuru": {
+      shortName: "Kuvempunagar",
+      name: "Mr. WashWala - Kuvempunagar, Mysuru"
     }
   };
 
@@ -43,7 +48,7 @@ export default function Branches() {
             Our Branches
           </h1>
           <p className="branches-hero-subtitle" data-aos="fade-up" data-aos-delay="200">
-            Two premium outlets across Mysuru, one consistent standard of
+            Premium outlets across Mysuru, one consistent standard of
             care. Find the branch nearest you and see how we work.
           </p>
         </div>
@@ -53,8 +58,9 @@ export default function Branches() {
       <section className="branches-grid-section">
         <div className="container">
           <div className="branches-grid">
-            {activeBranches.map((branch, index) => {
+            {allBranches.map((branch, index) => {
               const content = branchContent[branch.id] || {};
+              const isComingSoon = branch.comingSoon || !branch.isActive;
               return (
                 <div
                   className="branch-card"
@@ -94,16 +100,27 @@ export default function Branches() {
                         <span className="branch-card-icon" aria-hidden="true">
                           🕒
                         </span>
-                        Open everyday, 9 AM – 8 PM
+                        {isComingSoon ? "Opening Soon" : "Open everyday, 9 AM – 8 PM"}
                       </li>
                     </ul>
 
-                    <Link
-                      to={`/branches/${branch.id}`}
-                      className="btn btn-primary branch-card-btn"
-                    >
-                      View Details
-                    </Link>
+                    {isComingSoon ? (
+                      <button
+                        type="button"
+                        className="btn btn-secondary branch-card-btn"
+                        disabled
+                        style={{ cursor: "default", opacity: 0.85 }}
+                      >
+                        Coming Soon
+                      </button>
+                    ) : (
+                      <Link
+                        to={`/branches/${branch.id}`}
+                        className="btn btn-primary branch-card-btn"
+                      >
+                        View Details
+                      </Link>
+                    )}
                   </div>
                 </div>
               );
