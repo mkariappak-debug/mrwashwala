@@ -80,22 +80,28 @@ export const branches = [
     isActive: true,
     businessHours: DEFAULT_BUSINESS_HOURS
   }
+];
 
-  // -----------------------------------------------------------------------
-  // To add branch #3, #4, #5... just paste a new object here, e.g.:
-  // {
-  //   id: "hebbal-mysuru",
-  //   name: "Mr. WashWala - Hebbal, Mysuru",
-  //   shortName: "Hebbal Branch",
-  //   businessName: SHARED_BUSINESS_INFO.businessName,
-  //   address: { line1: "...", line2: "...", line3: "...", full: "..." },
-  //   latitude: 12.34,
-  //   longitude: 76.62,
-  //   phone: SHARED_BUSINESS_INFO.phone,
-  //   whatsapp: SHARED_BUSINESS_INFO.whatsapp,
-  //   email: SHARED_BUSINESS_INFO.email,
-  //   isActive: true,
-  //   businessHours: DEFAULT_BUSINESS_HOURS
-  // }
-  // -----------------------------------------------------------------------
+export const adminBranches = [
+  ...branches,
+  {
+    id: "kuvempunagar-1st-stage-mysuru",
+    name: "Mr. WashWala - Kuvempu Nagar 1st Stage, Mysuru",
+    shortName: "Kuvempu Nagar 1st Stage",
+    businessName: SHARED_BUSINESS_INFO.businessName,
+    address: {
+      line1: "Main Road",
+      line2: "Kuvempu Nagar 1st Stage",
+      line3: "Mysuru, Karnataka 570023",
+      full: "Main Road, Kuvempu Nagar 1st Stage, Mysuru, Karnataka 570023"
+    },
+    mapsUrl: "https://www.google.com/maps/search/?api=1&query=Kuvempu+Nagar+1st+Stage,+Mysuru,+Karnataka",
+    latitude: 12.2850,
+    longitude: 76.6250,
+    phone: "7019436720",
+    whatsapp: SHARED_BUSINESS_INFO.whatsapp,
+    email: SHARED_BUSINESS_INFO.email,
+    isActive: true,
+    businessHours: DEFAULT_BUSINESS_HOURS
+  }
 ];

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { branches } from '../config/branches';
+import { adminBranches } from '../config/branches';
 
 const AdminBranchContext = createContext(null);
 const LOCAL_STORAGE_KEY = 'mrwashwala_admin_branch';
@@ -19,13 +19,13 @@ export const AdminBranchProvider = ({ children }) => {
 
   const selectedBranch = useMemo(() => {
     if (selectedBranchId === ALL_BRANCHES_ID) return null;
-    return branches.find((branch) => branch.id === selectedBranchId) || null;
+    return adminBranches.find((branch) => branch.id === selectedBranchId) || null;
   }, [selectedBranchId]);
 
   const availableBranches = useMemo(
     () => [
       { id: ALL_BRANCHES_ID, shortName: 'All Branches', name: 'All Branches' },
-      ...branches.map((branch) => ({
+      ...adminBranches.map((branch) => ({
         id: branch.id,
         name: branch.name,
         shortName: branch.shortName || branch.name

@@ -1,11 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import API from '../../api/api';
 import { useAdminBranch } from '../../context/AdminBranchContext.jsx';
+import { adminBranches } from '../../config/branches';
+import { isValidPhone, sanitizePhoneInput, getPhoneValidationMessage } from '../../utils/validators.js';
 
-const BRANCH_OPTIONS = [
-  { id: 'vijaynagar-mysuru', name: 'Vijayanagar 2nd Stage' },
-  { id: 'vijaynagar-2nd-stage-mysuru', name: 'Vijayanagar 4th Stage' }
-];
+const BRANCH_OPTIONS = adminBranches.map((branch) => ({
+  id: branch.id,
+  name: branch.shortName || branch.name
+}));
 
 const STATUS_OPTIONS = [
   'Pending',
@@ -52,7 +54,7 @@ const emptyOrderForm = {
     mapsLink: '',
     notes: ''
   },
-  branch: {
+  branch: BRANCH_OPTIONS[0] || {
     id: 'vijaynagar-mysuru',
     name: 'Vijayanagar 2nd Stage'
   },
@@ -95,12 +97,13 @@ const getNumericValue = (value) => {
 const calculateServiceSubtotal = (service) => {
   const quantity = getNumericValue(service?.quantity);
   const price = getNumericValue(service?.price);
-  return quantity * price;
+  return Math.round(quantity * price * 100) / 100;
 };
 
 export default function WalkInOrders() {
   const { selectedBranchId } = useAdminBranch();
   const [orders, setOrders] = useState([]);
+  const [availableServices, setAvailableServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState('');
@@ -163,6 +166,19 @@ export default function WalkInOrders() {
     fetchOrders();
   }, [selectedBranchId, search, branchFilter, statusFilter, paymentMethodFilter, paymentStatusFilter, dateRange, sortOrder]);
 
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const response = await API.get('/api/services');
+        setAvailableServices(response.data || []);
+      } catch (err) {
+        console.error('Failed to load services:', err);
+      }
+    };
+
+    fetchServices();
+  }, []);
+
   const handleFormChange = (path, value) => {
     const nextForm = { ...orderForm };
     const keys = path.split('.');
@@ -202,11 +218,49 @@ export default function WalkInOrders() {
     setOrderForm(nextForm);
   };
 
+  const handleSelectService = (index, serviceName) => {
+    const nextForm = { ...orderForm };
+    const matchedService = availableServices.find((s) => s.name === serviceName);
+    const prevRow = nextForm.services[index] || {};
+    const price = matchedService ? (Number(matchedService.price) || 0) : (prevRow.price || 0);
+    const unit = matchedService?.unit ? (matchedService.unit.charAt(0).toUpperCase() + matchedService.unit.slice(1)) : (prevRow.unit || 'Kg');
+    const quantity = Math.max(1, Number(prevRow.quantity) || 1);
+    const subtotal = Math.round(quantity * price * 100) / 100;
+
+    const updatedRow = {
+      ...prevRow,
+      name: serviceName,
+      price,
+      unit,
+      quantity,
+      subtotal
+    };
+    nextForm.services[index] = updatedRow;
+    const summary = calculateSummary(nextForm);
+    nextForm.subtotal = summary.subtotal;
+    nextForm.grandTotal = summary.grandTotal;
+    nextForm.payment.balanceDue = summary.balanceDue;
+    setOrderForm(nextForm);
+  };
+
   const updateServiceRow = (index, field, value) => {
     const nextForm = { ...orderForm };
-    const service = { ...nextForm.services[index], [field]: value };
-    service.subtotal = calculateServiceSubtotal(service);
-    nextForm.services[index] = service;
+    const currentRow = { ...nextForm.services[index] };
+
+    if (field === 'quantity') {
+      const qty = Math.max(1, Number(value) || 1);
+      currentRow.quantity = qty;
+      currentRow.subtotal = Math.round(qty * (Number(currentRow.price) || 0) * 100) / 100;
+    } else if (field === 'price') {
+      const price = Math.max(0, Number(value) || 0);
+      currentRow.price = price;
+      currentRow.subtotal = Math.round((Number(currentRow.quantity) || 1) * price * 100) / 100;
+    } else {
+      currentRow[field] = value;
+      currentRow.subtotal = calculateServiceSubtotal(currentRow);
+    }
+
+    nextForm.services[index] = currentRow;
     const summary = calculateSummary(nextForm);
     nextForm.subtotal = summary.subtotal;
     nextForm.grandTotal = summary.grandTotal;
@@ -236,9 +290,31 @@ export default function WalkInOrders() {
 
   const handleSaveOrder = async (event) => {
     event.preventDefault();
-    setSaving(true);
     setError(null);
 
+    if (!orderForm.customer?.name?.trim()) {
+      setError('Customer Name is required');
+      return;
+    }
+    
+    const phoneError = getPhoneValidationMessage(orderForm.customer?.phone);
+    if (phoneError) {
+      setError(phoneError);
+      return;
+    }
+
+    if (!orderForm.customer?.address?.trim()) {
+      setError('Customer Address is required');
+      return;
+    }
+
+    const validServices = orderForm.services.filter(s => s.name && s.name.trim() !== '');
+    if (validServices.length === 0) {
+      setError('Please select at least one service.');
+      return;
+    }
+
+    setSaving(true);
     try {
       if (formMode === 'create') {
         await API.post('/api/walkin-orders', orderForm);
@@ -348,31 +424,37 @@ export default function WalkInOrders() {
               <tr>
                 <th>Order ID</th>
                 <th>Customer</th>
-                <th>Phone</th>
                 <th>Branch</th>
-                <th>Order Summary</th>
-                <th>Grand Total</th>
-                <th>Payment</th>
+                <th>Summary</th>
+                <th>Total</th>
                 <th>Status</th>
-                <th>Pickup</th>
-                <th>Delivery</th>
-                <th>Created</th>
+                <th>Timing</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredOrders.map((order) => (
                 <tr key={order.orderId}>
-                  <td>{order.orderId}</td>
-                  <td>{order.customer.name || '—'}</td>
-                  <td>{order.customer.phone}</td>
-                  <td>{order.branch.name}</td>
-                  <td>{order.orderSummary}</td>
-                  <td>₹{order.grandTotal.toLocaleString()}</td>
+                  <td><span style={{ fontWeight: 600, color: 'var(--admin-primary)' }}>{order.orderId}</span></td>
                   <td>
-                    <div style={{ display: 'grid', gap: 4 }}>
-                      <span>{order.payment.method}</span>
-                      <span className="status-pill {order.payment.status.toLowerCase()}">{order.payment.status}</span>
+                    <div className="admin-cell-user">
+                      <strong>{order.customer.name || '—'}</strong>
+                      <span>{order.customer.phone}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span className="branch-badge">{order.branch?.name || '—'}</span>
+                  </td>
+                  <td>
+                    <div style={{ maxWidth: 240, whiteSpace: 'normal', fontSize: '0.82rem', lineHeight: '1.4' }}>
+                      {order.orderSummary}
+                    </div>
+                  </td>
+                  <td>
+                    <div className="admin-cell-user">
+                      <strong style={{ fontSize: '0.95rem' }}>₹{order.grandTotal.toLocaleString()}</strong>
+                      <span className={`status-pill ${order.payment.status.toLowerCase().replace(/\s+/g, '-')}`} style={{ marginTop: '3px' }}>{order.payment.status}</span>
+                      <span style={{ fontSize: '0.75rem', marginTop: '3px' }}>{order.payment.method}</span>
                     </div>
                   </td>
                   <td>
@@ -380,19 +462,24 @@ export default function WalkInOrders() {
                       {order.status}
                     </span>
                   </td>
-                  <td>{order.delivery.pickupDate || '—'}</td>
-                  <td>{order.delivery.expectedDeliveryDate || '—'}</td>
-                  <td>{formatDate(order.createdAt)}</td>
-                  <td style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                    <button className="admin-button" type="button" onClick={() => setActiveOrder(order)}>
-                      View
-                    </button>
-                    <button className="admin-button" type="button" onClick={() => openEditForm(order)}>
-                      Edit
-                    </button>
-                    <button className="admin-button" type="button" onClick={() => handleDeleteOrder(order.orderId)} style={{ background: '#ef4444' }}>
-                      Delete
-                    </button>
+                  <td>
+                    <div className="admin-cell-user">
+                      <span><strong>In:</strong> {order.delivery.pickupDate || '—'}</span>
+                      <span><strong>Out:</strong> {order.delivery.expectedDeliveryDate || '—'}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="admin-cell-actions">
+                      <button className="admin-button admin-button--compact" type="button" onClick={() => setActiveOrder(order)}>
+                        View
+                      </button>
+                      <button className="admin-button admin-button--compact admin-button--secondary" type="button" onClick={() => openEditForm(order)}>
+                        Edit
+                      </button>
+                      <button className="admin-button admin-button--compact admin-button--danger" type="button" onClick={() => handleDeleteOrder(order.orderId)}>
+                        Del
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -418,21 +505,22 @@ export default function WalkInOrders() {
                 <div className="admin-card__title">Customer Information</div>
                 <div className="admin-filter-row">
                   <label>
-                    <span>Name</span>
+                    <span>Name <span style={{ color: '#ef4444' }}>*</span></span>
                     <input
                       className="admin-input"
+                      required
                       value={orderForm.customer.name}
                       onChange={(event) => handleFormChange('customer.name', event.target.value)}
                     />
                   </label>
                   <label>
-                    <span>Mobile Number</span>
+                    <span>Mobile Number <span style={{ color: '#ef4444' }}>*</span></span>
                     <input
                       className="admin-input"
                       required
                       value={orderForm.customer.phone}
                       onBlur={(event) => handleLookupPhone(event.target.value)}
-                      onChange={(event) => handleFormChange('customer.phone', event.target.value)}
+                      onChange={(event) => handleFormChange('customer.phone', sanitizePhoneInput(event.target.value))}
                     />
                   </label>
                 </div>
@@ -456,9 +544,10 @@ export default function WalkInOrders() {
                 </div>
                 <div className="admin-filter-row">
                   <label>
-                    <span>Address</span>
+                    <span>Address <span style={{ color: '#ef4444' }}>*</span></span>
                     <textarea
                       className="admin-textarea"
+                      required
                       value={orderForm.customer.address}
                       onChange={(event) => handleFormChange('customer.address', event.target.value)}
                     />
@@ -535,11 +624,21 @@ export default function WalkInOrders() {
                     <div className="admin-service-row" key={index}>
                       <div className="admin-service-field admin-service-field--full">
                         <span className="admin-service-field__label">Service</span>
-                        <input
-                          className="admin-input"
+                        <select
+                          className="admin-select"
                           value={service.name}
-                          onChange={(event) => updateServiceRow(index, 'name', event.target.value)}
-                        />
+                          onChange={(event) => handleSelectService(index, event.target.value)}
+                        >
+                          <option value="">Select a service</option>
+                          {availableServices.map((s) => (
+                            <option key={s.id || s._id || s.name} value={s.name}>
+                              {s.name} (₹{s.price}/{s.unit || 'unit'})
+                            </option>
+                          ))}
+                          {service.name && !availableServices.some((s) => s.name === service.name) && (
+                            <option value={service.name}>{service.name}</option>
+                          )}
+                        </select>
                       </div>
                       <div className="admin-service-field">
                         <span className="admin-service-field__label">Qty</span>
@@ -547,8 +646,16 @@ export default function WalkInOrders() {
                           className="admin-input"
                           type="number"
                           min="1"
-                          value={service.quantity}
-                          onChange={(event) => updateServiceRow(index, 'quantity', Number(event.target.value))}
+                          value={service.quantity === 0 ? '' : service.quantity}
+                          placeholder="1"
+                          onFocus={(e) => {
+                            if (e.target.value === '0' || e.target.value === '1') e.target.select();
+                          }}
+                          onChange={(event) => {
+                            const raw = event.target.value;
+                            const qty = raw === '' ? 1 : Number(raw.replace(/^0+(?=\d)/, ''));
+                            updateServiceRow(index, 'quantity', qty);
+                          }}
                         />
                       </div>
                       <div className="admin-service-field">
@@ -560,16 +667,28 @@ export default function WalkInOrders() {
                         >
                           <option value="Kg">Kg</option>
                           <option value="Piece">Piece</option>
+                          <option value="Item">Item</option>
+                          <option value="Pair">Pair</option>
+                          <option value="Set">Set</option>
                         </select>
                       </div>
                       <div className="admin-service-field">
-                        <span className="admin-service-field__label">Price</span>
+                        <span className="admin-service-field__label">Price (₹)</span>
                         <input
                           className="admin-input"
                           type="number"
                           min="0"
-                          value={service.price}
-                          onChange={(event) => updateServiceRow(index, 'price', Number(event.target.value))}
+                          step="any"
+                          value={service.price === 0 ? '' : service.price}
+                          placeholder="0"
+                          onFocus={(e) => {
+                            if (e.target.value === '0') e.target.select();
+                          }}
+                          onChange={(event) => {
+                            const raw = event.target.value;
+                            const pr = raw === '' ? 0 : Number(raw.replace(/^0+(?=\d)/, ''));
+                            updateServiceRow(index, 'price', pr);
+                          }}
                         />
                       </div>
                       <div className="admin-service-field">
@@ -595,23 +714,39 @@ export default function WalkInOrders() {
                 </button>
                 <div className="admin-form-grid" style={{ marginTop: 16 }}>
                   <label>
-                    <span>Discount</span>
+                    <span>Discount (₹)</span>
                     <input
                       className="admin-input"
                       type="number"
                       min="0"
-                      value={orderForm.discount}
-                      onChange={(event) => handleFormChange('discount', Number(event.target.value))}
+                      value={orderForm.discount === 0 ? '' : orderForm.discount}
+                      placeholder="0"
+                      onFocus={(e) => {
+                        if (e.target.value === '0') e.target.select();
+                      }}
+                      onChange={(event) => {
+                        const raw = event.target.value;
+                        const val = raw === '' ? 0 : Number(raw.replace(/^0+(?=\d)/, ''));
+                        handleFormChange('discount', val);
+                      }}
                     />
                   </label>
                   <label>
-                    <span>GST</span>
+                    <span>GST (₹)</span>
                     <input
                       className="admin-input"
                       type="number"
                       min="0"
-                      value={orderForm.gst}
-                      onChange={(event) => handleFormChange('gst', Number(event.target.value))}
+                      value={orderForm.gst === 0 ? '' : orderForm.gst}
+                      placeholder="0"
+                      onFocus={(e) => {
+                        if (e.target.value === '0') e.target.select();
+                      }}
+                      onChange={(event) => {
+                        const raw = event.target.value;
+                        const val = raw === '' ? 0 : Number(raw.replace(/^0+(?=\d)/, ''));
+                        handleFormChange('gst', val);
+                      }}
                     />
                   </label>
                 </div>
@@ -650,9 +785,16 @@ export default function WalkInOrders() {
                     className="admin-input"
                     type="number"
                     min="0"
-                    value={orderForm.payment.amountPaid}
-                    onChange={(event) => handleFormChange('payment.amountPaid', Number(event.target.value))}
-                    placeholder="Amount Paid"
+                    value={orderForm.payment.amountPaid === 0 ? '' : orderForm.payment.amountPaid}
+                    placeholder="Amount Paid (0)"
+                    onFocus={(e) => {
+                      if (e.target.value === '0') e.target.select();
+                    }}
+                    onChange={(event) => {
+                      const raw = event.target.value;
+                      const val = raw === '' ? 0 : Number(raw.replace(/^0+(?=\d)/, ''));
+                      handleFormChange('payment.amountPaid', val);
+                    }}
                   />
                 </div>
                 <div className="admin-filter-row" style={{ marginTop: 16 }}>
@@ -740,7 +882,7 @@ export default function WalkInOrders() {
 
               <section className="admin-card">
                 <div className="admin-card__title">Order Summary</div>
-                <p><strong>Branch:</strong> {activeOrder.branch.name}</p>
+                <p><strong>Branch:</strong> {activeOrder.branch?.name || '—'}</p>
                 <p><strong>Status:</strong> {activeOrder.status}</p>
                 <p><strong>Grand Total:</strong> ₹{activeOrder.grandTotal.toLocaleString()}</p>
                 <p><strong>Subtotal:</strong> ₹{activeOrder.subtotal.toLocaleString()}</p>

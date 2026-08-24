@@ -1,5 +1,7 @@
 import express from 'express';
 import WalkInOrder from '../models/WalkInOrder.js';
+import OrderProcessing from '../models/OrderProcessing.js';
+import { determineWorkflow } from '../config/workflows.js';
 import { adminAuth } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -81,8 +83,8 @@ router.post('/', async (req, res) => {
       orderSummary = ''
     } = req.body;
 
-    if (!customer || !customer.phone) {
-      return res.status(400).json({ message: 'Customer mobile number is required' });
+    if (!customer || !customer.name?.trim() || !customer.phone?.trim() || !customer.address?.trim()) {
+      return res.status(400).json({ message: 'Customer Name, Mobile Number, and Address are required' });
     }
 
     if (!branch || !branch.id || !branch.name) {
@@ -137,6 +139,21 @@ router.post('/', async (req, res) => {
     });
 
     const savedOrder = await walkInOrder.save();
+
+    const processingTickets = normalizedServices.map(service => {
+      const workflow = determineWorkflow(service.name);
+      return {
+        orderId: savedOrder.orderId,
+        orderType: 'WalkInOrder',
+        customerName: customer.name || 'Walk-in Customer',
+        serviceName: service.name,
+        workflowKey: workflow.key,
+        status: 'New'
+      };
+    });
+    
+    await OrderProcessing.insertMany(processingTickets);
+
     res.status(201).json(savedOrder);
   } catch (error) {
     console.error('Walk-in order creation failed:', error.message);
@@ -172,6 +189,17 @@ router.get('/:orderId', async (req, res) => {
 router.patch('/:orderId', async (req, res) => {
   try {
     const updates = req.body;
+
+    if (updates.customer) {
+      if (
+        (updates.customer.name !== undefined && !updates.customer.name.trim()) ||
+        (updates.customer.phone !== undefined && !updates.customer.phone.trim()) ||
+        (updates.customer.address !== undefined && !updates.customer.address.trim())
+      ) {
+        return res.status(400).json({ message: 'Customer Name, Mobile Number, and Address cannot be empty' });
+      }
+    }
+
     if (updates.services) {
       updates.services = updates.services.map((service) => ({
         ...service,

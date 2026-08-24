@@ -18,6 +18,7 @@ import adminRoutes from './routes/adminRoutes.js';
 import franchiseLeadRoutes from './routes/FranchiseLeadRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import walkinOrderRoutes from './routes/walkinOrderRoutes.js';
+import processingRoutes from './routes/processingRoutes.js';
 
 // Load environment variables
 
@@ -107,6 +108,7 @@ app.use('/api/walkin-orders', walkinOrderRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/franchise-leads', franchiseLeadRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/processing', processingRoutes);
 
 // =========================
 // API Status Route

@@ -36,38 +36,38 @@ export default function AdminDashboard() {
   return (
     <div className="admin-section">
       <div className="admin-grid admin-grid--4">
-        <div className="admin-card">
+        <div className="admin-stat-card">
           <div className="admin-card__title">Total Orders</div>
           <div className="admin-card__value">{stats.totalOrders}</div>
         </div>
-        <div className="admin-card">
+        <div className="admin-stat-card">
           <div className="admin-card__title">Pending Orders</div>
           <div className="admin-card__value">{stats.pendingOrders}</div>
         </div>
-        <div className="admin-card">
+        <div className="admin-stat-card">
           <div className="admin-card__title">Monthly Revenue</div>
           <div className="admin-card__value">₹{stats.monthlyRevenue.toLocaleString()}</div>
         </div>
-        <div className="admin-card">
+        <div className="admin-stat-card">
           <div className="admin-card__title">Franchise Leads</div>
           <div className="admin-card__value">{stats.franchiseLeads}</div>
         </div>
       </div>
 
       <div className="admin-grid admin-grid--4" style={{ marginTop: 20 }}>
-        <div className="admin-card">
+        <div className="admin-stat-card">
           <div className="admin-card__title">Today's Orders</div>
           <div className="admin-card__value">{stats.todaysOrders}</div>
         </div>
-        <div className="admin-card">
+        <div className="admin-stat-card">
           <div className="admin-card__title">Walk-in Orders</div>
           <div className="admin-card__value">{stats.totalWalkInOrders}</div>
         </div>
-        <div className="admin-card">
+        <div className="admin-stat-card">
           <div className="admin-card__title">Walk-in Revenue</div>
           <div className="admin-card__value">₹{stats.walkInMonthlyRevenue.toLocaleString()}</div>
         </div>
-        <div className="admin-card">
+        <div className="admin-stat-card">
           <div className="admin-card__title">Website Order Revenue</div>
           <div className="admin-card__value">₹{stats.websiteOrderRevenue.toLocaleString()}</div>
         </div>

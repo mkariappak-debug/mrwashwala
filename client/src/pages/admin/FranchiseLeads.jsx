@@ -4,15 +4,58 @@ import { useAdminBranch } from '../../context/AdminBranchContext.jsx';
 
 const statusOptions = ['New', 'Contacted', 'Interested', 'Closed', 'Rejected'];
 
+const LeadCard = ({ lead, onSave }) => {
+  const [status, setStatus] = useState(lead.status || 'New');
+  const [assignedTo, setAssignedTo] = useState(lead.assignedTo || '');
+  const [notes, setNotes] = useState(lead.notes || '');
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async () => {
+    setSaving(true);
+    await onSave(lead._id, { status, assignedTo, notes });
+    setSaving(false);
+  };
+
+  return (
+    <div className="admin-card" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div>
+          <h3 style={{ margin: '0 0 6px 0', fontSize: '1.1rem', color: 'var(--admin-heading)' }}>{lead.name}</h3>
+          <span className={`status-pill ${status.toLowerCase()}`}>{status}</span>
+        </div>
+        <div style={{ textAlign: 'right', fontSize: '0.8rem', color: 'var(--admin-muted)' }}>
+          {new Date(lead.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
+        </div>
+      </div>
+      
+      <div className="admin-cell-user" style={{ gap: 8, marginTop: '4px' }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>📞 {lead.phone}</span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>✉️ {lead.email || 'No email'}</span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>📍 {lead.city || 'No city'} {lead.branch ? `(${lead.branch.name})` : ''}</span>
+      </div>
+      
+      <div style={{ height: '1px', background: 'var(--admin-glass-border-subtle)', margin: '6px 0' }} />
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <select className="admin-select" value={status} onChange={(e) => setStatus(e.target.value)}>
+          {statusOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+        </select>
+        <input className="admin-input" placeholder="Assign staff" value={assignedTo} onChange={(e) => setAssignedTo(e.target.value)} />
+        <textarea className="admin-textarea" rows={3} placeholder="Notes" value={notes} onChange={(e) => setNotes(e.target.value)} />
+      </div>
+
+      <button type="button" className="admin-button" onClick={handleSave} disabled={saving} style={{ marginTop: '4px' }}>
+        {saving ? 'Saving...' : 'Save Updates'}
+      </button>
+    </div>
+  );
+};
+
 export default function AdminFranchiseLeads() {
   const { selectedBranchId } = useAdminBranch();
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeLead, setActiveLead] = useState(null);
-  const [notes, setNotes] = useState('');
-  const [assignedTo, setAssignedTo] = useState('');
-  const [status, setStatus] = useState('New');
 
   useEffect(() => {
     const fetchLeads = async () => {
@@ -32,25 +75,12 @@ export default function AdminFranchiseLeads() {
     fetchLeads();
   }, [selectedBranchId]);
 
-  const selectLead = (lead) => {
-    setActiveLead(lead);
-    setNotes(lead.notes || '');
-    setAssignedTo(lead.assignedTo || '');
-    setStatus(lead.status || 'New');
-  };
-
-  const saveLead = async () => {
-    if (!activeLead) return;
+  const handleUpdateLead = async (id, updates) => {
     try {
-      const response = await API.patch(`/api/franchise-leads/${activeLead._id}/status`, {
-        status,
-        assignedTo,
-        notes
-      });
-      setLeads((prev) => prev.map((lead) => (lead._id === response.data.data._id ? response.data.data : lead)));
-      setActiveLead(response.data.data);
+      const response = await API.patch(`/api/franchise-leads/${id}/status`, updates);
+      setLeads((prev) => prev.map((lead) => (lead._id === id ? response.data.data : lead)));
     } catch (err) {
-      setError(err?.response?.data?.message || err.message || 'Unable to update lead');
+      alert(err?.response?.data?.message || 'Unable to update lead');
     }
   };
 
@@ -64,82 +94,20 @@ export default function AdminFranchiseLeads() {
 
   return (
     <div className="admin-section">
-      <div className="admin-grid" style={{ gridTemplateColumns: 'minmax(280px, 1fr) minmax(320px, 1.35fr)', gap: 24 }}>
-        <div className="admin-card">
-          <div className="admin-card__title">Franchise Leads</div>
-          <div style={{ display: 'grid', gap: 12 }}>
-            {leads.length === 0 ? (
-              <div className="admin-empty-state">No leads available.</div>
-            ) : (
-              leads.map((lead) => (
-                <button
-                  type="button"
-                  key={lead._id}
-                  onClick={() => selectLead(lead)}
-                  className="admin-card"
-                  style={{ textAlign: 'left', width: '100%', cursor: 'pointer', display: 'grid', gap: 8 }}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
-                    <strong>{lead.name}</strong>
-                    <span className="status-pill">{lead.status}</span>
-                  </div>
-                  <div style={{ display: 'grid', gap: 4, fontSize: '0.95rem' }}>
-                    <div>{lead.phone}</div>
-                    <div>{lead.email || 'No email provided'}</div>
-                    <div>{lead.city || 'No city specified'}</div>
-                  </div>
-                </button>
-              ))
-            )}
-          </div>
-        </div>
-
-        <div className="admin-card">
-          <div className="admin-card__title">Lead Details</div>
-          {activeLead ? (
-            <div className="admin-form">
-              <div>
-                <strong>Name:</strong> {activeLead.name}
-              </div>
-              <div>
-                <strong>Phone:</strong> {activeLead.phone}
-              </div>
-              <div>
-                <strong>Email:</strong> {activeLead.email || '—'}
-              </div>
-              <div>
-                <strong>City:</strong> {activeLead.city || '—'}
-              </div>
-              <div>
-                <strong>Branch:</strong> {activeLead.branch?.name || '—'}
-              </div>
-              <select className="admin-select" value={status} onChange={(event) => setStatus(event.target.value)}>
-                {statusOptions.map((option) => (
-                  <option key={option} value={option}>{option}</option>
-                ))}
-              </select>
-              <input
-                className="admin-input"
-                placeholder="Assign staff"
-                value={assignedTo}
-                onChange={(event) => setAssignedTo(event.target.value)}
-              />
-              <textarea
-                className="admin-textarea"
-                rows={5}
-                placeholder="Notes"
-                value={notes}
-                onChange={(event) => setNotes(event.target.value)}
-              />
-              <button type="button" className="admin-button" onClick={saveLead}>
-                Save Lead
-              </button>
-            </div>
-          ) : (
-            <div className="admin-empty-state">Select a lead to manage details.</div>
-          )}
-        </div>
+      <div className="admin-page-header" style={{ marginBottom: '10px' }}>
+        <h1>Franchise Leads</h1>
+        <p>Manage and track all prospective franchise inquiries without duplicate panels.</p>
       </div>
+
+      {leads.length === 0 ? (
+        <div className="admin-empty-state">No franchise leads available.</div>
+      ) : (
+        <div className="admin-grid admin-grid--3">
+          {leads.map((lead) => (
+            <LeadCard key={lead._id} lead={lead} onSave={handleUpdateLead} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

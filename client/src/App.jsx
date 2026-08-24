@@ -16,6 +16,8 @@ import AdminServices from "./pages/admin/Services.jsx";
 import AdminReviews from "./pages/admin/Reviews.jsx";
 import AdminFranchiseLeads from "./pages/admin/FranchiseLeads.jsx";
 import AdminWalkInOrders from "./pages/admin/WalkInOrders.jsx";
+import OrderProcessing from "./pages/admin/OrderProcessing.jsx";
+import ProcessingDetail from "./pages/admin/ProcessingDetail.jsx";
 import ProtectedRoute from "./components/admin/ProtectedRoute.jsx";
 import React, { useState, useEffect } from "react";
 
@@ -243,6 +245,8 @@ export default function App() {
         <Route path="services" element={<AdminServices />} />
         <Route path="reviews" element={<AdminReviews />} />
         <Route path="franchise-leads" element={<AdminFranchiseLeads />} />
+        <Route path="processing" element={<OrderProcessing />} />
+        <Route path="processing/:id" element={<ProcessingDetail />} />
       </Route>
 
       <Route path="/address" element={<Navigate to="/contact#address" replace />} />

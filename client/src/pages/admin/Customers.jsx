@@ -65,8 +65,8 @@ export default function AdminCustomers() {
             <table className="admin-table">
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Phone</th>
+                <th>Customer</th>
+                <th>Contact</th>
                 <th>Total Orders</th>
                 <th>Total Spending</th>
                 <th>Last Order</th>
@@ -75,10 +75,20 @@ export default function AdminCustomers() {
             <tbody>
               {filteredCustomers.map((customer) => (
                 <tr key={customer._id || customer.phone}>
-                  <td>{customer.name}</td>
-                  <td>{customer.phone}</td>
-                  <td>{customer.totalOrders}</td>
-                  <td>₹{customer.totalSpent.toLocaleString()}</td>
+                  <td>
+                    <strong>{customer.name}</strong>
+                  </td>
+                  <td>
+                    <span style={{ fontFamily: 'monospace' }}>{customer.phone}</span>
+                  </td>
+                  <td>
+                    <span className="status-pill pending" style={{ background: 'rgba(37, 99, 235, 0.1)', color: 'var(--admin-primary)', border: 'none' }}>
+                      {customer.totalOrders} Orders
+                    </span>
+                  </td>
+                  <td>
+                    <strong>₹{customer.totalSpent.toLocaleString()}</strong>
+                  </td>
                   <td>{new Date(customer.lastOrder).toLocaleDateString()}</td>
                 </tr>
               ))}

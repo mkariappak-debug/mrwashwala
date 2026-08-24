@@ -1,5 +1,7 @@
 import express from 'express';
 import Order from '../models/Order.js';
+import OrderProcessing from '../models/OrderProcessing.js';
+import { determineWorkflow } from '../config/workflows.js';
 import { adminAuth } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -43,7 +45,7 @@ router.post('/', async (req, res) => {
       selectedBranch = null
     } = req.body;
 
-    if (!customer || !customer.name || !customer.phone || !customer.address) {
+    if (!customer || !customer.name?.trim() || !customer.phone?.trim() || !customer.address?.trim()) {
       return res.status(400).json({ message: 'Customer details (name, phone, address) are required' });
     }
 
@@ -86,6 +88,22 @@ router.post('/', async (req, res) => {
     });
 
     const savedOrder = await order.save();
+
+    // Create OrderProcessing tickets for each item
+    const processingTickets = items.map(item => {
+      const workflow = determineWorkflow(item.name);
+      return {
+        orderId: savedOrder.orderId,
+        orderType: 'Order',
+        customerName: customer.name,
+        serviceName: item.name,
+        workflowKey: workflow.key,
+        status: 'New'
+      };
+    });
+    
+    await OrderProcessing.insertMany(processingTickets);
+
     res.status(201).json(savedOrder);
   } catch (error) {
     res.status(500).json({ message: 'Failed to create order', error: error.message });

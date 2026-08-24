@@ -13,11 +13,11 @@ const WalkInOrderServiceSchema = new mongoose.Schema(
 
 const WalkInOrderCustomerSchema = new mongoose.Schema(
   {
-    name: { type: String, trim: true, default: '' },
+    name: { type: String, required: true, trim: true },
     phone: { type: String, required: true, trim: true },
     altPhone: { type: String, trim: true, default: '' },
     email: { type: String, trim: true, default: '' },
-    address: { type: String, trim: true, default: '' },
+    address: { type: String, required: true, trim: true },
     area: { type: String, trim: true, default: '' },
     city: { type: String, trim: true, default: '' },
     pincode: { type: String, trim: true, default: '' },

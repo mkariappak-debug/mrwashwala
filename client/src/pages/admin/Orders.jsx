@@ -233,23 +233,25 @@ export default function AdminOrders() {
                 {filteredOrders.map((order) => {
                   const paymentStatus = normalizePaymentStatus(order);
                   const branchName = order.selectedBranch?.name || order.selectedBranch?.id || 'All Branches';
+                  const statusClass = order.status ? order.status.toLowerCase().replace(/\s+/g, '-') : 'pending';
                   return (
                     <tr key={order._id}>
-                      <td>{order.orderId}</td>
+                      <td><span style={{ fontWeight: 600, color: 'var(--admin-primary)' }}>{order.orderId}</span></td>
                       <td>
-                        <div style={{ display: 'grid', gap: 4 }}>
+                        <div className="admin-cell-user">
                           <strong>{order.customer.name}</strong>
-                          <span className="admin-muted-text">{order.customer.phone || '—'}</span>
+                          <span>{order.customer.phone || '—'}</span>
                         </div>
                       </td>
                       <td>
-                        <span className="branch-badge" style={{ padding: '6px 10px' }}>
+                        <span className="branch-badge">
                           {branchName}
                         </span>
                       </td>
                       <td>
                         <select
                           className="admin-select"
+                          style={{ padding: '6px 10px', fontSize: '0.8rem', minWidth: '130px' }}
                           value={order.status}
                           onChange={(event) => handleStatusUpdate(order.orderId, event.target.value)}
                           aria-label={`Change status for order ${order.orderId}`}
@@ -261,18 +263,25 @@ export default function AdminOrders() {
                           ))}
                         </select>
                       </td>
-                      <td>₹{Number(order.totalAmount || 0).toLocaleString()}</td>
                       <td>
-                        <div style={{ display: 'grid', gap: 4 }}>
-                          <span>{paymentStatus}</span>
-                          <span className="admin-muted-text">{order.paymentMethod || '—'}</span>
+                        <strong style={{ fontSize: '0.95rem' }}>₹{Number(order.totalAmount || 0).toLocaleString()}</strong>
+                      </td>
+                      <td>
+                        <div className="admin-cell-user">
+                          <span className={`status-pill ${paymentStatus.toLowerCase()}`}>{paymentStatus}</span>
+                          <span style={{ fontSize: '0.75rem', marginTop: '2px' }}>{order.paymentMethod || '—'}</span>
                         </div>
                       </td>
-                      <td>{order.pickupDate || '—'}</td>
+                      <td>
+                        <div className="admin-cell-user">
+                          <span><strong>In:</strong> {order.pickupDate || '—'}</span>
+                          <span><strong>Out:</strong> {order.deliveryDate || '—'}</span>
+                        </div>
+                      </td>
                       <td>
                         <button
                           type="button"
-                          className="admin-button"
+                          className="admin-button admin-button--compact"
                           onClick={() => setActiveOrder(order)}
                         >
                           View
