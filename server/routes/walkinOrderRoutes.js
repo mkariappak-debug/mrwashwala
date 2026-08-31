@@ -1,6 +1,7 @@
 import express from 'express';
 import WalkInOrder from '../models/WalkInOrder.js';
 import OrderProcessing from '../models/OrderProcessing.js';
+import Service from '../models/Service.js';
 import { determineWorkflow } from '../config/workflows.js';
 import { adminAuth } from '../middleware/authMiddleware.js';
 
@@ -42,15 +43,25 @@ const buildSearchFilter = (query) => {
   }
 
   if (query.search) {
-    const regex = new RegExp(query.search.trim(), 'i');
+    const escapedSearch = query.search.trim().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+    const searchLower = escapedSearch.toLowerCase();
+    const regex = new RegExp(escapedSearch, 'i');
     filter.$or = [
       { orderId: regex },
-      { 'customer.name': regex },
       { 'customer.phone': regex },
       { 'customer.altPhone': regex },
       { 'customer.address': regex },
       { 'branch.name': regex },
-      { orderSummary: regex }
+      { orderSummary: regex },
+      {
+        $expr: {
+          $regexMatch: {
+            input: { $toLower: '$customer.name' },
+            regex: searchLower,
+            options: 'i'
+          }
+        }
+      }
     ];
   }
 
@@ -95,17 +106,33 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ message: 'At least one service is required' });
     }
 
+    const dbServices = await Service.find({});
+    const serviceMap = {};
+    dbServices.forEach(s => {
+      serviceMap[s.name.toLowerCase().trim()] = s.surahiUnitCost || 0;
+    });
+
     const normalizedServices = services.map((service) => {
       const quantity = Number(service.quantity) || 0;
       const price = Number(service.price) || 0;
       const subtotal = Number(service.subtotal) || quantity * price;
+
+      const nameLower = (service.name || '').toLowerCase().trim();
+      let surahiUnitCost = service.surahiUnitCost !== undefined ? Number(service.surahiUnitCost) : (serviceMap[nameLower] || 0);
+
+      // Fallback for dry cleaning
+      if (surahiUnitCost === 0 && (nameLower.includes('dry cleaning') || nameLower.includes('dry clean'))) {
+        surahiUnitCost = Math.round(price * 0.7);
+      }
 
       return {
         name: service.name || 'Service',
         quantity,
         unit: service.unit || 'Kg',
         price,
-        subtotal
+        subtotal,
+        surahiUnitCost,
+        surahiTotalCost: surahiUnitCost * quantity
       };
     });
 
@@ -201,12 +228,35 @@ router.patch('/:orderId', async (req, res) => {
     }
 
     if (updates.services) {
-      updates.services = updates.services.map((service) => ({
-        ...service,
-        quantity: Number(service.quantity) || 0,
-        price: Number(service.price) || 0,
-        subtotal: Number(service.subtotal) || Number(service.quantity) * Number(service.price)
-      }));
+      const dbServices = await Service.find({});
+      const serviceMap = {};
+      dbServices.forEach(s => {
+        serviceMap[s.name.toLowerCase().trim()] = s.surahiUnitCost || 0;
+      });
+
+      updates.services = updates.services.map((service) => {
+        const quantity = Number(service.quantity) || 0;
+        const price = Number(service.price) || 0;
+        const subtotal = Number(service.subtotal) || quantity * price;
+
+        const nameLower = (service.name || '').toLowerCase().trim();
+        let surahiUnitCost = service.surahiUnitCost !== undefined ? Number(service.surahiUnitCost) : (serviceMap[nameLower] || 0);
+
+        // Fallback for dry cleaning
+        if (surahiUnitCost === 0 && (nameLower.includes('dry cleaning') || nameLower.includes('dry clean'))) {
+          surahiUnitCost = Math.round(price * 0.7);
+        }
+
+        return {
+          name: service.name || 'Service',
+          quantity,
+          unit: service.unit || 'Kg',
+          price,
+          subtotal,
+          surahiUnitCost,
+          surahiTotalCost: surahiUnitCost * quantity
+        };
+      });
       updates.subtotal = updates.services.reduce((sum, item) => sum + item.subtotal, 0);
     }
 

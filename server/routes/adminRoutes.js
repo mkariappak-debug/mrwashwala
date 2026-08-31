@@ -14,7 +14,12 @@ router.get('/dashboard', async (req, res) => {
   try {
     const branch = req.query.branch;
     const baseFilter = branch && branch !== 'all' ? { 'selectedBranch.id': branch } : {};
-    const totalOrders = await Order.countDocuments(baseFilter);
+    const walkInFilter = branch && branch !== 'all' ? { 'branch.id': branch } : {};
+
+    const websiteOrders = await Order.countDocuments(baseFilter);
+    const totalWalkInOrders = await WalkInOrder.countDocuments(walkInFilter);
+    const totalOrders = websiteOrders + totalWalkInOrders;
+
     const pendingOrders = await Order.countDocuments({ ...baseFilter, status: 'Pending' });
     const inProgressOrders = await Order.countDocuments({
       ...baseFilter,
@@ -47,8 +52,6 @@ router.get('/dashboard', async (req, res) => {
     const franchiseLeads = await FranchiseLead.countDocuments();
     const revenueGrowth = 12; // placeholder until more historical data is available
 
-    const walkInFilter = branch && branch !== 'all' ? { 'branch.id': branch } : {};
-    const totalWalkInOrders = await WalkInOrder.countDocuments(walkInFilter);
     const pendingWalkInOrders = await WalkInOrder.countDocuments({
       ...walkInFilter,
       status: 'Pending'
@@ -84,6 +87,7 @@ router.get('/dashboard', async (req, res) => {
 
     res.json({
       totalOrders,
+      websiteOrders,
       pendingOrders,
       inProgressOrders,
       deliveredOrders,

@@ -1,10 +1,14 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 import { useAdminAuth } from '../../context/AdminAuthContext.jsx';
 import { useAdminBranch } from '../../context/AdminBranchContext.jsx';
 
 export default function TopNavbar({ onOpenSidebar }) {
   const { user } = useAdminAuth();
   const { selectedBranchId, availableBranches, setSelectedBranchId } = useAdminBranch();
+  const location = useLocation();
+
+  const isDashboard = location.pathname === '/admin' || location.pathname === '/admin/';
 
   return (
     <header className="admin-header">
@@ -21,13 +25,15 @@ export default function TopNavbar({ onOpenSidebar }) {
             <line x1="3" y1="18" x2="21" y2="18"></line>
           </svg>
         </button>
-        <div className="admin-header__search">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-          <input type="search" placeholder="Search orders, customers, services…" aria-label="Search dashboard" />
-        </div>
+        {!isDashboard && (
+          <div className="admin-header__search">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="search" placeholder="Search orders, customers, services…" aria-label="Search dashboard" />
+          </div>
+        )}
       </div>
       <div className="admin-header__actions">
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>

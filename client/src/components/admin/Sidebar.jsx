@@ -3,12 +3,15 @@ import { NavLink } from 'react-router-dom';
 import { useAdminAuth } from '../../context/AdminAuthContext.jsx';
 
 const links = [
-  { to: '/admin', label: 'Dashboard', icon: '📊' },
+  { to: '/admin/dashboard', label: 'Dashboard & Analytics', icon: '📊' },
+  { to: '/admin/insights', label: 'Insights', icon: '💡' },
   { to: '/admin/orders', label: 'Orders', icon: '📦' },
   { to: '/admin/processing', label: 'Order Processing', icon: '⚡' },
   { to: '/admin/walkin-orders', label: 'Walk-in Orders', icon: '🏪' },
   { to: '/admin/customers', label: 'Customers', icon: '👥' },
   { to: '/admin/services', label: 'Services', icon: '🧺' },
+  { to: '/admin/revenue', label: 'Revenue', icon: '💰' },
+  { to: '/admin/inventory', label: 'Inventory', icon: '📋' },
   { to: '/admin/reviews', label: 'Reviews', icon: '⭐' },
   { to: '/admin/franchise-leads', label: 'Franchise Leads', icon: '💼' }
 ];
@@ -31,7 +34,7 @@ export default function Sidebar({ open, onClose }) {
           <NavLink
             key={item.to}
             to={item.to}
-            end={item.to === '/admin'}
+            end={item.to === '/admin/dashboard'}
             className={({ isActive }) =>
               `admin-sidebar__link${isActive ? ' active' : ''}`
             }

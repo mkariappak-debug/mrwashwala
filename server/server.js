@@ -19,6 +19,10 @@ import franchiseLeadRoutes from './routes/FranchiseLeadRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import walkinOrderRoutes from './routes/walkinOrderRoutes.js';
 import processingRoutes from './routes/processingRoutes.js';
+import revenueRoutes from './routes/revenueRoutes.js';
+import inventoryRoutes from './routes/inventoryRoutes.js';
+import expenseRoutes from './routes/expenseRoutes.js';
+import analyticsRoutes from './routes/analyticsRoutes.js';
 
 // Load environment variables
 
@@ -109,6 +113,10 @@ app.use('/api/reviews', reviewRoutes);
 app.use('/api/franchise-leads', franchiseLeadRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/processing', processingRoutes);
+app.use('/api/revenue', revenueRoutes);
+app.use('/api/inventory', inventoryRoutes);
+app.use('/api/expenses', expenseRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 // =========================
 // API Status Route

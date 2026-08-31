@@ -23,7 +23,7 @@ const formatDate = (value) => {
 };
 
 const normalizePaymentStatus = (order) => {
-  if (order.paymentStatus && order.paymentStatus !== 'Pending') return order.paymentStatus;
+  if (order.paymentStatus) return order.paymentStatus;
   if (['QR Payment', 'Online Payment'].includes(order.paymentMethod)) return 'Paid';
   if (order.paymentMethod === 'WhatsApp Checkout') return 'Pending';
   return 'Pending';
@@ -82,7 +82,6 @@ export default function AdminOrders() {
         if (statusFilter !== 'All') params.status = statusFilter;
         if (paymentMethodFilter !== 'All') params.paymentMethod = paymentMethodFilter;
         if (paymentStatusFilter !== 'All') params.paymentStatus = paymentStatusFilter;
-        if (search.trim()) params.search = search.trim();
 
         const response = await API.get('/api/orders', { params });
         setOrders(response.data || []);
@@ -94,19 +93,81 @@ export default function AdminOrders() {
     };
 
     fetchOrders();
-  }, [selectedBranchId, statusFilter, paymentMethodFilter, paymentStatusFilter, search]);
+  }, [selectedBranchId, statusFilter, paymentMethodFilter, paymentStatusFilter]);
+
+  const formatDateTime = (value) => {
+    if (!value) return '—';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return value;
+    
+    const dateStr = date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
+    
+    let hours = date.getHours();
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    const timeStr = `${hours}:${minutes} ${ampm}`;
+    
+    return `${dateStr}, ${timeStr}`;
+  };
+
+  const getPickupInString = (order) => {
+    if (order.orderSource === 'Walk-in Order') {
+      return formatDateTime(order.createdAt);
+    }
+    if (order.pickupDate) {
+      const timePart = order.pickupTime || '00:00';
+      return formatDateTime(`${order.pickupDate}T${timePart}`);
+    }
+    return formatDateTime(order.createdAt);
+  };
+
+  const getPickupOutString = (order) => {
+    if (order.status !== 'Delivered') {
+      return '—';
+    }
+    return formatDateTime(order.updatedAt);
+  };
 
   const filteredOrders = useMemo(() => {
     return orders.filter((order) => {
+      if (search.trim()) {
+        const term = search.toLowerCase().trim();
+        const orderId = (order.orderId || '').toLowerCase();
+        const customerName = (order.customer?.name || '').toLowerCase();
+        const customerPhone = (order.customer?.phone || '').toLowerCase();
+        const customerAddress = (order.customer?.address || '').toLowerCase();
+        
+        const matchesSearch = 
+          orderId.includes(term) ||
+          customerName.includes(term) ||
+          customerPhone.includes(term) ||
+          customerAddress.includes(term);
+
+        if (!matchesSearch) return false;
+      }
+
+      // Date range filtering (accounting for browser local time zone offset)
       const createdAt = order.createdAt ? new Date(order.createdAt) : null;
-      const fromDate = dateRange.from ? new Date(dateRange.from) : null;
-      const toDate = dateRange.to ? new Date(dateRange.to) : null;
+      
+      let fromDate = null;
+      if (dateRange.from) {
+        const [fYear, fMonth, fDay] = dateRange.from.split('-').map(Number);
+        fromDate = new Date(fYear, fMonth - 1, fDay, 0, 0, 0, 0);
+      }
+
+      let toDate = null;
+      if (dateRange.to) {
+        const [tYear, tMonth, tDay] = dateRange.to.split('-').map(Number);
+        toDate = new Date(tYear, tMonth - 1, tDay, 23, 59, 59, 999);
+      }
 
       if (fromDate && createdAt && createdAt < fromDate) return false;
       if (toDate && createdAt && createdAt > toDate) return false;
       return true;
     });
-  }, [orders, dateRange]);
+  }, [orders, dateRange, search]);
 
   const handleStatusUpdate = async (orderId, nextStatus) => {
     try {
@@ -122,6 +183,49 @@ export default function AdminOrders() {
       console.error(err);
       setSuccessMessage(null);
       setError(err?.response?.data?.message || 'Failed to update status');
+    }
+  };
+
+  const handlePaymentStatusUpdate = async (orderId, nextPaymentStatus) => {
+    // Optimistic UI update
+    setOrders((prev) =>
+      prev.map((order) =>
+        order.orderId === orderId ? { ...order, paymentStatus: nextPaymentStatus } : order
+      )
+    );
+
+    try {
+      const response = await API.patch(`/api/orders/${encodeURIComponent(orderId)}/payment-status`, {
+        paymentStatus: nextPaymentStatus
+      });
+      setOrders((prev) => prev.map((order) => (order.orderId === orderId ? response.data : order)));
+      if (activeOrder?.orderId === orderId) {
+        setActiveOrder(response.data);
+      }
+      setError(null);
+      setSuccessMessage(`Payment status for order ${orderId} updated to ${nextPaymentStatus}`);
+      window.setTimeout(() => setSuccessMessage(null), 4000);
+    } catch (err) {
+      console.error(err);
+      setSuccessMessage(null);
+      setError(err?.response?.data?.message || 'Failed to update payment status');
+      
+      // Revert status on failure
+      const fetchOrders = async () => {
+        try {
+          const params = {};
+          if (selectedBranchId && selectedBranchId !== 'all') params.branch = selectedBranchId;
+          if (statusFilter !== 'All') params.status = statusFilter;
+          if (paymentMethodFilter !== 'All') params.paymentMethod = paymentMethodFilter;
+          if (paymentStatusFilter !== 'All') params.paymentStatus = paymentStatusFilter;
+
+          const response = await API.get('/api/orders', { params });
+          setOrders(response.data || []);
+        } catch (e) {
+          console.error(e);
+        }
+      };
+      await fetchOrders();
     }
   };
 
@@ -141,71 +245,92 @@ export default function AdminOrders() {
     <div className="admin-section">
       <div className="admin-card">
         <div className="admin-card__title">Order Filters</div>
-        <div className="admin-filter-row">
-          <select
-            className="admin-select"
-            value={selectedBranchId}
-            onChange={(event) => handleBranchChange(event.target.value)}
-          >
-            {availableBranches.map((branch) => (
-              <option key={branch.id} value={branch.id}>
-                {branch.shortName}
-              </option>
-            ))}
-          </select>
+         <div className="admin-filter-row">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '130px' }}>
+            <label>Branch</label>
+            <select
+              className="admin-select"
+              value={selectedBranchId}
+              onChange={(event) => handleBranchChange(event.target.value)}
+            >
+              {availableBranches.map((branch) => (
+                <option key={branch.id} value={branch.id}>
+                  {branch.shortName}
+                </option>
+              ))}
+            </select>
+          </div>
 
-          <select
-            className="admin-select"
-            value={statusFilter}
-            onChange={(event) => setStatusFilter(event.target.value)}
-          >
-            {STATUS_OPTIONS.map((status) => (
-              <option key={status} value={status}>{status}</option>
-            ))}
-          </select>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '130px' }}>
+            <label>Status</label>
+            <select
+              className="admin-select"
+              value={statusFilter}
+              onChange={(event) => setStatusFilter(event.target.value)}
+            >
+              {STATUS_OPTIONS.map((status) => (
+                <option key={status} value={status}>{status}</option>
+              ))}
+            </select>
+          </div>
 
-          <select
-            className="admin-select"
-            value={paymentStatusFilter}
-            onChange={(event) => setPaymentStatusFilter(event.target.value)}
-          >
-            {PAYMENT_STATUS_OPTIONS.map((status) => (
-              <option key={status} value={status}>{status}</option>
-            ))}
-          </select>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '130px' }}>
+            <label>Payment Status</label>
+            <select
+              className="admin-select"
+              value={paymentStatusFilter}
+              onChange={(event) => setPaymentStatusFilter(event.target.value)}
+            >
+              {PAYMENT_STATUS_OPTIONS.map((status) => (
+                <option key={status} value={status}>{status}</option>
+              ))}
+            </select>
+          </div>
 
-          <select
-            className="admin-select"
-            value={paymentMethodFilter}
-            onChange={(event) => setPaymentMethodFilter(event.target.value)}
-          >
-            {PAYMENT_METHOD_OPTIONS.map((method) => (
-              <option key={method} value={method}>{method}</option>
-            ))}
-          </select>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '130px' }}>
+            <label>Payment Method</label>
+            <select
+              className="admin-select"
+              value={paymentMethodFilter}
+              onChange={(event) => setPaymentMethodFilter(event.target.value)}
+            >
+              {PAYMENT_METHOD_OPTIONS.map((method) => (
+                <option key={method} value={method}>{method}</option>
+              ))}
+            </select>
+          </div>
 
-          <input
-            className="admin-input"
-            type="date"
-            value={dateRange.from}
-            onChange={(event) => setDateRange((prev) => ({ ...prev, from: event.target.value }))}
-          />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '130px' }}>
+            <label>From Date</label>
+            <input
+              className="admin-input"
+              type="date"
+              value={dateRange.from}
+              onChange={(event) => setDateRange((prev) => ({ ...prev, from: event.target.value }))}
+            />
+          </div>
 
-          <input
-            className="admin-input"
-            type="date"
-            value={dateRange.to}
-            onChange={(event) => setDateRange((prev) => ({ ...prev, to: event.target.value }))}
-          />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '130px' }}>
+            <label>To Date</label>
+            <input
+              className="admin-input"
+              type="date"
+              value={dateRange.to}
+              onChange={(event) => setDateRange((prev) => ({ ...prev, to: event.target.value }))}
+            />
+          </div>
 
-          <input
-            className="admin-input"
-            type="search"
-            placeholder="Search by name, phone, order ID, address"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            style={{ minWidth: 240 }}
-          />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: '1', minWidth: '240px' }}>
+            <label>Search Orders</label>
+            <input
+              className="admin-input"
+              type="search"
+              placeholder="Search by name, phone, order ID, address"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              style={{ width: '100%' }}
+            />
+          </div>
         </div>
       </div>
 
@@ -220,12 +345,13 @@ export default function AdminOrders() {
               <thead>
                 <tr>
                   <th>Order ID</th>
+                  <th>Source</th>
                   <th>Customer</th>
                   <th>Branch</th>
                   <th>Status</th>
                   <th>Total</th>
                   <th>Payment</th>
-                  <th>Pickup</th>
+                  <th style={{ minWidth: '150px' }}>Pickup</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -237,6 +363,11 @@ export default function AdminOrders() {
                   return (
                     <tr key={order._id}>
                       <td><span style={{ fontWeight: 600, color: 'var(--admin-primary)' }}>{order.orderId}</span></td>
+                      <td>
+                        <span className={`source-badge ${order.orderSource === 'Walk-in Order' ? 'walkin' : 'website'}`}>
+                          {order.orderSource || 'Website Order'}
+                        </span>
+                      </td>
                       <td>
                         <div className="admin-cell-user">
                           <strong>{order.customer.name}</strong>
@@ -268,14 +399,25 @@ export default function AdminOrders() {
                       </td>
                       <td>
                         <div className="admin-cell-user">
-                          <span className={`status-pill ${paymentStatus.toLowerCase()}`}>{paymentStatus}</span>
+                          <select
+                            className={`payment-select ${paymentStatus.toLowerCase().replace(/\s+/g, '-')}`}
+                            value={paymentStatus}
+                            onChange={(event) => handlePaymentStatusUpdate(order.orderId, event.target.value)}
+                            aria-label={`Change payment status for order ${order.orderId}`}
+                          >
+                            <option value="Pending">Pending</option>
+                            <option value="Paid">Paid</option>
+                            {paymentStatus !== 'Pending' && paymentStatus !== 'Paid' && (
+                              <option value={paymentStatus}>{paymentStatus}</option>
+                            )}
+                          </select>
                           <span style={{ fontSize: '0.75rem', marginTop: '2px' }}>{order.paymentMethod || '—'}</span>
                         </div>
                       </td>
                       <td>
-                        <div className="admin-cell-user">
-                          <span><strong>In:</strong> {order.pickupDate || '—'}</span>
-                          <span><strong>Out:</strong> {order.deliveryDate || '—'}</span>
+                        <div className="admin-cell-pickup">
+                          <span><strong>In:</strong> {getPickupInString(order)}</span>
+                          <span><strong>Out:</strong> {getPickupOutString(order)}</span>
                         </div>
                       </td>
                       <td>
@@ -301,7 +443,12 @@ export default function AdminOrders() {
           <aside className="admin-drawer" onClick={(e) => e.stopPropagation()}>
             <div className="admin-drawer-header">
               <div>
-                <h2>{activeOrder.orderId}</h2>
+                <h2 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  {activeOrder.orderId}
+                  <span className={`source-badge ${activeOrder.orderSource === 'Walk-in Order' ? 'walkin' : 'website'}`} style={{ fontSize: '0.68rem', padding: '2px 6px' }}>
+                    {activeOrder.orderSource || 'Website Order'}
+                  </span>
+                </h2>
                 <p className="admin-muted-text">{activeOrder.customer.name}</p>
               </div>
               <div style={{ display: 'flex', gap: 8 }}>

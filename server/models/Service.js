@@ -22,6 +22,10 @@ const serviceSchema = new mongoose.Schema(
       type: Number,
       required: true
     },
+    surahiUnitCost: {
+      type: Number,
+      default: 0
+    },
     features: {
       type: [String],
       default: []

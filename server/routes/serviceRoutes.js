@@ -42,7 +42,7 @@ router.get('/', async (req, res) => {
 // @access  Admin
 router.post('/', adminAuth, async (req, res) => {
   try {
-    const { id, name, unit, price, features, featured, displayType, customizeCategory, customizeSubcategory } = req.body;
+    const { id, name, unit, price, surahiUnitCost, features, featured, displayType, customizeCategory, customizeSubcategory } = req.body;
 
     // Check if service already exists
     const serviceExists = await Service.findOne({ id });
@@ -55,6 +55,7 @@ router.post('/', adminAuth, async (req, res) => {
       name,
       unit,
       price,
+      surahiUnitCost: Number(surahiUnitCost || 0),
       features,
       featured,
       displayType,
@@ -74,7 +75,7 @@ router.post('/', adminAuth, async (req, res) => {
 // @access  Admin
 router.put('/:id', adminAuth, async (req, res) => {
   try {
-    const { name, unit, price, features, featured, displayType, customizeCategory, customizeSubcategory } = req.body;
+    const { name, unit, price, surahiUnitCost, features, featured, displayType, customizeCategory, customizeSubcategory } = req.body;
     const service = await Service.findOne({ id: req.params.id });
     if (!service) {
       return res.status(404).json({ message: 'Service not found' });
@@ -83,6 +84,7 @@ router.put('/:id', adminAuth, async (req, res) => {
     if (name !== undefined) service.name = name;
     if (unit !== undefined) service.unit = unit;
     if (price !== undefined) service.price = price;
+    if (surahiUnitCost !== undefined) service.surahiUnitCost = Number(surahiUnitCost || 0);
     if (features !== undefined) service.features = features;
     if (featured !== undefined) service.featured = featured;
     if (displayType !== undefined) service.displayType = displayType;

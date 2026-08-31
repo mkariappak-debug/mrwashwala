@@ -6,6 +6,7 @@ const emptyService = {
   name: '',
   unit: '',
   price: 0,
+  surahiUnitCost: 0,
   features: '',
   featured: false,
   displayType: 'main',
@@ -48,6 +49,7 @@ export default function AdminServices() {
           name: form.name,
           unit: form.unit,
           price: Number(form.price),
+          surahiUnitCost: Number(form.surahiUnitCost || 0),
           features: form.features.split(',').map((item) => item.trim()).filter(Boolean),
           featured: form.featured,
           displayType: form.displayType,
@@ -62,6 +64,7 @@ export default function AdminServices() {
           name: form.name,
           unit: form.unit,
           price: Number(form.price),
+          surahiUnitCost: Number(form.surahiUnitCost || 0),
           features: form.features.split(',').map((item) => item.trim()).filter(Boolean),
           featured: form.featured,
           displayType: form.displayType,
@@ -112,84 +115,132 @@ export default function AdminServices() {
     <div className="admin-section">
       <div className="admin-card" style={{ marginBottom: 20 }}>
         <div className="admin-card__title">{isEditing ? 'Edit Service' : 'Add New Service'}</div>
-        <form className="admin-form" onSubmit={handleSubmit}>
-          <input
-            className="admin-input"
-            placeholder="Service ID"
-            value={form.id}
-            onChange={(event) => setForm({ ...form, id: event.target.value })}
-            required
-            disabled={isEditing}
-          />
-          <input
-            className="admin-input"
-            placeholder="Name"
-            value={form.name}
-            onChange={(event) => setForm({ ...form, name: event.target.value })}
-            required
-          />
-          <input
-            className="admin-input"
-            placeholder="Unit"
-            value={form.unit}
-            onChange={(event) => setForm({ ...form, unit: event.target.value })}
-            required
-          />
-          <input
-            className="admin-input"
-            type="number"
-            placeholder="Price"
-            value={form.price}
-            onChange={(event) => setForm({ ...form, price: event.target.value })}
-            required
-          />
-          <input
-            className="admin-input"
-            placeholder="Features (comma-separated)"
-            value={form.features}
-            onChange={(event) => setForm({ ...form, features: event.target.value })}
-          />
-          <select
-            className="admin-select"
-            value={form.displayType}
-            onChange={(event) => setForm({ ...form, displayType: event.target.value })}
-          >
-            <option value="main">Main</option>
-            <option value="customize">Customize</option>
-          </select>
-          {form.displayType === 'customize' && (
-            <>
+        <form className="admin-form" onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <div className="admin-form-grid">
+            <div className="admin-form-group">
+              <label className="admin-form-label">Service ID</label>
               <input
                 className="admin-input"
-                placeholder="Customize Category"
-                value={form.customizeCategory}
-                onChange={(event) => setForm({ ...form, customizeCategory: event.target.value })}
+                placeholder="e.g. wash-fold"
+                value={form.id}
+                onChange={(event) => setForm({ ...form, id: event.target.value })}
+                required
+                disabled={isEditing}
               />
+            </div>
+            
+            <div className="admin-form-group">
+              <label className="admin-form-label">Service Name</label>
               <input
                 className="admin-input"
-                placeholder="Customize Subcategory"
-                value={form.customizeSubcategory}
-                onChange={(event) => setForm({ ...form, customizeSubcategory: event.target.value })}
+                placeholder="e.g. Wash & Fold"
+                value={form.name}
+                onChange={(event) => setForm({ ...form, name: event.target.value })}
+                required
               />
-            </>
-          )}
-          <label style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <input
-              type="checkbox"
-              checked={form.featured}
-              onChange={(event) => setForm({ ...form, featured: event.target.checked })}
-            />
-            Featured
-          </label>
-          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-            <button type="submit" className="admin-button">
-              {isEditing ? 'Update Service' : 'Create Service'}
-            </button>
-            {isEditing && (
-              <button type="button" className="admin-button" onClick={resetForm} style={{ background: '#64748b', color: '#fff' }}>
-                Cancel
-              </button>
+            </div>
+
+            <div className="admin-form-group">
+              <label className="admin-form-label">Unit of Measure</label>
+              <input
+                className="admin-input"
+                placeholder="e.g. kg, pair, item"
+                value={form.unit}
+                onChange={(event) => setForm({ ...form, unit: event.target.value })}
+                required
+              />
+            </div>
+
+            <div className="admin-form-group">
+              <label className="admin-form-label">Price (₹)</label>
+              <input
+                className="admin-input"
+                type="number"
+                placeholder="e.g. 49"
+                value={form.price}
+                onChange={(event) => setForm({ ...form, price: event.target.value })}
+                required
+              />
+            </div>
+
+            <div className="admin-form-group">
+              <label className="admin-form-label">Surahi Unit Cost (₹)</label>
+              <input
+                className="admin-input"
+                type="number"
+                placeholder="e.g. 20 (Outsourced Dry Clean)"
+                value={form.surahiUnitCost || ''}
+                onChange={(event) => setForm({ ...form, surahiUnitCost: event.target.value })}
+              />
+            </div>
+
+            <div className="admin-form-group">
+              <label className="admin-form-label">Features (comma-separated)</label>
+              <input
+                className="admin-input"
+                placeholder="e.g. Gentle drying, Neat folding"
+                value={form.features}
+                onChange={(event) => setForm({ ...form, features: event.target.value })}
+              />
+            </div>
+
+            <div className="admin-form-group">
+              <label className="admin-form-label">Catalog Category Type</label>
+              <select
+                className="admin-select"
+                value={form.displayType}
+                onChange={(event) => setForm({ ...form, displayType: event.target.value })}
+              >
+                <option value="main">Main Catalog</option>
+                <option value="customize">Customize Add-ons</option>
+              </select>
+            </div>
+
+            {form.displayType === 'customize' && (
+              <>
+                <div className="admin-form-group">
+                  <label className="admin-form-label">Customize Category</label>
+                  <input
+                    className="admin-input"
+                    placeholder="e.g. Dry Clean"
+                    value={form.customizeCategory}
+                    onChange={(event) => setForm({ ...form, customizeCategory: event.target.value })}
+                  />
+                </div>
+                <div className="admin-form-group">
+                  <label className="admin-form-label">Customize Subcategory</label>
+                  <input
+                    className="admin-input"
+                    placeholder="e.g. Men's Wear"
+                    value={form.customizeSubcategory}
+                    onChange={(event) => setForm({ ...form, customizeSubcategory: event.target.value })}
+                  />
+                </div>
+              </>
             )}
+          </div>
+
+          <div className="admin-form-row" style={{ justifyContent: 'space-between' }}>
+            <label style={{ display: 'inline-flex', alignItems: 'center', gap: 10, cursor: 'pointer', fontSize: '0.88rem', fontWeight: 600, color: '#334155' }}>
+              <input
+                type="checkbox"
+                checked={form.featured}
+                onChange={(event) => setForm({ ...form, featured: event.target.checked })}
+                style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+              />
+              Show as Featured Service
+            </label>
+
+            <div style={{ display: 'flex', gap: 12 }}>
+              {isEditing && (
+                <button type="button" className="admin-button admin-button--secondary" onClick={resetForm}>
+                  Cancel
+                </button>
+              )}
+              <button type="submit" className="admin-button">
+                {isEditing ? 'Update Service' : 'Create Service'}
+              </button>
+            </div>
           </div>
         </form>
       </div>
@@ -204,6 +255,7 @@ export default function AdminServices() {
               <th>Name</th>
               <th>Unit</th>
               <th>Price</th>
+              <th>Surahi Cost</th>
               <th>Display</th>
               <th>Category</th>
               <th>Subcategory</th>
@@ -218,6 +270,7 @@ export default function AdminServices() {
                 <td>{service.name}</td>
                 <td>{service.unit}</td>
                 <td>₹{service.price.toFixed(2)}</td>
+                <td>{service.surahiUnitCost ? `₹${service.surahiUnitCost.toFixed(2)}` : '—'}</td>
                 <td>{service.displayType || 'main'}</td>
                 <td>{service.customizeCategory || '-'}</td>
                 <td>{service.customizeSubcategory || '-'}</td>

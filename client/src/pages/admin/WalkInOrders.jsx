@@ -226,6 +226,7 @@ export default function WalkInOrders() {
     const unit = matchedService?.unit ? (matchedService.unit.charAt(0).toUpperCase() + matchedService.unit.slice(1)) : (prevRow.unit || 'Kg');
     const quantity = Math.max(1, Number(prevRow.quantity) || 1);
     const subtotal = Math.round(quantity * price * 100) / 100;
+    const surahiUnitCost = matchedService ? (Number(matchedService.surahiUnitCost) || 0) : (prevRow.surahiUnitCost || 0);
 
     const updatedRow = {
       ...prevRow,
@@ -233,7 +234,8 @@ export default function WalkInOrders() {
       price,
       unit,
       quantity,
-      subtotal
+      subtotal,
+      surahiUnitCost
     };
     nextForm.services[index] = updatedRow;
     const summary = calculateSummary(nextForm);
@@ -367,6 +369,33 @@ export default function WalkInOrders() {
       setLookupError(err?.response?.data?.message || err.message || 'Lookup failed');
     }
   };
+  const formatDateTime = (value) => {
+    if (!value) return '—';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return value;
+    
+    const dateStr = date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
+    
+    let hours = date.getHours();
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    const timeStr = `${hours}:${minutes} ${ampm}`;
+    
+    return `${dateStr}, ${timeStr}`;
+  };
+
+  const getPickupInString = (order) => {
+    return formatDateTime(order.createdAt);
+  };
+
+  const getPickupOutString = (order) => {
+    if (order.status !== 'Delivered') {
+      return '—';
+    }
+    return formatDateTime(order.updatedAt);
+  };
 
   const filteredOrders = useMemo(() => orders, [orders]);
 
@@ -375,44 +404,68 @@ export default function WalkInOrders() {
       <div className="admin-card" style={{ marginBottom: 20 }}>
         <div className="admin-card__title">Walk-in Orders</div>
         <div className="admin-filter-row">
-          <button className="admin-button" type="button" onClick={openCreateForm}>
+          <button className="admin-button" type="button" onClick={openCreateForm} style={{ alignSelf: 'flex-end', height: '40px' }}>
             + New Walk-in Order
           </button>
-          <input
-            className="admin-input"
-            type="search"
-            placeholder="Search by order ID, customer, phone, branch"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-          />
-          <select className="admin-select" value={branchFilter} onChange={(event) => setBranchFilter(event.target.value)}>
-            <option value="all">All Branches</option>
-            {BRANCH_OPTIONS.map((branch) => (
-              <option key={branch.id} value={branch.id}>{branch.name}</option>
-            ))}
-          </select>
-          <select className="admin-select" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
-            <option value="All">All Statuses</option>
-            {STATUS_OPTIONS.map((status) => (
-              <option key={status} value={status}>{status}</option>
-            ))}
-          </select>
-          <select className="admin-select" value={paymentStatusFilter} onChange={(event) => setPaymentStatusFilter(event.target.value)}>
-            <option value="All">All Payments</option>
-            {PAYMENT_STATUS_OPTIONS.map((status) => (
-              <option key={status} value={status}>{status}</option>
-            ))}
-          </select>
-          <select className="admin-select" value={paymentMethodFilter} onChange={(event) => setPaymentMethodFilter(event.target.value)}>
-            <option value="All">All Methods</option>
-            {PAYMENT_METHOD_OPTIONS.map((method) => (
-              <option key={method} value={method}>{method}</option>
-            ))}
-          </select>
-          <select className="admin-select" value={sortOrder} onChange={(event) => setSortOrder(event.target.value)}>
-            <option value="latest">Sort by Latest</option>
-            <option value="oldest">Sort by Oldest</option>
-          </select>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: '1', minWidth: '200px' }}>
+            <label>Search Walk-in Orders</label>
+            <input
+              className="admin-input"
+              type="search"
+              placeholder="Search by order ID, customer, phone, branch"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+            />
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '130px' }}>
+            <label>Branch</label>
+            <select className="admin-select" value={branchFilter} onChange={(event) => setBranchFilter(event.target.value)}>
+              <option value="all">All Branches</option>
+              {BRANCH_OPTIONS.map((branch) => (
+                <option key={branch.id} value={branch.id}>{branch.name}</option>
+              ))}
+            </select>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '130px' }}>
+            <label>Status</label>
+            <select className="admin-select" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
+              <option value="All">All Statuses</option>
+              {STATUS_OPTIONS.map((status) => (
+                <option key={status} value={status}>{status}</option>
+              ))}
+            </select>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '130px' }}>
+            <label>Payment Status</label>
+            <select className="admin-select" value={paymentStatusFilter} onChange={(event) => setPaymentStatusFilter(event.target.value)}>
+              <option value="All">All Payments</option>
+              {PAYMENT_STATUS_OPTIONS.map((status) => (
+                <option key={status} value={status}>{status}</option>
+              ))}
+            </select>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '130px' }}>
+            <label>Payment Method</label>
+            <select className="admin-select" value={paymentMethodFilter} onChange={(event) => setPaymentMethodFilter(event.target.value)}>
+              <option value="All">All Methods</option>
+              {PAYMENT_METHOD_OPTIONS.map((method) => (
+                <option key={method} value={method}>{method}</option>
+              ))}
+            </select>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '130px' }}>
+            <label>Sort By</label>
+            <select className="admin-select" value={sortOrder} onChange={(event) => setSortOrder(event.target.value)}>
+              <option value="latest">Sort by Latest</option>
+              <option value="oldest">Sort by Oldest</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -428,7 +481,7 @@ export default function WalkInOrders() {
                 <th>Summary</th>
                 <th>Total</th>
                 <th>Status</th>
-                <th>Timing</th>
+                <th style={{ minWidth: '150px' }}>Timing</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -463,9 +516,9 @@ export default function WalkInOrders() {
                     </span>
                   </td>
                   <td>
-                    <div className="admin-cell-user">
-                      <span><strong>In:</strong> {order.delivery.pickupDate || '—'}</span>
-                      <span><strong>Out:</strong> {order.delivery.expectedDeliveryDate || '—'}</span>
+                    <div className="admin-cell-pickup">
+                      <span><strong>In:</strong> {getPickupInString(order)}</span>
+                      <span><strong>Out:</strong> {getPickupOutString(order)}</span>
                     </div>
                   </td>
                   <td>
@@ -473,7 +526,7 @@ export default function WalkInOrders() {
                       <button className="admin-button admin-button--compact" type="button" onClick={() => setActiveOrder(order)}>
                         View
                       </button>
-                      <button className="admin-button admin-button--compact admin-button--secondary" type="button" onClick={() => openEditForm(order)}>
+                      <button className="admin-button admin-button--compact admin-button--warning" type="button" onClick={() => openEditForm(order)}>
                         Edit
                       </button>
                       <button className="admin-button admin-button--compact admin-button--danger" type="button" onClick={() => handleDeleteOrder(order.orderId)}>
@@ -691,6 +744,24 @@ export default function WalkInOrders() {
                           }}
                         />
                       </div>
+                      {(service.name || '').toLowerCase().includes('dry clean') && (
+                        <div className="admin-service-field">
+                          <span className="admin-service-field__label">Surahi (₹)</span>
+                          <input
+                            className="admin-input"
+                            type="number"
+                            min="0"
+                            step="any"
+                            value={service.surahiUnitCost === 0 ? '' : service.surahiUnitCost}
+                            placeholder="0"
+                            onChange={(event) => {
+                              const raw = event.target.value;
+                              const cost = raw === '' ? 0 : Number(raw);
+                              updateServiceRow(index, 'surahiUnitCost', cost);
+                            }}
+                          />
+                        </div>
+                      )}
                       <div className="admin-service-field">
                         <span className="admin-service-field__label">Subtotal</span>
                         <div className="admin-service-total">{formatCurrency(service.subtotal)}</div>

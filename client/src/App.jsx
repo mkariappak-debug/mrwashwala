@@ -18,6 +18,9 @@ import AdminFranchiseLeads from "./pages/admin/FranchiseLeads.jsx";
 import AdminWalkInOrders from "./pages/admin/WalkInOrders.jsx";
 import OrderProcessing from "./pages/admin/OrderProcessing.jsx";
 import ProcessingDetail from "./pages/admin/ProcessingDetail.jsx";
+import AdminRevenue from "./pages/admin/Revenue.jsx";
+import AdminInventory from "./pages/admin/Inventory.jsx";
+import AdminAnalytics from "./pages/admin/Analytics.jsx";
 import ProtectedRoute from "./components/admin/ProtectedRoute.jsx";
 import React, { useState, useEffect } from "react";
 
@@ -238,7 +241,9 @@ export default function App() {
 
       <Route path="/admin/login" element={<AdminLogin />} />
       <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
-        <Route index element={<AdminDashboard />} />
+        <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="dashboard" element={<AdminDashboard />} />
+        <Route path="insights" element={<AdminAnalytics />} />
         <Route path="orders" element={<AdminOrders />} />
         <Route path="walkin-orders" element={<AdminWalkInOrders />} />
         <Route path="customers" element={<AdminCustomers />} />
@@ -247,6 +252,8 @@ export default function App() {
         <Route path="franchise-leads" element={<AdminFranchiseLeads />} />
         <Route path="processing" element={<OrderProcessing />} />
         <Route path="processing/:id" element={<ProcessingDetail />} />
+        <Route path="revenue" element={<AdminRevenue />} />
+        <Route path="inventory" element={<AdminInventory />} />
       </Route>
 
       <Route path="/address" element={<Navigate to="/contact#address" replace />} />

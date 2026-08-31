@@ -6,7 +6,9 @@ const WalkInOrderServiceSchema = new mongoose.Schema(
     quantity: { type: Number, required: true, min: 1, default: 1 },
     unit: { type: String, required: true, trim: true, default: 'Kg' },
     price: { type: Number, required: true, min: 0, default: 0 },
-    subtotal: { type: Number, required: true, min: 0, default: 0 }
+    subtotal: { type: Number, required: true, min: 0, default: 0 },
+    surahiUnitCost: { type: Number, default: 0 },
+    surahiTotalCost: { type: Number, default: 0 }
   },
   { _id: false }
 );

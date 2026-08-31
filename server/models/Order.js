@@ -47,6 +47,14 @@ const orderSchema = new mongoose.Schema(
         unit: {
           type: String,
           required: true
+        },
+        surahiUnitCost: {
+          type: Number,
+          default: 0
+        },
+        surahiTotalCost: {
+          type: Number,
+          default: 0
         }
       }
     ],

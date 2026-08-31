@@ -5897,3 +5897,16 @@ line-height: 1.4;
 .processing-history-item.rework .history-meta {
   color: #ef4444;
 }
+
+/* ==========================================
+   ANALYTICS & INSIGHTS CUSTOM STYLES
+   ========================================== */
+.chart-point-group circle {
+  transition: r 0.15s ease-in-out, stroke-width 0.15s ease-in-out;
+  cursor: pointer;
+}
+.chart-point-group:hover circle {
+  r: 6;
+  stroke-width: 3;
+}
+
